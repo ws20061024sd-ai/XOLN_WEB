@@ -63,6 +63,18 @@ const sections = [
     ),
   },
   {
+    href: "/md-test",
+    title: "MD测试",
+    desc: "Markdown 语法测试，边看源码边学。",
+    color: "#6366f1",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      </svg>
+    ),
+  },
+  {
     href: "/misc",
     title: "杂项",
     desc: "暂时归不了类的内容。",
