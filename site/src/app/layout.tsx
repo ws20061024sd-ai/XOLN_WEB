@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
 
 export const metadata: Metadata = {
   title: "我的网站",
-  description: "个人网站",
+  description: "个人网站 —— 记录思考、作品和值得留下的东西。",
 };
 
 export default function RootLayout({
@@ -15,16 +17,23 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="h-full antialiased">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&family=JetBrains+Mono:wght@400;450;500&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[var(--color-bg)] text-[var(--color-text)]">
+      <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--text)]">
         <Header />
-        <main className="flex-1 mx-auto w-full max-w-3xl px-4 py-8 sm:py-12">
-          {children}
+        <main className="flex-1">
+          <PageTransition>{children}</PageTransition>
         </main>
+        <Footer />
       </body>
     </html>
   );

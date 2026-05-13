@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const navItems = [
   { href: "/", label: "首页" },
@@ -17,65 +17,96 @@ const navItems = [
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // 页面切换时关闭移动端菜单
+  useEffect(() => setOpen(false), [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 backdrop-blur">
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "border-b border-[var(--border)] bg-[var(--bg)]/85 backdrop-blur-md shadow-sm"
+          : "border-b border-transparent bg-[var(--bg)]"
+      }`}
+    >
       <nav className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
         <Link
           href="/"
-          className="text-lg font-semibold tracking-tight text-[var(--color-text)] no-underline"
+          className="text-lg font-semibold tracking-tight text-[var(--text)] no-underline transition-opacity hover:opacity-70"
         >
           我的网站
         </Link>
 
         {/* 桌面导航 */}
-        <div className="hidden gap-6 md:flex">
-          {navItems.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`text-sm no-underline transition-colors ${
-                pathname === href
-                  ? "font-medium text-[var(--color-accent)]"
-                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
+        <div className="hidden gap-1 md:flex">
+          {navItems.map(({ href, label }) => {
+            const active = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium no-underline transition-all ${
+                  active
+                    ? "bg-[var(--accent-soft)] text-[var(--accent)]"
+                    : "text-[var(--text-muted)] hover:bg-[var(--border-light)] hover:text-[var(--text)]"
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </div>
 
         {/* 移动端按钮 */}
         <button
           onClick={() => setOpen(!open)}
-          className="text-sm text-[var(--color-text-muted)] md:hidden"
-          aria-label="菜单"
+          className="rounded-md p-2 text-sm font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--border-light)] md:hidden"
+          aria-label={open ? "关闭菜单" : "打开菜单"}
         >
-          {open ? "关闭" : "菜单"}
+          {open ? (
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 5l8 8M13 5l-8 8" />
+            </svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 5h12M3 9h12M3 13h12" />
+            </svg>
+          )}
         </button>
       </nav>
 
       {/* 移动端菜单 */}
-      {open && (
-        <div className="border-t border-[var(--color-border)] md:hidden">
-          <div className="mx-auto max-w-3xl px-4 py-3 flex flex-col gap-3">
-            {navItems.map(({ href, label }) => (
+      <div
+        className={`overflow-hidden transition-all duration-300 md:hidden ${
+          open ? "max-h-80" : "max-h-0"
+        }`}
+      >
+        <div className="border-t border-[var(--border)] bg-[var(--bg)] px-4 py-3 flex flex-col gap-1">
+          {navItems.map(({ href, label }) => {
+            const active = pathname === href;
+            return (
               <Link
                 key={href}
                 href={href}
-                onClick={() => setOpen(false)}
-                className={`text-sm no-underline ${
-                  pathname === href
-                    ? "font-medium text-[var(--color-accent)]"
-                    : "text-[var(--color-text-muted)]"
+                className={`rounded-md px-3 py-2 text-sm font-medium no-underline transition-colors ${
+                  active
+                    ? "bg-[var(--accent-soft)] text-[var(--accent)]"
+                    : "text-[var(--text-muted)] hover:bg-[var(--border-light)]"
                 }`}
               >
                 {label}
               </Link>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      )}
+      </div>
     </header>
   );
 }

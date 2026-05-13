@@ -4,14 +4,16 @@ function parseInline(text: string): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
   let remaining = text;
 
-  // 处理行内元素：**加粗**、*斜体*、`代码`、[链接](url)
   while (remaining.length > 0) {
+    // 图片 ![...](...) 必须在链接 [...] 之前匹配
+    const imageMatch = remaining.match(/^(.*?)!\[(.+?)\]\((.+?)\)/);
     const boldMatch = remaining.match(/^(.*?)\*\*(.+?)\*\*/);
-    const italicMatch = remaining.match(/^(.*?)\*(.+?)\*/);
+    const italicMatch = remaining.match(/^(.*?)(?<!\*)\*(?!\*)(.+?)\*(?!\*)/);
     const codeMatch = remaining.match(/^(.*?)`(.+?)`/);
     const linkMatch = remaining.match(/^(.*?)\[(.+?)\]\((.+?)\)/);
 
     const matches = [
+      { match: imageMatch, type: "image" as const },
       { match: boldMatch, type: "bold" as const },
       { match: italicMatch, type: "italic" as const },
       { match: codeMatch, type: "code" as const },
@@ -33,6 +35,17 @@ function parseInline(text: string): React.ReactNode[] {
     if (m[1]) parts.push(m[1]);
 
     switch (earliest.type) {
+      case "image":
+        parts.push(
+          React.createElement("img", {
+            key: parts.length,
+            src: m[3],
+            alt: m[2],
+            loading: "lazy",
+          })
+        );
+        remaining = m.input!.slice(m.index! + m[0].length);
+        break;
       case "bold":
         parts.push(React.createElement("strong", { key: parts.length }, m[2]));
         remaining = m.input!.slice(m.index! + m[0].length);
@@ -47,11 +60,7 @@ function parseInline(text: string): React.ReactNode[] {
         break;
       case "link":
         parts.push(
-          React.createElement(
-            "a",
-            { href: m[3], key: parts.length },
-            m[2]
-          )
+          React.createElement("a", { href: m[3], key: parts.length }, m[2])
         );
         remaining = m.input!.slice(m.index! + m[0].length);
         break;
@@ -75,6 +84,102 @@ export function MarkdownRenderer({ content }: { content: string }) {
       i++;
       continue;
     }
+
+    // ===== 媒体元素 =====
+
+    // Bilibili 嵌入: !bilibili[title](BVid)
+    const biliMatch = trimmed.match(/^!bilibili\[(.*?)\]\((.*?)\)$/);
+    if (biliMatch) {
+      const bvid = biliMatch[2];
+      elements.push(
+        <figure key={elements.length} className="my-8">
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+            <iframe
+              src={`https://player.bilibili.com/player.html?bvid=${bvid}&page=1&high_quality=1`}
+              scrolling="no"
+              frameBorder="0"
+              allowFullScreen
+              className="absolute inset-0 h-full w-full rounded-lg"
+            />
+          </div>
+          {biliMatch[1] && (
+            <figcaption className="mt-2 text-center text-sm text-[var(--text-muted)]">
+              {biliMatch[1]}
+            </figcaption>
+          )}
+        </figure>
+      );
+      i++;
+      continue;
+    }
+
+    // YouTube 嵌入: !youtube[title](videoId)
+    const ytMatch = trimmed.match(/^!youtube\[(.*?)\]\((.*?)\)$/);
+    if (ytMatch) {
+      elements.push(
+        <figure key={elements.length} className="my-8">
+          <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+            <iframe
+              src={`https://www.youtube.com/embed/${ytMatch[2]}`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="absolute inset-0 h-full w-full rounded-lg"
+            />
+          </div>
+          {ytMatch[1] && (
+            <figcaption className="mt-2 text-center text-sm text-[var(--text-muted)]">
+              {ytMatch[1]}
+            </figcaption>
+          )}
+        </figure>
+      );
+      i++;
+      continue;
+    }
+
+    // 本地/远程视频: !video[poster标题](url)
+    const videoMatch = trimmed.match(/^!video\[(.*?)\]\((.*?)\)$/);
+    if (videoMatch) {
+      elements.push(
+        <figure key={elements.length} className="my-8">
+          <video
+            controls
+            preload="metadata"
+            className="w-full rounded-lg"
+            poster={videoMatch[1] !== "无" ? undefined : undefined}
+          >
+            <source src={videoMatch[2]} />
+            你的浏览器不支持视频播放。
+          </video>
+        </figure>
+      );
+      i++;
+      continue;
+    }
+
+    // 独立图片: ![alt](url)  占整行时渲染为 figure
+    const imageMatch = trimmed.match(/^!\[(.*?)\]\((.+?)\)$/);
+    if (imageMatch) {
+      elements.push(
+        <figure key={elements.length} className="my-8">
+          <img
+            src={imageMatch[2]}
+            alt={imageMatch[1]}
+            loading="lazy"
+            className="w-full rounded-lg"
+          />
+          {imageMatch[1] && (
+            <figcaption className="mt-2 text-center text-sm text-[var(--text-muted)]">
+              {imageMatch[1]}
+            </figcaption>
+          )}
+        </figure>
+      );
+      i++;
+      continue;
+    }
+
+    // ===== 原有元素 =====
 
     // 代码块
     if (trimmed.startsWith("```")) {
@@ -210,6 +315,7 @@ export function MarkdownRenderer({ content }: { content: string }) {
       i < lines.length &&
       lines[i].trim() &&
       !lines[i].trim().startsWith("#") &&
+      !lines[i].trim().startsWith("!") &&
       !lines[i].trim().startsWith("```") &&
       !lines[i].trim().startsWith("> ") &&
       !lines[i].trim().startsWith("- ") &&
