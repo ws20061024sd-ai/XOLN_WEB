@@ -11,7 +11,6 @@ const navItems = [
   { href: "/works", label: "作品" },
   { href: "/favorites", label: "喜爱" },
   { href: "/changelog", label: "更新" },
-  { href: "/md-test", label: "MD测试" },
   { href: "/misc", label: "杂项" },
 ];
 
