@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Users/xoln/Desktop/编程/博客/docs && mv /Users/xoln/Desktop/编程/博客/*.md /Users/xoln/Desktop/编程/博客/docs/)",
+      "Bash(npx create-next-app@latest site --typescript --tailwind --eslint --app --src-dir --no-import-alias --turbopack --use-npm)",
+      "Bash(npm -v)",
+      "Bash(brew --version)",
+      "Read(//usr/local/bin/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//Users/xoln/Downloads/**)",
+      "Read(//Users/xoln/Desktop/**)",
+      "Read(//usr/**)",
+      "Read(//opt/**)",
+      "Bash(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh)",
+      "Bash(bash)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3099)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ],
+    "additionalDirectories": [
+      "/Users/xoln/Desktop/编程/博客"
+    ]
+  }
+}
