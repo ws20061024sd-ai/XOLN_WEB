@@ -181,15 +181,21 @@ export function MarkdownRenderer({ content }: { content: string }) {
 
     // ===== 原有元素 =====
 
-    // 代码块
-    if (trimmed.startsWith("```")) {
+    // 代码块：匹配开 fence 的 backtick 数量，防止嵌套 fence 提前关闭
+    const fenceMatch = trimmed.match(/^(`{3,})/);
+    if (fenceMatch) {
+      const fenceLen = fenceMatch[1].length;
       const codeLines: string[] = [];
       i++;
-      while (i < lines.length && !lines[i].trim().startsWith("```")) {
+      while (i < lines.length) {
+        const endMatch = lines[i].trim().match(/^(`{3,})/);
+        if (endMatch && endMatch[1].length >= fenceLen) {
+          i++; // skip closing fence
+          break;
+        }
         codeLines.push(lines[i]);
         i++;
       }
-      i++; // skip end ```
       elements.push(
         <pre key={elements.length}>
           <code>{codeLines.join("\n")}</code>

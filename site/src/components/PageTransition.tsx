@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function PageTransition({
   children,
@@ -9,26 +9,24 @@ export default function PageTransition({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [visible, setVisible] = useState(false);
   const prevPathname = useRef(pathname);
+  const [transitioning, setTransitioning] = useState(false);
 
   useEffect(() => {
     if (prevPathname.current !== pathname) {
-      setVisible(false);
+      setTransitioning(true);
       const timer = setTimeout(() => {
-        setVisible(true);
+        setTransitioning(false);
         prevPathname.current = pathname;
-      }, 50);
+      }, 300);
       return () => clearTimeout(timer);
-    } else {
-      setVisible(true);
     }
   }, [pathname]);
 
   return (
     <div
-      className={`transition-all duration-400 ease-out ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
+      className={`transition-all duration-300 ease-out ${
+        transitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"
       }`}
     >
       {children}
