@@ -25,7 +25,11 @@
       "Bash(curl -s http://localhost:3099/md-test)",
       "Bash(cat /tmp/nextdev.log | head -20)",
       "Read(//private/tmp/**)",
-      "Bash(curl -s http://localhost:3099/about)"
+      "Bash(curl -s http://localhost:3099/about)",
+      "Bash(curl -s -o /dev/null -w \"about: %{http_code}\\\\n\" http://localhost:3099/about)",
+      "Bash(curl -s -o /dev/null -w \"misc: %{http_code}\\\\n\" http://localhost:3099/misc)",
+      "Bash(curl -s -o /dev/null -w \"md-test: %{http_code}\\\\n\" http://localhost:3099/md-test)",
+      "Bash(echo \"about body length: $\\(curl -s http://localhost:3099/about)"
     ],
     "additionalDirectories": [
       "/Users/xoln/Desktop/编程/博客"
