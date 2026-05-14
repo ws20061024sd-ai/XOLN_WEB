@@ -5,7 +5,7 @@ const sections = [
   {
     href: "/about",
     title: "个人简介",
-    desc: "经历、身份、在做的事。",
+    desc: "经历、身份、在做的事。（独立页）",
     color: "#2563eb",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -17,7 +17,7 @@ const sections = [
   {
     href: "/beliefs",
     title: "观念",
-    desc: "世界观、人生观、价值观——关于爱情、友情、亲情的思考。",
+    desc: "世界观、人生观、价值观——关于爱情、友情、亲情的思考。（列表+详情）",
     color: "#7c3aed",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -30,7 +30,7 @@ const sections = [
   {
     href: "/works",
     title: "作品",
-    desc: "文稿、设计作品，以及一些做过的东西。",
+    desc: "文稿、设计作品。（列表+详情）",
     color: "#059669",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -42,7 +42,7 @@ const sections = [
   {
     href: "/favorites",
     title: "喜爱",
-    desc: "电影、音乐、书籍、活动——塑造了我的那些事物。",
+    desc: "电影、音乐、书籍、活动——塑造了我的那些事物。（列表+详情）",
     color: "#d97706",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -53,7 +53,7 @@ const sections = [
   {
     href: "/changelog",
     title: "更新日志",
-    desc: "这个网站的版本记录与改动。",
+    desc: "这个网站的版本记录与改动。（列表+详情）",
     color: "#dc2626",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -63,14 +63,14 @@ const sections = [
     ),
   },
   {
-    href: "/misc",
-    title: "杂项",
-    desc: "暂时归不了类的内容，以及 Markdown 语法测试。",
-    color: "#0891b2",
+    href: "/search",
+    title: "搜索",
+    desc: "搜索全站内容，快速找到你想要的文章。",
+    color: "#6366f1",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" />
       </svg>
     ),
   },

@@ -1,9 +1,9 @@
-import { getPageContent } from "@/lib/content";
+import { getSinglePage } from "@/lib/content";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import ScrollReveal from "@/components/ScrollReveal";
 
 export default function AboutPage() {
-  const { title, content } = getPageContent("about");
+  const { title, content } = getSinglePage("about");
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">

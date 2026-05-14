@@ -1,25 +1,14 @@
-import { getPageContent } from "@/lib/content";
-import { MarkdownRenderer } from "@/components/MarkdownRenderer";
-import ScrollReveal from "@/components/ScrollReveal";
+import { getContentList } from "@/lib/content";
+import ContentList from "@/components/ContentList";
 
-export default function MiscPage() {
-  const { title, content } = getPageContent("misc");
-
+export default function MiscListPage() {
+  const items = getContentList("misc");
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
-      <ScrollReveal>
-        <p className="text-sm font-medium tracking-wide text-[var(--accent)] uppercase">
-          其他
-        </p>
-        <h1 className="mt-3 font-serif text-3xl font-bold tracking-tight sm:text-4xl">
-          {title}
-        </h1>
-      </ScrollReveal>
-      <ScrollReveal delay={100}>
-        <div className="prose mt-10">
-          <MarkdownRenderer content={content} />
-        </div>
-      </ScrollReveal>
-    </div>
+    <ContentList
+      items={items}
+      section="misc"
+      label="杂项"
+      emptyText="暂无杂项内容。"
+    />
   );
 }

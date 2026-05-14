@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const quotes = [
@@ -15,7 +16,6 @@ const quotes = [
   "想象力比知识更重要。 —— 爱因斯坦",
   "简洁是终极的复杂。 —— 达芬奇",
   "世界以痛吻我，要我报之以歌。 —— 泰戈尔",
-  "你必须成为你希望在世界上看到的那种改变。 —— 甘地",
   "人生如逆旅，我亦是行人。 —— 苏轼",
 ];
 
@@ -35,6 +35,14 @@ export default function Footer() {
             {quote}
           </p>
         )}
+        <div className="mb-2 flex items-center justify-center gap-4 text-xs text-[var(--text-soft)]">
+          <Link href="/misc" className="no-underline transition-colors hover:text-[var(--accent)]">
+            杂项
+          </Link>
+          <Link href="/search" className="no-underline transition-colors hover:text-[var(--accent)]">
+            搜索
+          </Link>
+        </div>
         <p className="text-xs text-[var(--text-soft)]">
           &copy; {new Date().getFullYear()} 我的网站
         </p>

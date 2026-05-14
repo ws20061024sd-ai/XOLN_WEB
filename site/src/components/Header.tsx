@@ -11,7 +11,6 @@ const navItems = [
   { href: "/works", label: "作品" },
   { href: "/favorites", label: "喜爱" },
   { href: "/changelog", label: "更新" },
-  { href: "/misc", label: "杂项" },
 ];
 
 export default function Header() {
@@ -25,7 +24,6 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // 页面切换时关闭移动端菜单
   useEffect(() => setOpen(false), [pathname]);
 
   return (
@@ -45,9 +43,9 @@ export default function Header() {
         </Link>
 
         {/* 桌面导航 */}
-        <div className="hidden gap-1 md:flex">
+        <div className="hidden items-center gap-1 md:flex">
           {navItems.map(({ href, label }) => {
-            const active = pathname === href;
+            const active = pathname === href || pathname.startsWith(href + "/");
             return (
               <Link
                 key={href}
@@ -62,6 +60,21 @@ export default function Header() {
               </Link>
             );
           })}
+          {/* 搜索图标 */}
+          <Link
+            href="/search"
+            className={`ml-1 rounded-md p-1.5 no-underline transition-all ${
+              pathname === "/search"
+                ? "bg-[var(--accent-soft)] text-[var(--accent)]"
+                : "text-[var(--text-muted)] hover:bg-[var(--border-light)] hover:text-[var(--text)]"
+            }`}
+            aria-label="搜索"
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.35-4.35" />
+            </svg>
+          </Link>
         </div>
 
         {/* 移动端按钮 */}
@@ -85,12 +98,12 @@ export default function Header() {
       {/* 移动端菜单 */}
       <div
         className={`overflow-hidden transition-all duration-300 md:hidden ${
-          open ? "max-h-80" : "max-h-0"
+          open ? "max-h-96" : "max-h-0"
         }`}
       >
         <div className="border-t border-[var(--border)] bg-[var(--bg)] px-4 py-3 flex flex-col gap-1">
           {navItems.map(({ href, label }) => {
-            const active = pathname === href;
+            const active = pathname === href || pathname.startsWith(href + "/");
             return (
               <Link
                 key={href}
@@ -105,6 +118,16 @@ export default function Header() {
               </Link>
             );
           })}
+          <Link
+            href="/search"
+            className={`rounded-md px-3 py-2 text-sm font-medium no-underline transition-colors ${
+              pathname === "/search"
+                ? "bg-[var(--accent-soft)] text-[var(--accent)]"
+                : "text-[var(--text-muted)] hover:bg-[var(--border-light)]"
+            }`}
+          >
+            搜索
+          </Link>
         </div>
       </div>
     </header>

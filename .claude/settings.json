@@ -29,10 +29,17 @@
       "Bash(curl -s -o /dev/null -w \"about: %{http_code}\\\\n\" http://localhost:3099/about)",
       "Bash(curl -s -o /dev/null -w \"misc: %{http_code}\\\\n\" http://localhost:3099/misc)",
       "Bash(curl -s -o /dev/null -w \"md-test: %{http_code}\\\\n\" http://localhost:3099/md-test)",
-      "Bash(echo \"about body length: $\\(curl -s http://localhost:3099/about)"
+      "Bash(echo \"about body length: $\\(curl -s http://localhost:3099/about)",
+      "Bash(mkdir -p /Users/xoln/Desktop/编程/博客/site/src/app/beliefs/\\\\[slug\\\\] \\\\ *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3099/beliefs)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3099/beliefs/worldview)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3099/misc/md-test)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3099/search)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3099/works)"
     ],
     "additionalDirectories": [
-      "/Users/xoln/Desktop/编程/博客"
+      "/Users/xoln/Desktop/编程/博客",
+      "/Users/xoln/Desktop/编程/博客/site/src/app/beliefs"
     ]
   }
 }
