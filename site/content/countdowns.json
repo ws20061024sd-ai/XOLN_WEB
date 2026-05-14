@@ -1,0 +1,9 @@
+[
+  { "title": "个人网站上线", "date": "2025-01-15", "type": "since" },
+  { "title": "下一个生日", "date": "2025-08-20", "type": "until" },
+  { "title": "元旦 2026", "date": "2026-01-01", "type": "until" },
+  { "title": "大学毕业", "date": "2019-06-30", "type": "since" },
+  { "title": "第一次工作", "date": "2019-09-01", "type": "since" },
+  { "title": "下次旅行", "date": "2025-10-01", "type": "until" },
+  { "title": "出生", "date": "1998-08-20", "type": "since" }
+]

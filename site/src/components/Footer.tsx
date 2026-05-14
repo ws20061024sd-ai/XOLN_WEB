@@ -36,6 +36,9 @@ export default function Footer() {
           </p>
         )}
         <div className="mb-2 flex items-center justify-center gap-4 text-xs text-[var(--text-soft)]">
+          <Link href="/countdown" className="no-underline transition-colors hover:text-[var(--accent)]">
+            倒计时
+          </Link>
           <Link href="/misc" className="no-underline transition-colors hover:text-[var(--accent)]">
             杂项
           </Link>
