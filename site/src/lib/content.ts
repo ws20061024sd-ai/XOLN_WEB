@@ -29,7 +29,7 @@ export function getContentList(section: string): ContentMeta[] {
   const dir = path.join(contentRoot, section);
   if (!fs.existsSync(dir)) return [];
 
-  return fs
+  const items = fs
     .readdirSync(dir)
     .filter((f) => f.endsWith(".md"))
     .map((f) => {
@@ -41,9 +41,19 @@ export function getContentList(section: string): ContentMeta[] {
         date: data.date || "",
         description: data.description || "",
         tags: data.tags || [],
+        order: data.order as number | undefined,
       };
-    })
-    .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    });
+
+  // 如果全部有 order，按 order 升序；否则按日期降序
+  const allHaveOrder = items.every((x) => x.order != null);
+  if (allHaveOrder) {
+    items.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+  } else {
+    items.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  }
+
+  return items;
 }
 
 /** 读取栏目下某一篇 .md 的完整内容 */

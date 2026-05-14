@@ -3,6 +3,7 @@ title: "关于友情"
 date: "2025-01-15"
 description: "朋友意味着什么。"
 tags: ["友情", "思考"]
+order: 6
 ---
 
 # 关于友情

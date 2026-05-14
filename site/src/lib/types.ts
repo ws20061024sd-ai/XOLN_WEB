@@ -4,6 +4,7 @@ export interface ContentMeta {
   date?: string;
   description?: string;
   tags?: string[];
+  order?: number;
 }
 
 export interface ContentItem extends ContentMeta {
