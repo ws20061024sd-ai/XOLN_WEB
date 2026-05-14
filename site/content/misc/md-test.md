@@ -3,6 +3,7 @@ title: "Markdown 语法测试"
 date: "2025-01-15"
 description: "对照源码学习 Markdown 语法的测试页面。"
 tags: ["测试", "Markdown"]
+order: 1
 ---
 
 > 打开 `site/content/misc/md-test.md` 对比源码，边看边学。

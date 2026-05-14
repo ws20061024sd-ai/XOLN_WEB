@@ -3,6 +3,7 @@ title: "喜欢的书籍"
 date: "2025-01-15"
 description: "那些改变了我看法的书。"
 tags: ["书籍"]
+order: 3
 ---
 
 # 喜欢的书籍
