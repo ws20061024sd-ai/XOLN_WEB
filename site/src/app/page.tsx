@@ -93,11 +93,8 @@ export default function Home() {
           </p>
           <h1 className="mt-4 font-serif text-4xl font-bold leading-tight tracking-tight sm:text-5xl sm:leading-tight">
             你好，我是{" "}
-            <span className="relative inline-block">
-              <span className="relative z-10 bg-gradient-to-r from-[var(--accent)] to-[var(--accent-2)] bg-clip-text text-transparent">
-                [你的名字]
-              </span>
-              <span className="absolute bottom-1 left-0 -z-0 h-3 w-full bg-[var(--accent-soft)] opacity-60" />
+            <span className="text-[var(--accent)]">
+              [你的名字]
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-[var(--text-muted)]">
