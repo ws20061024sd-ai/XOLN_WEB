@@ -14,6 +14,28 @@ interface Message {
 }
 interface Stats { pv: number; today: number; top: { path: string; count: number }[] }
 
+const pathNames: Record<string, string> = {
+  "/": "首页",
+  "/about": "关于",
+  "/beliefs": "观念（列表）",
+  "/works": "作品（列表）",
+  "/favorites": "喜爱（列表）",
+  "/changelog": "更新（列表）",
+  "/misc": "杂项（列表）",
+  "/countdown": "倒计时",
+  "/search": "搜索",
+  "/admin": "管理面板",
+};
+function pathLabel(path: string): string {
+  if (pathNames[path]) return pathNames[path];
+  // 详情页匹配: /works/article-one → 作品 > article-one
+  const parts = path.split("/").filter(Boolean);
+  if (parts.length === 2 && pathNames["/" + parts[0]]) {
+    return pathNames["/" + parts[0]] + " > " + parts[1];
+  }
+  return path;
+}
+
 export default function AdminPanel() {
   const [key, setKey] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -184,7 +206,8 @@ export default function AdminPanel() {
               <div key={t.path} className="flex items-center justify-between py-2 text-sm border-b border-[var(--border-light)] last:border-0">
                 <span className="text-[var(--text)]">
                   <span className="text-[var(--text-soft)] mr-2">{i + 1}.</span>
-                  {t.path === "/" ? "首页 ( / )" : t.path}
+                  {pathLabel(t.path)}
+                  <span className="ml-1 text-xs text-[var(--text-soft)]">({t.path})</span>
                 </span>
                 <span className="rounded bg-[var(--accent-soft)] px-2 py-0.5 text-xs font-medium text-[var(--accent)]">{t.count} 次</span>
               </div>
