@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const API = "http://193.112.220.113";
+const API = "http://api.xolnxoln.cn";
 
 interface Comment {
   id: number; slug: string; section: string; author: string;
