@@ -1,0 +1,10 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data:/app/data
+    restart: always
+    environment:
+      - PORT=3001

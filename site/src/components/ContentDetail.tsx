@@ -3,6 +3,7 @@ import type { ContentItem } from "@/lib/types";
 import { sectionLabels } from "@/lib/types";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import ScrollReveal from "./ScrollReveal";
+import CommentSection from "./CommentSection";
 
 interface ContentDetailProps {
   item: ContentItem;
@@ -63,6 +64,8 @@ export default function ContentDetail({ item, section }: ContentDetailProps) {
           返回{label}列表
         </Link>
       </div>
+
+      <CommentSection slug={item.slug} section={section} />
     </div>
   );
 }
