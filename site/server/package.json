@@ -9,12 +9,11 @@
   },
   "dependencies": {
     "hono": "^4",
-    "better-sqlite3": "^11",
+    "sql.js": "^1",
     "@hono/node-server": "^1"
   },
   "devDependencies": {
     "tsx": "^4",
-    "@types/better-sqlite3": "^7",
     "@types/node": "^22",
     "typescript": "^5"
   }

@@ -1,40 +1,44 @@
 import { Hono } from "hono";
-import { db } from "../db/schema.js";
+import { getDb, saveDb } from "../db/schema.js";
 
 const stats = new Hono();
 
-// 记录页面访问
 stats.post("/pageview", async (c) => {
   const { path } = await c.req.json();
   if (!path) return c.json({ ok: false }, 400);
-
-  db.prepare("INSERT INTO pageviews (path, ip) VALUES (?, ?)").run(
+  const db = await getDb();
+  db.run("INSERT INTO pageviews (path, ip) VALUES (?, ?)", [
     path,
-    c.req.header("x-real-ip") || ""
-  );
-
+    c.req.header("x-real-ip") || "",
+  ]);
+  saveDb();
   return c.json({ ok: true });
 });
 
-// Top 10 访问页面
-stats.get("/top", (c) => {
-  const rows = db
-    .prepare(
-      "SELECT path, COUNT(*) as count FROM pageviews GROUP BY path ORDER BY count DESC LIMIT 10"
-    )
-    .all();
+stats.get("/top", async (c) => {
+  const db = await getDb();
+  const results = db.exec(
+    "SELECT path, COUNT(*) as count FROM pageviews GROUP BY path ORDER BY count DESC LIMIT 10"
+  );
+  const columns = results[0]?.columns || [];
+  const values = results[0]?.values || [];
+  const rows = values.map((row: any[]) =>
+    Object.fromEntries(columns.map((col: string, i: number) => [col, row[i]]))
+  );
   return c.json(rows);
 });
 
-// 总览
-stats.get("/summary", (c) => {
-  const total = db.prepare("SELECT COUNT(*) as pv FROM pageviews").get() as {
-    pv: number;
-  };
-  const comments = db
-    .prepare("SELECT COUNT(*) as count FROM comments WHERE approved = 1")
-    .get() as { count: number };
-  return c.json({ pv: total.pv, comments: comments.count });
+stats.get("/summary", async (c) => {
+  const db = await getDb();
+  const pvResult = db.exec("SELECT COUNT(*) as pv FROM pageviews");
+  const commentResult = db.exec(
+    "SELECT COUNT(*) as count FROM comments WHERE approved = 1"
+  );
+  const pv =
+    pvResult[0]?.values?.[0]?.[0] ?? 0;
+  const commentCount =
+    commentResult[0]?.values?.[0]?.[0] ?? 0;
+  return c.json({ pv: Number(pv), comments: Number(commentCount) });
 });
 
 export default stats;

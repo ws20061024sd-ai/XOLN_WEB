@@ -1,16 +1,19 @@
 import { Hono } from "hono";
-import { db } from "../db/schema.js";
+import { getDb, saveDb } from "../db/schema.js";
 
 const comments = new Hono();
 
-// 获取某篇的评论（仅已审核的）
-comments.get("/:slug", (c) => {
+// 获取某篇的评论
+comments.get("/:slug", async (c) => {
+  const db = await getDb();
   const slug = c.req.param("slug");
-  const rows = db
-    .prepare(
-      "SELECT id, slug, section, author, content, created_at FROM comments WHERE slug = ? AND approved = 1 ORDER BY created_at DESC"
-    )
-    .all(slug);
+  const stmt = db.prepare(
+    "SELECT id, slug, section, author, content, created_at FROM comments WHERE slug = ? AND approved = 1 ORDER BY created_at DESC"
+  );
+  stmt.bind([slug]);
+  const rows: unknown[] = [];
+  while (stmt.step()) rows.push(stmt.getAsObject());
+  stmt.free();
   return c.json(rows);
 });
 
@@ -23,9 +26,14 @@ comments.post("/", async (c) => {
   if (author.length > 50 || content.length > 5000) {
     return c.json({ ok: false, error: "内容过长" }, 400);
   }
-  db.prepare(
-    "INSERT INTO comments (slug, section, author, content) VALUES (?, ?, ?, ?)"
-  ).run(slug, section || "", author, content);
+  const db = await getDb();
+  db.run("INSERT INTO comments (slug, section, author, content) VALUES (?, ?, ?, ?)", [
+    slug,
+    section || "",
+    author,
+    content,
+  ]);
+  saveDb();
   return c.json({ ok: true, msg: "评论已提交，审核后显示" }, 201);
 });
 
