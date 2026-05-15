@@ -39,11 +39,26 @@
       "Bash(curl -s http://localhost:3099/beliefs)",
       "Bash(git commit *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3099/countdown)",
-      "Bash(curl -s http://localhost:3099/countdown)"
+      "Bash(curl -s http://localhost:3099/countdown)",
+      "Bash(gh --version)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://github.com/ws20061024sd-ai/XOLN_WEB)",
+      "Bash(curl -s -H \"Authorization: token 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\" https://api.github.com/user)",
+      "Bash(curl -s -I -H \"Authorization: token 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\" https://api.github.com/user)",
+      "Bash(curl -s -w \"\\\\n%{http_code}\" -H \"Authorization: token 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\" https://api.github.com/repos/ws20061024sd-ai/XOLN_WEB)",
+      "Bash(curl -s -H \"Authorization: token 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\" https://api.github.com/repos/ws20061024sd-ai/XOLN_WEB)",
+      "Bash(grep -o '\"login\":\"[^\"]*\"\\\\|\"permissions\":{[^}]*}\\\\|\"private\":[^,]*')",
+      "Bash(git config *)",
+      "Bash(ls ~/.ssh/id_* 2>&1)",
+      "Read(//Users/xoln/**)",
+      "Bash(ssh-keygen -t ed25519 -C \"xoln@blog\" -f ~/.ssh/id_ed25519 -N \"\")",
+      "Bash(ssh-keyscan github.com >> ~/.ssh/known_hosts 2>&1 && git push -u origin main 2>&1)"
     ],
     "additionalDirectories": [
       "/Users/xoln/Desktop/编程/博客",
-      "/Users/xoln/Desktop/编程/博客/site/src/app/beliefs"
+      "/Users/xoln/Desktop/编程/博客/site/src/app/beliefs",
+      "/Users/xoln/.ssh"
     ]
   }
 }

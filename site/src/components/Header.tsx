@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
   { href: "/", label: "首页" },
@@ -60,6 +61,7 @@ export default function Header() {
               </Link>
             );
           })}
+          <ThemeToggle />
           {/* 搜索图标 */}
           <Link
             href="/search"
@@ -118,6 +120,9 @@ export default function Header() {
               </Link>
             );
           })}
+          <div className="px-3 py-2">
+            <ThemeToggle />
+          </div>
           <Link
             href="/search"
             className={`rounded-md px-3 py-2 text-sm font-medium no-underline transition-colors ${
