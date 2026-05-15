@@ -1,5 +1,7 @@
 # GitHub 技能推荐
 
+> 代码已托管在 GitHub：`ws20061024sd-ai/XOLN_WEB`，使用 SSH Key 推送。
+
 ## GitHub Actions（CI/CD 自动化）
 
 ### 构建与部署
