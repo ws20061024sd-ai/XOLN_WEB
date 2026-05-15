@@ -27,14 +27,14 @@ comments.post("/", async (c) => {
     return c.json({ ok: false, error: "内容过长" }, 400);
   }
   const db = await getDb();
-  db.run("INSERT INTO comments (slug, section, author, content) VALUES (?, ?, ?, ?)", [
+  db.run("INSERT INTO comments (slug, section, author, content, approved) VALUES (?, ?, ?, ?, 1)", [
     slug,
     section || "",
     author,
     content,
   ]);
   saveDb();
-  return c.json({ ok: true, msg: "评论已提交，审核后显示" }, 201);
+  return c.json({ ok: true, msg: "评论已提交" }, 201);
 });
 
 export default comments;
