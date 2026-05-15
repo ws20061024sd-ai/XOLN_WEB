@@ -29,7 +29,7 @@ export async function getDb(): Promise<Database> {
     section TEXT NOT NULL DEFAULT '',
     author TEXT NOT NULL,
     content TEXT NOT NULL,
-    approved INTEGER NOT NULL DEFAULT 0,
+    approved INTEGER NOT NULL DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
   db.run(`CREATE TABLE IF NOT EXISTS pageviews (
