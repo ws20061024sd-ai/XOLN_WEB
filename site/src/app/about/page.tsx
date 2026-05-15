@@ -1,6 +1,7 @@
 import { getSinglePage } from "@/lib/content";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import ScrollReveal from "@/components/ScrollReveal";
+import ContactForm from "@/components/ContactForm";
 
 export default function AboutPage() {
   const { title, content } = getSinglePage("about");
@@ -19,6 +20,10 @@ export default function AboutPage() {
         <div className="prose mt-10">
           <MarkdownRenderer content={content} />
         </div>
+      </ScrollReveal>
+
+      <ScrollReveal delay={200}>
+        <ContactForm />
       </ScrollReveal>
     </div>
   );

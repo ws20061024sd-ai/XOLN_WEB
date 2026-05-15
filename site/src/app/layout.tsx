@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import ThemeScript from "@/components/ThemeScript";
+import PageTracker from "@/components/PageTracker";
 
 export const metadata: Metadata = {
   title: "我的网站",
@@ -31,6 +32,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--text)]">
+        <PageTracker />
         <Header />
         <main className="flex-1">
           <PageTransition>{children}</PageTransition>
