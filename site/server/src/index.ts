@@ -11,7 +11,12 @@ const app = new Hono();
 app.use(
   "/api/*",
   cors({
-    origin: ["https://xolnxoln.cn", "https://www.xolnxoln.cn"],
+    origin: [
+      "https://xolnxoln.cn",
+      "https://www.xolnxoln.cn",
+      "http://localhost:3099",
+      "http://localhost:3000",
+    ],
     allowMethods: ["GET", "POST"],
   })
 );
