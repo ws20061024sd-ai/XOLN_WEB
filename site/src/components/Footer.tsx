@@ -47,7 +47,8 @@ export default function Footer() {
           </Link>
         </div>
         <p className="text-xs text-[var(--text-soft)]">
-          &copy; {new Date().getFullYear()} 我的网站
+          <Link href="/admin" className="no-underline text-[var(--text-soft)] hover:text-[var(--text)]">&copy;</Link>{" "}
+          {new Date().getFullYear()} 我的网站
         </p>
       </div>
     </footer>
