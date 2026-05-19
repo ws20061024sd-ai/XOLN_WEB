@@ -50,6 +50,11 @@ export default function Footer() {
           <Link href="/admin" className="no-underline text-[var(--text-soft)] hover:text-[var(--text)]">&copy;</Link>{" "}
           {new Date().getFullYear()} 我的网站
         </p>
+        <p className="mt-1 text-xs text-[var(--text-soft)]">
+          <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer" className="no-underline text-[var(--text-soft)] hover:text-[var(--text)]">
+            湘ICP备2026019191号
+          </a>
+        </p>
       </div>
     </footer>
   );
