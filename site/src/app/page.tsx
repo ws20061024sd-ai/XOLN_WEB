@@ -94,7 +94,7 @@ export default function Home() {
           <h1 className="mt-4 font-serif text-4xl font-bold leading-tight tracking-tight sm:text-5xl sm:leading-tight">
             你好，我是{" "}
             <span className="text-[var(--accent)]">
-              [你的名字]
+              晓鸥
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-[var(--text-muted)]">
