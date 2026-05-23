@@ -3,7 +3,7 @@ title: "列表+详情架构重构"
 date: "2026-05-14"
 description: "所有栏目拆分为列表页+详情页，引入 frontmatter 元数据和 order 排序。"
 tags: ["架构", "重构"]
-order: 4
+order: 6
 ---
 
 ## 做了什么

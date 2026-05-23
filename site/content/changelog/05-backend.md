@@ -3,7 +3,7 @@ title: "后端 API 部署上线"
 date: "2026-05-15"
 description: "Lighthouse 服务器部署 Hono + SQLite API，12 个接口全部可用。"
 tags: ["后端", "部署", "API"]
-order: 2
+order: 4
 ---
 
 ## 做了什么
