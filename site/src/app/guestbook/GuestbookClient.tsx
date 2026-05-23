@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import ScrollReveal from "@/components/ScrollReveal";
 
-const API = typeof window !== "undefined" && window.location.hostname === "localhost"
-  ? "http://api.xolnxoln.cn"
-  : "https://api.xolnxoln.cn";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://api.xolnxoln.cn";
 
 interface Msg {
   id: number;
