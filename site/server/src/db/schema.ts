@@ -38,6 +38,13 @@ export async function getDb(): Promise<Database> {
     ip TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+  db.run(`CREATE TABLE IF NOT EXISTS guestbook (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    author TEXT NOT NULL,
+    content TEXT NOT NULL,
+    approved INTEGER NOT NULL DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
   db.run(`CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,

@@ -5,6 +5,7 @@ import comments from "./routes/comments.js";
 import stats from "./routes/stats.js";
 import contact from "./routes/contact.js";
 import admin from "./routes/admin.js";
+import guestbook from "./routes/guestbook.js";
 
 const app = new Hono();
 
@@ -49,6 +50,7 @@ app.use("/api/*", async (c, next) => {
 app.route("/api/comments", comments);
 app.route("/api/stats", stats);
 app.route("/api/contact", contact);
+app.route("/api/guestbook", guestbook);
 app.route("/api/admin", admin);
 
 // 健康检查

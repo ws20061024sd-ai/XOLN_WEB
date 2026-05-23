@@ -41,8 +41,9 @@ function pathLabel(path: string): string {
 export default function AdminPanel() {
   const [key, setKey] = useState("");
   const [authed, setAuthed] = useState(false);
-  const [tab, setTab] = useState<"comments" | "messages" | "stats">("comments");
+  const [tab, setTab] = useState<"comments" | "guestbook" | "messages" | "stats">("comments");
   const [comments, setComments] = useState<Comment[]>([]);
+  const [guestbook, setGuestbook] = useState<Comment[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(false);
@@ -67,6 +68,7 @@ export default function AdminPanel() {
       .then(r => r.json())
       .then(data => {
         if (type === "comments") setComments(data);
+        if (type === "guestbook") setGuestbook(data);
         if (type === "messages") setMessages(data);
         if (type === "stats") setStats(data);
       })
@@ -130,7 +132,7 @@ export default function AdminPanel() {
 
       {/* Tab 栏 */}
       <div className="mt-6 flex gap-2">
-        {(["comments", "messages", "stats"] as const).map(t => (
+        {(["comments", "guestbook", "messages", "stats"] as const).map(t => (
           <button
             key={t}
             onClick={() => { setTab(t); load(t); }}
@@ -140,7 +142,7 @@ export default function AdminPanel() {
                 : "bg-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text)]"
             }`}
           >
-            {t === "comments" ? "评论" : t === "messages" ? "消息" : "统计"}
+            {t === "comments" ? "评论" : t === "guestbook" ? "留言板" : t === "messages" ? "消息" : "统计"}
           </button>
         ))}
       </div>
@@ -163,6 +165,32 @@ export default function AdminPanel() {
                   {c.approved ? "隐藏" : "显示"}
                 </button>
                 <button onClick={() => deleteComment(c.id)} className="text-xs text-red-500 hover:underline">删除</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 留言板 */}
+      {tab === "guestbook" && !loading && (
+        <div className="mt-6 flex flex-col gap-3">
+          {guestbook.length === 0 && <p className="text-sm text-[var(--text-muted)]">暂无留言</p>}
+          {guestbook.map(g => (
+            <div key={g.id} className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] p-4">
+              <div className="flex items-center justify-between text-xs text-[var(--text-soft)]">
+                <span><strong className="text-[var(--text)]">{g.author}</strong></span>
+                <span>{g.created_at}</span>
+              </div>
+              <p className="mt-2 text-sm text-[var(--text)] whitespace-pre-wrap">{g.content}</p>
+              <div className="mt-3">
+                <button
+                  onClick={() => {
+                    if (!confirm("确定删除？")) return;
+                    fetch(`${API}/api/admin/guestbook/${g.id}`, { method: "DELETE", headers: { "x-admin-key": key } })
+                      .then(() => load("guestbook"));
+                  }}
+                  className="text-xs text-red-500 hover:underline"
+                >删除</button>
               </div>
             </div>
           ))}

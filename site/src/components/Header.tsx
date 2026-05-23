@@ -11,6 +11,7 @@ const navItems = [
   { href: "/beliefs", label: "观念" },
   { href: "/works", label: "作品" },
   { href: "/favorites", label: "喜爱" },
+  { href: "/guestbook", label: "留言板" },
   { href: "/changelog", label: "更新" },
 ];
 

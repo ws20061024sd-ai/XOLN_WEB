@@ -59,6 +59,24 @@ admin.get("/messages", async (c) => {
   return c.json(rows);
 });
 
+// 留言板管理
+admin.get("/guestbook", async (c) => {
+  const db = await getDb();
+  const result = db.exec("SELECT * FROM guestbook ORDER BY created_at DESC LIMIT 100");
+  const cols = result[0]?.columns || [];
+  const rows = (result[0]?.values || []).map((r: unknown[]) =>
+    Object.fromEntries(cols.map((c: string, i: number) => [c, r[i]]))
+  );
+  return c.json(rows);
+});
+
+admin.delete("/guestbook/:id", async (c) => {
+  const db = await getDb();
+  db.run("DELETE FROM guestbook WHERE id = ?", [c.req.param("id")]);
+  saveDb();
+  return c.json({ ok: true });
+});
+
 // 统计详情
 admin.get("/stats", async (c) => {
   const db = await getDb();
