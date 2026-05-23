@@ -18,7 +18,8 @@ app.use(
       "http://localhost:3099",
       "http://localhost:3000",
     ],
-    allowMethods: ["GET", "POST"],
+    allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "x-admin-key"],
   })
 );
 
