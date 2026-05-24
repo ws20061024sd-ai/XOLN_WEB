@@ -320,7 +320,6 @@ export function MarkdownRenderer({ content }: { content: string }) {
     while (
       i < lines.length &&
       lines[i].trim() &&
-      !lines[i].trim().startsWith("#") &&
       !lines[i].trim().startsWith("!") &&
       !lines[i].trim().startsWith("```") &&
       !lines[i].trim().startsWith("> ") &&
