@@ -3,6 +3,7 @@
   { "title": "下一个生日", "date": "2026-12-02", "type": "until" },
   { "title": "元旦 2027", "date": "2027-01-01", "type": "until" },
   { "title": "高中毕业", "date": "2025-06-09", "type": "since" },
+  { "title": "某天已经", "date": "2024-09-02", "type": "since" },
   { "title": "距离大学毕业", "date": "2029-06-30", "type": "since" },
   { "title": "上次旅行", "date": "2026-05-01", "type": "since" },
   { "title": "出生", "date": "2006-12-24", "type": "since" },
