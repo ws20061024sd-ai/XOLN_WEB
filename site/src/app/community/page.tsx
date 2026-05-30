@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { fetchCommunityPosts, fetchCommunityPost, submitCommunityPost, type CommunityPost } from "@/lib/api";
+import CommentSection from "@/components/CommentSection";
 
 function CommunityContent() {
   const searchParams = useSearchParams();
@@ -77,6 +78,7 @@ function CommunityContent() {
         <div className="mt-10 prose">
           <MarkdownRenderer content={article.content || ""} />
         </div>
+        <CommentSection slug={`community-${article.id}`} section="community" />
       </article>
     );
   }
