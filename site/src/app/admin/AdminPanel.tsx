@@ -41,10 +41,11 @@ function pathLabel(path: string): string {
 export default function AdminPanel() {
   const [key, setKey] = useState("");
   const [authed, setAuthed] = useState(false);
-  const [tab, setTab] = useState<"comments" | "guestbook" | "messages" | "stats">("comments");
+  const [tab, setTab] = useState<"comments" | "guestbook" | "messages" | "community" | "stats">("comments");
   const [comments, setComments] = useState<Comment[]>([]);
   const [guestbook, setGuestbook] = useState<Comment[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [community, setCommunity] = useState<Comment[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
@@ -70,6 +71,7 @@ export default function AdminPanel() {
         if (type === "comments") setComments(data);
         if (type === "guestbook") setGuestbook(data);
         if (type === "messages") setMessages(data);
+        if (type === "community") setCommunity(data);
         if (type === "stats") setStats(data);
       })
       .finally(() => setLoading(false));
@@ -132,7 +134,7 @@ export default function AdminPanel() {
 
       {/* Tab 栏 */}
       <div className="mt-6 flex gap-2">
-        {(["comments", "guestbook", "messages", "stats"] as const).map(t => (
+        {(["comments", "guestbook", "messages", "community", "stats"] as const).map(t => (
           <button
             key={t}
             onClick={() => { setTab(t); load(t); }}
@@ -142,7 +144,7 @@ export default function AdminPanel() {
                 : "bg-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text)]"
             }`}
           >
-            {t === "comments" ? "评论" : t === "guestbook" ? "留言板" : t === "messages" ? "消息" : "统计"}
+            {t === "comments" ? "评论" : t === "guestbook" ? "留言板" : t === "messages" ? "消息" : t === "community" ? "共创" : "统计"}
           </button>
         ))}
       </div>
@@ -208,6 +210,45 @@ export default function AdminPanel() {
                 <span>{m.created_at}</span>
               </div>
               <p className="mt-2 text-sm text-[var(--text)] whitespace-pre-wrap">{m.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 共创投稿 */}
+      {tab === "community" && !loading && (
+        <div className="mt-6 flex flex-col gap-3">
+          {community.length === 0 && <p className="text-sm text-[var(--text-muted)]">暂无投稿</p>}
+          {community.map((c: any) => (
+            <div key={c.id} className={`rounded-lg border p-4 ${c.approved ? "border-[var(--border)] bg-[var(--bg-card)]" : "border-amber-200 bg-amber-50"}`}>
+              <div className="flex items-center justify-between text-xs text-[var(--text-soft)]">
+                <span><strong className="text-[var(--text)]">{c.title}</strong> · {c.author}</span>
+                <span>{c.created_at}</span>
+              </div>
+              {c.tags && <p className="mt-1 text-xs text-[var(--text-soft)]">标签: {c.tags}</p>}
+              <p className="mt-2 text-sm text-[var(--text)] whitespace-pre-wrap line-clamp-4">{c.content}</p>
+              <div className="mt-3 flex gap-2">
+                <button
+                  onClick={() => {
+                    fetch(`${API}/api/admin/community/${c.id}`, {
+                      method: "PATCH",
+                      headers: { "x-admin-key": key, "Content-Type": "application/json" },
+                      body: JSON.stringify({ approved: c.approved ? 0 : 1 }),
+                    }).then(() => load("community"));
+                  }}
+                  className="text-xs text-[var(--accent)] hover:underline"
+                >
+                  {c.approved ? "隐藏" : "审核通过"}
+                </button>
+                <button
+                  onClick={() => {
+                    if (!confirm("确定删除？")) return;
+                    fetch(`${API}/api/admin/community/${c.id}`, { method: "DELETE", headers: { "x-admin-key": key } })
+                      .then(() => load("community"));
+                  }}
+                  className="text-xs text-red-500 hover:underline"
+                >删除</button>
+              </div>
             </div>
           ))}
         </div>

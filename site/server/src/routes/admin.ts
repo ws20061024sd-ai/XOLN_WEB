@@ -77,6 +77,32 @@ admin.delete("/guestbook/:id", async (c) => {
   return c.json({ ok: true });
 });
 
+// 共创文章管理
+admin.get("/community", async (c) => {
+  const db = await getDb();
+  const result = db.exec("SELECT * FROM community_posts ORDER BY created_at DESC LIMIT 100");
+  const cols = result[0]?.columns || [];
+  const rows = (result[0]?.values || []).map((r: unknown[]) =>
+    Object.fromEntries(cols.map((c: string, i: number) => [c, r[i]]))
+  );
+  return c.json(rows);
+});
+
+admin.patch("/community/:id", async (c) => {
+  const db = await getDb();
+  const { approved } = await c.req.json();
+  db.run("UPDATE community_posts SET approved = ? WHERE id = ?", [approved ? 1 : 0, c.req.param("id")]);
+  saveDb();
+  return c.json({ ok: true });
+});
+
+admin.delete("/community/:id", async (c) => {
+  const db = await getDb();
+  db.run("DELETE FROM community_posts WHERE id = ?", [c.req.param("id")]);
+  saveDb();
+  return c.json({ ok: true });
+});
+
 // 统计详情
 admin.get("/stats", async (c) => {
   const db = await getDb();

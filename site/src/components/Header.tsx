@@ -12,6 +12,7 @@ const navItems = [
   { href: "/works", label: "作品" },
   { href: "/favorites", label: "喜爱" },
   { href: "/guestbook", label: "留言板" },
+  { href: "/community", label: "共创" },
   { href: "/changelog", label: "更新" },
 ];
 

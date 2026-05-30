@@ -45,6 +45,15 @@ export async function getDb(): Promise<Database> {
     approved INTEGER NOT NULL DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
+  db.run(`CREATE TABLE IF NOT EXISTS community_posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    content TEXT NOT NULL,
+    tags TEXT DEFAULT '',
+    approved INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
   db.run(`CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,

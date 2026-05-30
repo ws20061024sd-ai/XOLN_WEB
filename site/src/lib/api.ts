@@ -67,3 +67,50 @@ export async function submitContact(data: {
   });
   return res.json();
 }
+
+// ===== 共创投稿 =====
+
+export interface CommunityPost {
+  id: number;
+  title: string;
+  author: string;
+  content?: string;
+  tags: string;
+  approved: number;
+  created_at: string;
+}
+
+export async function fetchCommunityPosts(): Promise<CommunityPost[]> {
+  if (!API_BASE) return [];
+  try {
+    const res = await fetch(`${API_BASE}/api/community`);
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchCommunityPost(id: number): Promise<CommunityPost | null> {
+  if (!API_BASE) return null;
+  try {
+    const res = await fetch(`${API_BASE}/api/community/${id}`);
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function submitCommunityPost(data: {
+  title: string;
+  author: string;
+  content: string;
+  tags?: string;
+}) {
+  if (!API_BASE) return { ok: false, error: "投稿暂未开放" };
+  const res = await fetch(`${API_BASE}/api/community`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
