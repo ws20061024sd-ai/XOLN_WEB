@@ -3,7 +3,7 @@ title: "项目初始化"
 date: "2026-05-12"
 description: "搭建 Next.js 16 项目，确立静态优先+渐进增强的架构方向。"
 tags: ["架构", "初始化"]
-order: 8
+order: 9
 ---
 
 ## 做了什么
