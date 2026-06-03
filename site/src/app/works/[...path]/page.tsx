@@ -100,9 +100,30 @@ function WorksList({ nodes, basePath }: { nodes: WorksNode[]; basePath: string }
   );
 }
 
-export async function generateStaticParams() {
-  const paths = getAllWorksPaths();
-  return paths.map(p => ({ path: p }));
+export function generateStaticParams() {
+  const fs = require("fs");
+  const path = require("path");
+  const worksDir = path.join(process.cwd(), "content/works");
+  const results: { path: string[] }[] = [];
+
+  if (!fs.existsSync(worksDir)) return results;
+
+  function walk(dir: string, prefix: string[]) {
+    for (const entry of fs.readdirSync(dir)) {
+      const full = path.join(dir, entry);
+      const stat = fs.statSync(full);
+      if (stat.isDirectory() && !entry.startsWith("_")) {
+        results.push({ path: [...prefix, entry] });
+        walk(full, [...prefix, entry]);
+      } else if (entry.endsWith(".md")) {
+        results.push({ path: [...prefix, entry.replace(/\.md$/, "")] });
+      }
+    }
+  }
+
+  walk(worksDir, []);
+  console.log("generateStaticParams works paths:", JSON.stringify(results));
+  return results;
 }
 
 export default async function WorksNodePage({
