@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const API = typeof window !== "undefined" && window.location.hostname === "localhost"
-  ? "http://api.xolnxoln.cn"
-  : "https://api.xolnxoln.cn";
+const API = "https://api.xolnxoln.cn";
 
 interface Comment {
   id: number; slug: string; section: string; author: string;
