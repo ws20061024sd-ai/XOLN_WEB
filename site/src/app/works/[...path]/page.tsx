@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getWorksNode, getAllWorksPaths, type WorksNode } from "@/lib/content";
+import { getWorksNode, type WorksNode } from "@/lib/content";
 import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import ScrollReveal from "@/components/ScrollReveal";
 import CommentSection from "@/components/CommentSection";
@@ -122,7 +122,6 @@ export function generateStaticParams() {
   }
 
   walk(worksDir, []);
-  console.log("generateStaticParams works paths:", JSON.stringify(results));
   return results;
 }
 
