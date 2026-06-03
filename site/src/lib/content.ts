@@ -91,6 +91,137 @@ export function getAllContent(): ContentItem[] {
   });
 }
 
+// ===== 作品栏目：递归目录树（支持多级文件夹） =====
+
+export interface WorksNode {
+  type: "directory" | "file";
+  name: string;       // 目录名或文件名（不含 .md）
+  title: string;      // 显示标题
+  order?: number;     // 排序用
+  children?: WorksNode[];
+  // 仅文件：
+  date?: string;
+  description?: string;
+  tags?: string[];
+  content?: string;
+}
+
+function readWorksDir(dir: string): WorksNode[] {
+  if (!fs.existsSync(dir)) return [];
+  const entries = fs.readdirSync(dir);
+
+  const nodes: WorksNode[] = [];
+
+  for (const name of entries) {
+    const full = path.join(dir, name);
+    const stat = fs.statSync(full);
+
+    if (stat.isDirectory()) {
+      // 跳过下划线开头的隐藏目录
+      if (name.startsWith("_")) continue;
+      const children = readWorksDir(full);
+      // 目录名直接做标题，或者可以用一个 _index.md 来定义目录元数据
+      nodes.push({
+        type: "directory",
+        name,
+        title: name,
+        children,
+      });
+    } else if (name.endsWith(".md")) {
+      const slug = name.replace(/\.md$/, "");
+      const raw = fs.readFileSync(full, "utf-8");
+      const { data, content } = matter(raw);
+      nodes.push({
+        type: "file",
+        name: slug,
+        title: data.title || slug,
+        date: data.date || "",
+        description: data.description || "",
+        tags: data.tags || [],
+        order: data.order as number | undefined,
+        content: content.trim(),
+      });
+    }
+    // 忽略非 .md 文件
+  }
+
+  // 排序：目录在前，按名称排；文件在后，有 order 按 order，否则按日期降序
+  nodes.sort((a, b) => {
+    if (a.type !== b.type) return a.type === "directory" ? -1 : 1;
+    if (a.type === "directory") return a.name.localeCompare(b.name);
+    // both files
+    if (a.order != null && b.order != null) return a.order - b.order;
+    if (a.order != null) return -1;
+    if (b.order != null) return 1;
+    return (b.date || "").localeCompare(a.date || "");
+  });
+
+  return nodes;
+}
+
+/** 获取作品根目录树（/works 页面用） */
+export function getWorksRoot(): WorksNode[] {
+  return readWorksDir(path.join(contentRoot, "works"));
+}
+
+/** 根据 URL 路径段定位节点（/works/[...path] 用） */
+export function getWorksNode(
+  pathSegments: string[]
+): { type: "directory"; children: WorksNode[]; breadcrumb: { name: string; label: string }[] }
+ | { type: "file"; node: WorksNode; breadcrumb: { name: string; label: string }[] }
+ | null {
+  const root = getWorksRoot();
+  const breadcrumb: { name: string; label: string }[] = [{ name: "", label: "作品" }];
+
+  if (pathSegments.length === 0) {
+    return { type: "directory", children: root, breadcrumb };
+  }
+
+  let current = root;
+  for (let i = 0; i < pathSegments.length; i++) {
+    const seg = pathSegments[i];
+    const found = current.find((n) => n.name === seg);
+    if (!found) return null;
+
+    if (found.type === "directory") {
+      breadcrumb.push({ name: found.name, label: found.title });
+      if (i === pathSegments.length - 1) {
+        // 最后一段是目录 → 展示子目录列表
+        return { type: "directory", children: found.children || [], breadcrumb };
+      }
+      // 不是最后一段 → 继续深入
+      current = found.children || [];
+    } else {
+      // 找到了文件
+      breadcrumb.push({ name: found.name, label: found.title });
+      return { type: "file", node: found, breadcrumb };
+    }
+  }
+
+  return null;
+}
+
+/** 递归收集所有路径段（给 generateStaticParams 用） */
+export function getAllWorksPaths(): string[][] {
+  const paths: string[][] = [];
+
+  function walk(nodes: WorksNode[], prefix: string[]) {
+    for (const node of nodes) {
+      const current = [...prefix, node.name];
+      if (node.type === "file") {
+        paths.push(current);
+      } else {
+        // 目录本身也是一个列表页
+        paths.push(current);
+        walk(node.children || [], current);
+      }
+    }
+  }
+
+  walk(getWorksRoot(), []);
+  return paths;
+}
+
 export const sections = ["beliefs", "works", "favorites", "changelog", "misc"] as const;
 
 export const sectionLabels: Record<string, string> = {
