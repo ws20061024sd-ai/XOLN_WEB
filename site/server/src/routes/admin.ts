@@ -111,7 +111,7 @@ admin.get("/stats", async (c) => {
   );
   const pvResult = db.exec("SELECT COUNT(*) as pv FROM pageviews");
   const todayResult = db.exec(
-    "SELECT COUNT(*) as count FROM pageviews WHERE date(created_at) = date('now')"
+    "SELECT COUNT(*) as count FROM pageviews WHERE date(created_at) = date('now', '+8 hours')"
   );
   const cols = topResult[0]?.columns || [];
   const top = (topResult[0]?.values || []).map((r: unknown[]) =>
