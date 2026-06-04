@@ -37,7 +37,7 @@ community.post("/", async (c) => {
   if (title.length > 100 || author.length > 50 || content.length > 50000)
     return c.json({ ok: false, error: "内容过长" }, 400);
   const db = await getDb();
-  db.run("INSERT INTO community_posts (title, author, content, tags) VALUES (?, ?, ?, ?)",
+  db.run("INSERT INTO community_posts (title, author, content, tags, created_at) VALUES (?, ?, ?, ?, datetime('now', '+8 hours'))",
     [title, author, content, tags || ""]);
   saveDb();
   return c.json({ ok: true, msg: "投稿已提交，审核后显示" }, 201);

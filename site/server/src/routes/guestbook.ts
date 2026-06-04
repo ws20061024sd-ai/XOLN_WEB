@@ -22,7 +22,7 @@ guestbook.post("/", async (c) => {
   if (!author || !content) return c.json({ ok: false, error: "请填写昵称和内容" }, 400);
   if (author.length > 50 || content.length > 2000) return c.json({ ok: false, error: "内容过长" }, 400);
   const db = await getDb();
-  db.run("INSERT INTO guestbook (author, content) VALUES (?, ?)", [author, content]);
+  db.run("INSERT INTO guestbook (author, content, created_at) VALUES (?, ?, datetime('now', '+8 hours'))", [author, content]);
   saveDb();
   return c.json({ ok: true, msg: "留言成功" }, 201);
 });

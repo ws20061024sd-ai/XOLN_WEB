@@ -7,7 +7,7 @@ stats.post("/pageview", async (c) => {
   const { path } = await c.req.json();
   if (!path) return c.json({ ok: false }, 400);
   const db = await getDb();
-  db.run("INSERT INTO pageviews (path, ip) VALUES (?, ?)", [
+  db.run("INSERT INTO pageviews (path, ip, created_at) VALUES (?, ?, datetime('now', '+8 hours'))", [
     path,
     c.req.header("x-real-ip") || "",
   ]);

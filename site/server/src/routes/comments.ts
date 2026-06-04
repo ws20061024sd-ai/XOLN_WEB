@@ -27,7 +27,7 @@ comments.post("/", async (c) => {
     return c.json({ ok: false, error: "内容过长" }, 400);
   }
   const db = await getDb();
-  db.run("INSERT INTO comments (slug, section, author, content, approved) VALUES (?, ?, ?, ?, 1)", [
+  db.run("INSERT INTO comments (slug, section, author, content, approved, created_at) VALUES (?, ?, ?, ?, 1, datetime('now', '+8 hours'))", [
     slug,
     section || "",
     author,

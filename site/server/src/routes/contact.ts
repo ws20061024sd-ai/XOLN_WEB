@@ -12,7 +12,7 @@ contact.post("/", async (c) => {
     return c.json({ ok: false, error: "内容过长" }, 400);
   }
   const db = await getDb();
-  db.run("INSERT INTO messages (name, email, content) VALUES (?, ?, ?)", [
+  db.run("INSERT INTO messages (name, email, content, created_at) VALUES (?, ?, ?, datetime('now', '+8 hours'))", [
     name,
     email,
     content,
