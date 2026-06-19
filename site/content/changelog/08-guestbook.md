@@ -3,7 +3,7 @@ title: "留言板 + 管理面板完善"
 date: "2026-05-18"
 description: "新增留言板页面和 API，管理面板补齐留言管理，API 全面启用 HTTPS。"
 tags: ["留言板", "管理", "HTTPS"]
-order: 3
+order: 5
 ---
 
 ## 留言板 `/guestbook`
