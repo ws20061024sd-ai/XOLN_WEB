@@ -176,19 +176,28 @@ async function main() {
   }
 
   console.log("");
-  let ok = 0, fail = 0;
-  for (let i = 0; i < toUpload.length; i++) {
-    const key = toUpload[i];
-    const filePath = path.join(outDir, key);
-    try {
-      await uploadFile(key, filePath);
-      ok++;
-      if ((ok + fail) % 50 === 0) process.stdout.write(`  ${ok + fail}/${toUpload.length}\n`);
-    } catch (e) {
-      fail++;
-      console.error(`  ✗ ${key}: ${e.message}`);
+  let ok = 0, fail = 0, idx = 0;
+  const concurrency = 10; // 并发数
+
+  async function worker() {
+    while (idx < toUpload.length) {
+      const i = idx++;
+      const key = toUpload[i];
+      const filePath = path.join(outDir, key);
+      try {
+        await uploadFile(key, filePath);
+        ok++;
+      } catch (e) {
+        fail++;
+        console.error(`  ✗ ${key}: ${e.message}`);
+      }
+      const done = ok + fail;
+      if (done % 50 === 0 || done === toUpload.length) process.stdout.write(`  ${done}/${toUpload.length}\n`);
     }
   }
+
+  const workers = Array.from({ length: Math.min(concurrency, toUpload.length) }, () => worker());
+  await Promise.all(workers);
   console.log(`\n上传完成: ${ok} 成功, ${fail} 失败, ${skipped} 跳过`);
 
   // 更新 manifest
