@@ -34,7 +34,8 @@ export default function SearchClient({ items }: { items: SearchItem[] }) {
         (item) =>
           fuzzyMatch(item.title, q) ||
           fuzzyMatch(item.description || "", q) ||
-          (item.tags && item.tags.some((t) => fuzzyMatch(t, q)))
+          (item.tags && item.tags.some((t) => fuzzyMatch(t, q))) ||
+          fuzzyMatch(item.content || "", q)
       )
       .slice(0, 20);
   }, [query, items]);

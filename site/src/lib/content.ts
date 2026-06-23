@@ -73,22 +73,48 @@ export function getContentItem(section: string, slug: string): ContentItem | nul
   };
 }
 
-/** 获取所有栏目下的全部内容（为搜索索引用） */
-export function getAllContent(): ContentItem[] {
+/** 获取所有栏目下的全部内容（为搜索索引用，递归遍历子目录） */
+export function getAllContent(): (ContentItem & { section: string })[] {
   const sections = fs
     .readdirSync(contentRoot)
     .filter((f) => fs.statSync(path.join(contentRoot, f)).isDirectory());
 
-  return sections.flatMap((section) => {
-    return fs
-      .readdirSync(path.join(contentRoot, section))
-      .filter((f) => f.endsWith(".md"))
-      .map((f) => {
-        const slug = f.replace(/\.md$/, "");
-        const item = getContentItem(section, slug);
-        return { ...item!, section } as ContentItem & { section: string };
-      });
-  });
+  const results: (ContentItem & { section: string })[] = [];
+
+  function walk(dir: string, section: string, prefix: string) {
+    if (!fs.existsSync(dir)) return;
+    for (const entry of fs.readdirSync(dir)) {
+      const full = path.join(dir, entry);
+      const stat = fs.statSync(full);
+      if (stat.isDirectory() && !entry.startsWith("_")) {
+        walk(full, section, prefix ? `${prefix}/${entry}` : entry);
+      } else if (entry.endsWith(".md")) {
+        const slugBase = entry.replace(/\.md$/, "");
+        const slug = prefix ? `${prefix}/${slugBase}` : slugBase;
+        try {
+          const raw = fs.readFileSync(full, "utf-8");
+          const { data, content } = matter(raw);
+          results.push({
+            slug,
+            section,
+            title: data.title || slugBase,
+            date: data.date || "",
+            description: data.description || "",
+            tags: data.tags || [],
+            content: content.trim(),
+          });
+        } catch {
+          // 跳过损坏的文件
+        }
+      }
+    }
+  }
+
+  for (const section of sections) {
+    walk(path.join(contentRoot, section), section, "");
+  }
+
+  return results;
 }
 
 // ===== 作品栏目：递归目录树（支持多级文件夹） =====
