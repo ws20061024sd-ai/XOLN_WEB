@@ -41,9 +41,9 @@ cd site/server && npm run build
 site/
 ├── content/              # Markdown 内容文件（前端读取渲染）
 │   ├── about.md          # 单页
-│   ├── changelog/        # 更新日志（8 篇，按 order 排序）
+│   ├── changelog/        # 更新日志（11 篇，按 order 排序）
 │   ├── beliefs/          # 观念（6 篇：世界观/人生观/价值观/爱情/亲情/友情）
-│   ├── works/            # 作品（3 篇）
+│   ├── works/            # 作品（子目录=系列，201 篇文章）
 │   ├── favorites/        # 喜爱（4 篇）
 │   └── misc/             # 杂项
 ├── src/
@@ -53,6 +53,8 @@ site/
 │   │   ├── guestbook/    # 留言板
 │   │   ├── countdown/    # 倒计时
 │   │   ├── search/       # 搜索
+│   │   ├── community/    # 共创投稿
+│   │   ├── works/[...path]/ # 作品 catch-all
 │   │   └── admin/        # 管理面板
 │   ├── components/
 │   │   ├── MarkdownRenderer.tsx  # 自定义 Markdown 渲染器（零依赖）
@@ -67,7 +69,7 @@ site/
 ├── server/                # 后端 API（独立部署到 Lighthouse）
 │   ├── src/
 │   │   ├── index.ts       # Hono 入口（CORS/限流/路由注册）
-│   │   ├── routes/        # comments/stats/contact/guestbook/admin
+│   │   ├── routes/        # comments/stats/contact/guestbook/community/admin
 │   │   └── db/schema.ts   # SQLite 建表
 │   ├── Dockerfile
 │   └── docker-compose.yml
