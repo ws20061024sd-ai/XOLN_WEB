@@ -5,18 +5,49 @@ import Link from "next/link";
 import type { ContentItem } from "@/lib/types";
 import { sectionLabels } from "@/lib/types";
 
-// 简易模糊搜索，不依赖 Fuse.js 额外安装
 function fuzzyMatch(text: string, query: string): boolean {
   const lower = text.toLowerCase();
   const q = query.toLowerCase();
   if (lower.includes(q)) return true;
 
-  // 逐字匹配
   let qi = 0;
   for (let i = 0; i < lower.length && qi < q.length; i++) {
     if (lower[i] === q[qi]) qi++;
   }
   return qi === q.length;
+}
+
+/** 从正文中提取搜索词首次出现的片段（前后各 30 字），含 <mark> 高亮 */
+function extractSnippet(content: string, query: string): string | null {
+  if (!content) return null;
+  const lower = content.toLowerCase();
+  const q = query.toLowerCase();
+  const idx = lower.indexOf(q);
+  if (idx === -1) {
+    // 逐字匹配定位
+    let qi = 0, pos = -1;
+    for (let i = 0; i < lower.length && qi < q.length; i++) {
+      if (lower[i] === q[qi]) { if (qi === 0) pos = i; qi++; }
+    }
+    if (qi !== q.length) return null;
+    if (pos === -1) return null;
+    const start = Math.max(0, pos - 30);
+    const end = Math.min(content.length, pos + q.length + 30);
+    const before = content.slice(start, pos);
+    const match = content.slice(pos, pos + q.length);
+    const after = content.slice(pos + q.length, end);
+    return `${start > 0 ? "..." : ""}${escapeHtml(before)}<mark>${escapeHtml(match)}</mark>${escapeHtml(after)}${end < content.length ? "..." : ""}`;
+  }
+  const start = Math.max(0, idx - 30);
+  const end = Math.min(content.length, idx + q.length + 30);
+  const before = content.slice(start, idx);
+  const match = content.slice(idx, idx + q.length);
+  const after = content.slice(idx + q.length, end);
+  return `${start > 0 ? "..." : ""}${escapeHtml(before)}<mark>${escapeHtml(match)}</mark>${escapeHtml(after)}${end < content.length ? "..." : ""}`;
+}
+
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 interface SearchItem extends ContentItem {
@@ -37,7 +68,11 @@ export default function SearchClient({ items }: { items: SearchItem[] }) {
           (item.tags && item.tags.some((t) => fuzzyMatch(t, q))) ||
           fuzzyMatch(item.content || "", q)
       )
-      .slice(0, 20);
+      .slice(0, 20)
+      .map((item) => ({
+        ...item,
+        snippet: extractSnippet(item.content || "", q),
+      }));
   }, [query, items]);
 
   return (
@@ -47,7 +82,7 @@ export default function SearchClient({ items }: { items: SearchItem[] }) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="搜索文章标题、描述、标签..."
+          placeholder="搜索文章标题、描述、标签、正文..."
           autoFocus
           className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-3 text-base outline-none transition-shadow placeholder:text-[var(--text-soft)] focus:border-[var(--accent)] focus:shadow-md"
         />
@@ -75,17 +110,18 @@ export default function SearchClient({ items }: { items: SearchItem[] }) {
             className="card-hover block rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 no-underline shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
-              <div>
+              <div className="min-w-0 flex-1">
                 <span className="text-xs font-medium text-[var(--accent)]">
                   {sectionLabels[item.section] || item.section}
                 </span>
                 <h3 className="mt-0.5 font-semibold text-[var(--text)]">
                   {item.title}
                 </h3>
-                {item.description && (
-                  <p className="mt-1 text-sm text-[var(--text-muted)] line-clamp-1">
-                    {item.description}
-                  </p>
+                {item.snippet && (
+                  <p
+                    className="mt-1.5 text-sm text-[var(--text-muted)] leading-relaxed line-clamp-3"
+                    dangerouslySetInnerHTML={{ __html: item.snippet }}
+                  />
                 )}
               </div>
               {item.date && (
@@ -94,6 +130,18 @@ export default function SearchClient({ items }: { items: SearchItem[] }) {
                 </span>
               )}
             </div>
+            {item.tags && item.tags.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {item.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-block rounded-md bg-[var(--accent-soft)] px-2 py-0.5 text-xs font-medium text-[var(--accent)]"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </Link>
         ))}
 
