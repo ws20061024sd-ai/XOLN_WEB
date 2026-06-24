@@ -210,6 +210,52 @@
   }
 
   /* ===== Footer ===== */
+  /* ===== Question Bank ===== */
+  .q-section { margin: 16px 0 24px; }
+  .q-section h4 { color: var(--accent); font-size: 14px; margin: 14px 0 8px; padding: 4px 0 4px 8px; border-left: 3px solid var(--accent); }
+  .q-item { margin: 6px 0 6px 6px; }
+  .q-item p { margin: 3px 0; }
+  .q-options { margin-left: 16px; }
+  .q-options li { list-style: none; padding: 1px 0; }
+  .q-options li::before { content: attr(data-label) ". "; font-weight: 600; color: #555; }
+  .q-blank { display: inline-block; min-width: 60px; border-bottom: 1px solid #333; text-align: center; margin: 0 4px; }
+  .q-blank.wide { min-width: 90px; }
+  .answer-box {
+    margin: 16px 0 24px;
+    padding: 12px 16px;
+    border: 1px solid #c5cdd5;
+    border-radius: 3px;
+    background: #f9fafb;
+  }
+  .answer-box summary {
+    font-weight: 700;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 13px;
+    user-select: none;
+  }
+  .answer-box summary:hover { color: #000; }
+  .answer-box.open summary { margin-bottom: 8px; }
+  .answer-content { margin-top: 8px; font-size: 13px; line-height: 1.8; }
+  .answer-content .q-label { font-weight: 600; color: #555; margin-right: 4px; }
+  .answer-content .correct { color: #b22222; font-weight: 700; }
+  .answer-content td { font-size: 12.5px; }
+  .score-badge {
+    display: inline-block;
+    font-size: 11px;
+    color: #888;
+    margin-left: 4px;
+  }
+  .exam-header {
+    text-align: center;
+    margin: 20px 0;
+    padding: 16px;
+    border: 1px solid #ddd;
+    background: #fafbfc;
+  }
+  .exam-header h3 { border-bottom: none; margin: 0 0 6px; font-size: 18px; text-align: center; }
+  .exam-meta { font-size: 13px; color: #666; }
+
   .footer-note {
     text-align: center;
     color: #aaa;
@@ -292,6 +338,22 @@
     strong { color: #000; font-weight: 700; }
     ul.checklist li { font-size: 11px; }
     .footer-note { font-size: 10px; }
+
+    .answer-box {
+      border-color: #bbb;
+      background: #f9fafb !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .answer-content { font-size: 10.5px; }
+    .q-blank { min-width: 40px; }
+    .q-blank.wide { min-width: 60px; }
+    .exam-header {
+      border-color: #bbb;
+      background: #fafbfc !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
 
     .tl-node {
       border-color: #bbb;
@@ -841,7 +903,679 @@
   </div>
 </div>
 
-<p class="footer-note">《现代设计史》复习笔记 · 共八大模块 · 涵盖九大流派及论述核心考点</p>
+<!-- ============================================================ -->
+<!-- ===== 九、针对性训练 ===== -->
+<!-- ============================================================ -->
+<h2 class="page-break-before">九、针对性训练</h2>
+<p style="color:#888; margin-bottom:16px;">按专题分类 · 含选择题、填空题、名词解释、简答题、判断题、连线题 · 答案附每专题末尾</p>
+
+<!-- ===== 专题一 ===== -->
+<div class="q-section no-break">
+<h3>专题一　工艺美术运动 · 新艺术运动 · 维也纳分离派</h3>
+
+<h4>一、单项选择题</h4>
+
+<div class="q-item"><p><strong>1.</strong> 工艺美术运动的思想奠基人是（　）</p>
+<ul class="q-options">
+  <li data-label="A">莫里斯</li>
+  <li data-label="B">拉斯金</li>
+  <li data-label="C">沙利文</li>
+  <li data-label="D">宾</li>
+</ul></div>
+
+<div class="q-item"><p><strong>2.</strong> 莫里斯的代表作是（　）</p>
+<ul class="q-options">
+  <li data-label="A">克莱斯勒大厦</li>
+  <li data-label="B">萨伏伊别墅</li>
+  <li data-label="C">红屋</li>
+  <li data-label="D">巴黎地铁入口</li>
+</ul></div>
+
+<div class="q-item"><p><strong>3.</strong> 新艺术运动的口号"回到自然去"是由谁提出的？（　）</p>
+<ul class="q-options">
+  <li data-label="A">吉马德</li>
+  <li data-label="B">慕卡</li>
+  <li data-label="C">萨穆尔·宾</li>
+  <li data-label="D">加雷</li>
+</ul></div>
+
+<div class="q-item"><p><strong>4.</strong> 新艺术运动的三大源泉不包括（　）</p>
+<ul class="q-options">
+  <li data-label="A">哥特式</li>
+  <li data-label="B">罗可可式</li>
+  <li data-label="C">日本浮世绘</li>
+  <li data-label="D">古希腊式</li>
+</ul></div>
+
+<div class="q-item"><p><strong>5.</strong> 维也纳分离派的性质是（　）</p>
+<ul class="q-options">
+  <li data-label="A">新艺术运动曲线派的代表</li>
+  <li data-label="B">新艺术运动直线派的代表</li>
+  <li data-label="C">现代主义设计的先驱</li>
+  <li data-label="D">装饰艺术运动的分支</li>
+</ul></div>
+
+<h4>二、填空题</h4>
+
+<div class="q-item"><p><strong>6.</strong> 1895年12月，宾在巴黎开设了名为"<span class="q-blank"></span>"的艺术商号。</p></div>
+
+<div class="q-item"><p><strong>7.</strong> 新艺术运动中，被称为"现代海报之父"的是<span class="q-blank"></span>。</p></div>
+
+<div class="q-item"><p><strong>8.</strong> 维也纳分离派的口号是"为时代的艺术，<span class="q-blank wide"></span>"。</p></div>
+
+<div class="q-item"><p><strong>9.</strong> 新艺术运动中从事家具与室内设计的三位设计师是加雷、吉马德和<span class="q-blank"></span>。</p></div>
+
+<div class="q-item"><p><strong>10.</strong> 工艺美术运动推崇<span class="q-blank"></span>和东方装饰，采用卷草、花卉、鸟类为装饰动机。</p></div>
+
+<h4>三、名词解释</h4>
+<div class="q-item"><p><strong>11.</strong> 麦金托什的设计思想</p></div>
+<div class="q-item"><p><strong>12.</strong> 维也纳分离派</p></div>
+
+<h4>四、简答题</h4>
+<div class="q-item"><p><strong>13.</strong> 简述工艺美术运动的风格特征。（四条）</p></div>
+
+<!-- 答案 -->
+<details class="answer-box">
+<summary>📋 专题一　参考答案（点击展开）</summary>
+<div class="answer-content">
+<p><span class="q-label">1-5</span> <span class="correct">B C C D B</span></p>
+<p><span class="q-label">6.</span> 新艺术之家</p>
+<p><span class="q-label">7.</span> 儒勒·舍雷</p>
+<p><span class="q-label">8.</span> 为艺术的自由</p>
+<p><span class="q-label">9.</span> 路易斯·莫卓列里</p>
+<p><span class="q-label">10.</span> 自然主义</p>
+<hr style="margin:8px 0;">
+<p><span class="q-label">11. 麦金托什的设计思想</span>：①抽象的几何形态，黑白对比色彩，纵横直线分隔，奠定现代设计造型语言；②从建筑到室内、家具、灯具、玻璃器皿、彩色玻璃、地毯的整体风格系统设计；③从自然主义→抽象主义，从曲线→直线，从繁琐→简洁；④向古典和东方学习，跳出传统，推陈出新。</p>
+<p><span class="q-label">12. 维也纳分离派</span>：1897年，19位艺术家离开维也纳学院派建立的前卫流派，是新艺术运动<strong>直线派</strong>的代表，口号"为时代的艺术，为艺术的自由"。代表人物：约瑟夫·奥尔布里希、霍夫曼、莫塞。</p>
+<p><span class="q-label">13. 工艺美术运动风格特征</span>：①强调手工艺，明确反对机械化生产；②反对维多利亚风格及古典、传统复兴风格，推崇自然主义与东方装饰；③提倡哥特风格和中世纪风格，讲究简单、朴实无华和良好功能；④主张设计的诚恳，反对哗众取宠、华而不实。</p>
+</div>
+</details>
+</div>
+
+
+<!-- ===== 专题二 ===== -->
+<div class="q-section no-break">
+<h3 class="page-break-before">专题二　芝加哥学派 · 德国工业同盟 · 包豪斯</h3>
+
+<h4>一、单项选择题</h4>
+
+<div class="q-item"><p><strong>1.</strong> "形式追随功能"的提出者是（　）</p>
+<ul class="q-options">
+  <li data-label="A">柯布西耶</li>
+  <li data-label="B">密斯·凡·德罗</li>
+  <li data-label="C">沙利文</li>
+  <li data-label="D">格罗皮乌斯</li>
+</ul></div>
+
+<div class="q-item"><p><strong>2.</strong> 德国工业同盟成立于哪一年？（　）</p>
+<ul class="q-options">
+  <li data-label="A">1897年</li>
+  <li data-label="B">1907年</li>
+  <li data-label="C">1917年</li>
+  <li data-label="D">1919年</li>
+</ul></div>
+
+<div class="q-item"><p><strong>3.</strong> 包豪斯的创始人是（　）</p>
+<ul class="q-options">
+  <li data-label="A">密斯·凡·德罗</li>
+  <li data-label="B">柯布西耶</li>
+  <li data-label="C">格罗皮乌斯</li>
+  <li data-label="D">彼得·贝伦斯</li>
+</ul></div>
+
+<div class="q-item"><p><strong>4.</strong> 以下哪项不属于德国工业同盟宣言的内容？（　）</p>
+<ul class="q-options">
+  <li data-label="A">坚决反对任何装饰</li>
+  <li data-label="B">主张标准化下的批量化</li>
+  <li data-label="C">推崇个性化手工艺制作</li>
+  <li data-label="D">走非官方路线，避免政治干扰</li>
+</ul></div>
+
+<div class="q-item"><p><strong>5.</strong> 包豪斯的教育理念认为（　）</p>
+<ul class="q-options">
+  <li data-label="A">技术知识和创作能力都只能启发</li>
+  <li data-label="B">技术知识与创作能力都可直接传授</li>
+  <li data-label="C">技术知识可以传授，创作能力只能启发</li>
+  <li data-label="D">创作能力可以传授，技术知识只能启发</li>
+</ul></div>
+
+<h4>二、填空题</h4>
+
+<div class="q-item"><p><strong>6.</strong> 1907年，彼得·贝伦斯受聘担任德国<span class="q-blank"></span>公司的艺术顾问。</p></div>
+
+<div class="q-item"><p><strong>7.</strong> 包豪斯成立于<span class="q-blank"></span>年，关闭于1933年。</p></div>
+
+<div class="q-item"><p><strong>8.</strong> 包豪斯造就的德国设计风格是"高度理性化 + <span class="q-blank wide"></span>"。</p></div>
+
+<div class="q-item"><p><strong>9.</strong> 德国工业同盟宣言主张<span class="q-blank wide"></span>下的批量化生产。</p></div>
+
+<div class="q-item"><p><strong>10.</strong> 包豪斯培养的杰出设计师包括布朗特、<span class="q-blank"></span>、马克思·比尔等。</p></div>
+
+<h4>三、名词解释</h4>
+<div class="q-item"><p><strong>11.</strong> 德国工业同盟</p></div>
+<div class="q-item"><p><strong>12.</strong> "形式追随功能"</p></div>
+
+<h4>四、简答题</h4>
+<div class="q-item"><p><strong>13.</strong> 简述包豪斯的四大历史贡献。</p></div>
+
+<!-- 答案 -->
+<details class="answer-box">
+<summary>📋 专题二　参考答案（点击展开）</summary>
+<div class="answer-content">
+<p><span class="q-label">1-5</span> <span class="correct">C B C C C</span></p>
+<p><span class="q-label">6.</span> AEG</p>
+<p><span class="q-label">7.</span> 1919</p>
+<p><span class="q-label">8.</span> 严谨功能化</p>
+<p><span class="q-label">9.</span> 标准化</p>
+<p><span class="q-label">10.</span> 马歇·布劳耶</p>
+<hr style="margin:8px 0;">
+<p><span class="q-label">11. 德国工业同盟</span>：1907年成立，倡导艺术、工业、手工业相结合，大力宣传功能主义，反对任何装饰，主张标准化下的批量化生产，走非官方路线。代表人物：穆特休斯、彼得·贝伦斯（受聘AEG艺术顾问）、维尔德。</p>
+<p><span class="q-label">12. "形式追随功能"</span>：芝加哥学派代表人物<strong>沙利文</strong>提出的设计理论，强调建筑和设计的形式应由其功能决定，成为现代主义功能主义思想的先声。</p>
+<p><span class="q-label">13. 包豪斯四大贡献</span>：①建立一整套设计艺术教学方法和教学体系，认清"技术知识可以传授，创作能力只能启发"；②真正实现技术与艺术的统一，形成理性主义设计原则；③造就德国设计风格：高度理性化 + 严谨功能化；④培养大批杰出设计师：布朗特、布劳耶、比尔等。</p>
+</div>
+</details>
+</div>
+
+
+<!-- ===== 专题三 ===== -->
+<div class="q-section no-break">
+<h3 class="page-break-before">专题三　装饰艺术运动 · 现代主义 · 后现代主义</h3>
+
+<h4>一、单项选择题</h4>
+
+<div class="q-item"><p><strong>1.</strong> 装饰艺术运动在意识形态上与现代主义的主要区别是（　）</p>
+<ul class="q-options">
+  <li data-label="A">装饰艺术运动反对工业化</li>
+  <li data-label="B">装饰艺术运动强调为上层顾客服务</li>
+  <li data-label="C">装饰艺术运动发生在19世纪</li>
+  <li data-label="D">装饰艺术运动不使用几何造型</li>
+</ul></div>
+
+<div class="q-item"><p><strong>2.</strong> 以下哪座建筑属于装饰艺术运动的代表作？（　）</p>
+<ul class="q-options">
+  <li data-label="A">包豪斯校舍</li>
+  <li data-label="B">萨伏伊别墅</li>
+  <li data-label="C">克莱斯勒大厦</li>
+  <li data-label="D">栗子山母亲之家</li>
+</ul></div>
+
+<div class="q-item"><p><strong>3.</strong> 现代主义设计的宗旨是（　）</p>
+<ul class="q-options">
+  <li data-label="A">为上层顾客服务、奢华</li>
+  <li data-label="B">面向大众的设计、理性</li>
+  <li data-label="C">反对一切形式、纯粹艺术</li>
+  <li data-label="D">回复历史装饰、折衷</li>
+</ul></div>
+
+<div class="q-item"><p><strong>4.</strong> 文丘里的代表作是（　）</p>
+<ul class="q-options">
+  <li data-label="A">西格拉姆大厦</li>
+  <li data-label="B">朗香教堂</li>
+  <li data-label="C">栗子山母亲之家</li>
+  <li data-label="D">范斯沃斯别墅</li>
+</ul></div>
+
+<div class="q-item"><p><strong>5.</strong> 后现代主义的核心主张不包括（　）</p>
+<ul class="q-options">
+  <li data-label="A">反对设计形式单一化</li>
+  <li data-label="B">强调形态的隐喻和符号</li>
+  <li data-label="C">坚持"少即是多"的纯粹性</li>
+  <li data-label="D">关注设计与环境的关系</li>
+</ul></div>
+
+<h4>二、填空题</h4>
+
+<div class="q-item"><p><strong>6.</strong> 装饰艺术运动的色彩特征表现为强烈原色 + 金属色，金属色包括古铜、金和<span class="q-blank"></span>。</p></div>
+
+<div class="q-item"><p><strong>7.</strong> 现代主义设计兴起于1920年代的<span class="q-blank"></span>，二战后在美国迅速发展。</p></div>
+
+<div class="q-item"><p><strong>8.</strong> 后现代主义的三大典型特征为历史主义与装饰主义、历史动机的折衷主义、<span class="q-blank wide"></span>。</p></div>
+
+<div class="q-item"><p><strong>9.</strong> 装饰艺术运动与<span class="q-blank wide"></span>主义设计运动几乎同时发生、同时结束。</p></div>
+
+<div class="q-item"><p><strong>10.</strong> 艾琳·格雷的代表作是<span class="q-blank"></span>。</p></div>
+
+<h4>三、名词解释</h4>
+<div class="q-item"><p><strong>11.</strong> "少即是多"（Less is more）</p></div>
+<div class="q-item"><p><strong>12.</strong> "少即乏味"（Less is a bore）</p></div>
+
+<h4>四、简答题</h4>
+<div class="q-item"><p><strong>13.</strong> 简述装饰艺术运动的六大风格影响因素。</p></div>
+<div class="q-item"><p><strong>14.</strong> 简述后现代主义三大典型特征及其内涵。</p></div>
+
+<!-- 答案 -->
+<details class="answer-box">
+<summary>📋 专题三　参考答案（点击展开）</summary>
+<div class="answer-content">
+<p><span class="q-label">1-5</span> <span class="correct">B C B C C</span></p>
+<p><span class="q-label">6.</span> 银</p>
+<p><span class="q-label">7.</span> 欧洲</p>
+<p><span class="q-label">8.</span> 娱乐性与装饰细节的含糊性</p>
+<p><span class="q-label">9.</span> 现代</p>
+<p><span class="q-label">10.</span> E-1027边桌</p>
+<hr style="margin:8px 0;">
+<p><span class="q-label">11. "少即是多"</span>：现代主义建筑大师<strong>密斯·凡·德罗</strong>提出的设计哲学。主张以极简的几何形态、开放空间达到丰富的功能与审美效果，是现代主义理性设计的核心口号。代表作：范斯沃斯别墅、西格拉姆大厦。</p>
+<p><span class="q-label">12. "少即乏味"</span>：后现代主义代表<strong>文丘里</strong>对密斯"少即是多"的反驳。主张设计应丰富多彩、折衷混合，反对现代主义的单调与纯粹。代表作：栗子山母亲之家。</p>
+<p><span class="q-label">13. 装饰艺术运动六大影响因素</span>：①埃及等古代装饰风格的实用性借鉴；②原始艺术的影响；③简单的几何外形；④舞台艺术的影响（俄国芭蕾舞团、爵士乐）；⑤独特的色彩系列：强烈原色 + 金属色（鲜红、鲜黄、鲜蓝、桔红 + 古铜、金、银）；⑥汽车的影响。</p>
+<p><span class="q-label">14. 后现代主义三大典型特征</span>：①<strong>历史主义与装饰主义</strong>——回复装饰性，从历史中吸取装饰营养，与现代主义的冷漠/严峻/理性化形成鲜明对照；②<strong>历史动机的折衷主义</strong>——不单纯回复历史风格，而是对历史风格采取抽出、混合、拼接的方法，建立在现代主义构造基础之上；③<strong>娱乐性与装饰细节的含糊性</strong>——具有戏谑、调侃色彩，反映利用新装饰细节达到设计上的宽松和舒展。</p>
+</div>
+</details>
+</div>
+
+
+<!-- ===== 专题四 ===== -->
+<div class="q-section no-break">
+<h3 class="page-break-before">专题四　综合人物 · 理论 · 年份 · 连线</h3>
+
+<h4>一、判断题（正确打√，错误打×）</h4>
+
+<div class="q-item"><p><strong>1.</strong> 拉斯金是工艺美术运动的代表性设计师，代表作是红屋。（　）</p></div>
+<div class="q-item"><p><strong>2.</strong> 维也纳分离派成立于1897年，属于新艺术运动的曲线派。（　）</p></div>
+<div class="q-item"><p><strong>3.</strong> 彼得·贝伦斯于1907年受聘为德国AEG公司艺术顾问。（　）</p></div>
+<div class="q-item"><p><strong>4.</strong> 包豪斯成立于1919年，首任校长是密斯·凡·德罗。（　）</p></div>
+<div class="q-item"><p><strong>5.</strong> 乌尔姆学院的纲领是"使设计直接服务于艺术"。（　）</p></div>
+<div class="q-item"><p><strong>6.</strong> 柯布西耶的代表作包括萨伏伊别墅、朗香教堂和马赛公寓。（　）</p></div>
+<div class="q-item"><p><strong>7.</strong> 美国工业设计"四大元老"包括罗维、蒂格、德莱福斯和盖茨。（　）</p></div>
+<div class="q-item"><p><strong>8.</strong> "流通空间"是柯布西耶提出的空间理论。（　）</p></div>
+<div class="q-item"><p><strong>9.</strong> 后现代主义与现代主义一样，坚持"形式追随功能"。（　）</p></div>
+<div class="q-item"><p><strong>10.</strong> 装饰艺术运动二战后继续蓬勃发展，取代了现代主义。（　）</p></div>
+
+<h4>二、连线题</h4>
+
+<div class="q-item">
+<p><strong>11.</strong> 将左侧人物与右侧对应的理论/代表作连线：</p>
+<div style="display:flex; gap:40px; margin:8px 0;">
+<div style="line-height:2.2;">
+  <p>A. 沙利文</p>
+  <p>B. 莫里斯</p>
+  <p>C. 艾琳·格雷</p>
+  <p>D. 蒙德里安</p>
+  <p>E. 格罗皮乌斯</p>
+</div>
+<div style="line-height:2.2;">
+  <p>① 包豪斯创始人</p>
+  <p>② 红屋</p>
+  <p>③ E-1027边桌</p>
+  <p>④ 形式追随功能</p>
+  <p>⑤ 《红黄蓝的构图》</p>
+</div>
+</div>
+</div>
+
+<div class="q-item">
+<p><strong>12.</strong> 将左侧流派与右侧对应的口号/理论连线：</p>
+<div style="display:flex; gap:40px; margin:8px 0;">
+<div style="line-height:2.2;">
+  <p>A. 新艺术运动</p>
+  <p>B. 维也纳分离派</p>
+  <p>C. 柯布西耶</p>
+  <p>D. 文丘里</p>
+  <p>E. 乌尔姆学院</p>
+</div>
+<div style="line-height:2.2;">
+  <p>① 为时代的艺术，为艺术的自由</p>
+  <p>② 少即乏味</p>
+  <p>③ 机器美学</p>
+  <p>④ 使设计直接服务于工业</p>
+  <p>⑤ 回到自然去</p>
+</div>
+</div>
+</div>
+
+<h4>三、名词解释</h4>
+<div class="q-item"><p><strong>13.</strong> 包豪斯</p></div>
+<div class="q-item"><p><strong>14.</strong> 柯布西耶"建筑五要素"</p></div>
+
+<h4>四、简答题</h4>
+<div class="q-item"><p><strong>15.</strong> 简述工业革命对设计领域的五大变革。</p></div>
+
+<!-- 答案 -->
+<details class="answer-box">
+<summary>📋 专题四　参考答案（点击展开）</summary>
+<div class="answer-content">
+<p><span class="q-label">判断题</span></p>
+<p>1. ×（拉斯金是<strong>思想奠基人</strong>，莫里斯才是代表性设计师和红屋作者）</p>
+<p>2. ×（维也纳分离派是新艺术运动<strong>直线派</strong>的代表）</p>
+<p>3. √</p>
+<p>4. ×（首任校长是<strong>格罗皮乌斯</strong>）</p>
+<p>5. ×（纲领是"使设计直接服务于<strong>工业</strong>"）</p>
+<p>6. √</p>
+<p>7. √</p>
+<p>8. ×（"流通空间"是<strong>密斯·凡·德罗</strong>提出的）</p>
+<p>9. ×（后现代主义反对"形式追随功能"，主张形式多样化）</p>
+<p>10. ×（装饰艺术运动二战后<strong>未能再次发展</strong>，现代主义成为真正的世界性设计运动）</p>
+<hr style="margin:8px 0;">
+<p><span class="q-label">连线题</span></p>
+<p>11. A-④　B-②　C-③　D-⑤　E-①</p>
+<p>12. A-⑤　B-①　C-③　D-②　E-④</p>
+<hr style="margin:8px 0;">
+<p><span class="q-label">13. 包豪斯</span>：1919年由格罗皮乌斯在德国创立的设计学院（至1933年），是现代设计教育的里程碑。核心主张"艺术与技术统一"，建立理性主义设计原则。贡献包括：建立设计教学体系、实现技术与艺术统一、造就德国理性功能风格、培养大批杰出设计师。局限：忽视人的心理需求、导致国际主义千篇一律、对现代工业产品探讨不足。</p>
+<p><span class="q-label">14. 建筑五要素</span>：柯布西耶提出的现代建筑基本原则——①自由平面；②自由立面；③水平长窗；④底层架空柱；⑤屋顶花园。是其"机器美学"思想在建筑中的具体实现。</p>
+<p><span class="q-label">15. 工业革命五大变革</span>：①<strong>生产方式变化</strong>：机器化生产代替手工劳动，手工业生产→标准化、批量化、机械化；②<strong>传统设计无法满足新形势</strong>：新材料出现使设计者无法借鉴传统；③<strong>设计地位独立</strong>：设计从制造中脱离，成为独立行业；④<strong>消费大众化、全球化</strong>：产品适应性要求提高；⑤<strong>先进生产方式提出新要求</strong>：设计者对新技术的适应困难，观念无法转变。</p>
+</div>
+</details>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- ===== 十、套卷训练 ===== -->
+<!-- ============================================================ -->
+<h2 class="page-break-before">十、套卷训练</h2>
+<p style="color:#888; margin-bottom:16px;">参照大学期末考试格式 · A卷基础 + B卷综合 · 建议每卷用时90分钟</p>
+
+<!-- ===== 模拟卷A ===== -->
+<div class="no-break">
+<div class="exam-header">
+  <h3>模拟卷 A（基础卷）</h3>
+  <p class="exam-meta">满分 100 分　|　建议用时 90 分钟　|　题型：单选 · 填空 · 判断 · 名词解释 · 简答</p>
+</div>
+
+<h4>一、单项选择题（10题，每题2分，共20分）</h4>
+
+<div class="q-item"><p><strong>1.</strong> 工艺美术运动最具代表性的设计师是（　）</p>
+<ul class="q-options">
+  <li data-label="A">拉斯金</li><li data-label="B">莫里斯</li><li data-label="C">德莱赛</li><li data-label="D">阿什比</li>
+</ul></div>
+
+<div class="q-item"><p><strong>2.</strong> "新艺术之家"在哪个城市开设？（　）</p>
+<ul class="q-options">
+  <li data-label="A">伦敦</li><li data-label="B">柏林</li><li data-label="C">巴黎</li><li data-label="D">维也纳</li>
+</ul></div>
+
+<div class="q-item"><p><strong>3.</strong> 维也纳分离派成立的年份是（　）</p>
+<ul class="q-options">
+  <li data-label="A">1895年</li><li data-label="B">1897年</li><li data-label="C">1907年</li><li data-label="D">1919年</li>
+</ul></div>
+
+<div class="q-item"><p><strong>4.</strong> 荷兰风格派的代表人物不包括（　）</p>
+<ul class="q-options">
+  <li data-label="A">蒙德里安</li><li data-label="B">里特维尔德</li><li data-label="C">杜斯伯格</li><li data-label="D">格罗皮乌斯</li>
+</ul></div>
+
+<div class="q-item"><p><strong>5.</strong> 以下哪一项属于包豪斯的局限性？（　）</p>
+<ul class="q-options">
+  <li data-label="A">培养了大量设计师</li><li data-label="B">忽视人的心理需求，形式机械呆板</li><li data-label="C">实现了技术与艺术的统一</li><li data-label="D">建立了设计教学体系</li>
+</ul></div>
+
+<div class="q-item"><p><strong>6.</strong> 装饰艺术运动的代表性建筑物不包括（　）</p>
+<ul class="q-options">
+  <li data-label="A">克莱斯勒大厦</li><li data-label="B">帝国大厦</li><li data-label="C">包豪斯校舍</li><li data-label="D">洛克菲勒中心大厦</li>
+</ul></div>
+
+<div class="q-item"><p><strong>7.</strong> 柯布西耶的建筑五要素中不包括（　）</p>
+<ul class="q-options">
+  <li data-label="A">自由平面</li><li data-label="B">自由立面</li><li data-label="C">拱形穹顶</li><li data-label="D">屋顶花园</li>
+</ul></div>
+
+<div class="q-item"><p><strong>8.</strong> 现代主义设计的服务对象是（　）</p>
+<ul class="q-options">
+  <li data-label="A">上层顾客</li><li data-label="B">精英阶层</li><li data-label="C">大众</li><li data-label="D">皇室贵族</li>
+</ul></div>
+
+<div class="q-item"><p><strong>9.</strong> 乌尔姆学院的合作典范企业是（　）</p>
+<ul class="q-options">
+  <li data-label="A">德国AEG</li><li data-label="B">布劳恩公司</li><li data-label="C">西门子</li><li data-label="D">大众汽车</li>
+</ul></div>
+
+<div class="q-item"><p><strong>10.</strong> 后现代主义反抗的主要对象是（　）</p>
+<ul class="q-options">
+  <li data-label="A">工艺美术运动</li><li data-label="B">新艺术运动</li><li data-label="C">现代主义纯而又纯的方法论</li><li data-label="D">装饰艺术运动的奢华风格</li>
+</ul></div>
+
+<h4>二、填空题（10空，每空2分，共20分）</h4>
+
+<div class="q-item"><p><strong>11.</strong> 新艺术运动三大源泉是哥特式、罗可可式和<span class="q-blank wide"></span>。</p></div>
+<div class="q-item"><p><strong>12.</strong> 沙利文提出的著名理论是"<span class="q-blank wide"></span>"。</p></div>
+<div class="q-item"><p><strong>13.</strong> 德国工业同盟主张坚决反对任何<span class="q-blank"></span>。</p></div>
+<div class="q-item"><p><strong>14.</strong> 包豪斯教育理念的核心认识是"技术知识可以传授，而<span class="q-blank wide"></span>只能启发"。</p></div>
+<div class="q-item"><p><strong>15.</strong> 密斯·凡·德罗的设计哲学是"少即是多"、"全面空间"和"<span class="q-blank"></span>"。</p></div>
+<div class="q-item"><p><strong>16.</strong> 装饰艺术运动中被称为"20世纪时装设计第一人"的是<span class="q-blank"></span>。</p></div>
+<div class="q-item"><p><strong>17.</strong> 荷兰风格派的代表作品是蒙德里安的《<span class="q-blank wide"></span>》和里特维尔德的《红蓝椅》。</p></div>
+<div class="q-item"><p><strong>18.</strong> 文丘里的口号是"少即乏味"，英文表达为<span class="q-blank wide"></span>。</p></div>
+<div class="q-item"><p><strong>19.</strong> 乌尔姆学院成立于<span class="q-blank"></span>年。</p></div>
+<div class="q-item"><p><strong>20.</strong> 保罗·布瓦列特从事的领域是<span class="q-blank"></span>设计。</p></div>
+
+<h4>三、判断题（10题，每题1分，共10分）</h4>
+
+<div class="q-item"><p><strong>21.</strong> 工艺美术运动完全拥抱机械化生产。（　）</p></div>
+<div class="q-item"><p><strong>22.</strong> 法国新艺术运动中心人物宾的口号是"回到自然去"。（　）</p></div>
+<div class="q-item"><p><strong>23.</strong> 芝加哥学派倡导高层商业建筑的设计。（　）</p></div>
+<div class="q-item"><p><strong>24.</strong> 德国工业同盟走官方路线，接受政治指导。（　）</p></div>
+<div class="q-item"><p><strong>25.</strong> 包豪斯于1933年关闭，共存在14年。（　）</p></div>
+<div class="q-item"><p><strong>26.</strong> 装饰艺术运动与现代主义运动几乎同时发生和结束。（　）</p></div>
+<div class="q-item"><p><strong>27.</strong> 朗香教堂是密斯·凡·德罗的代表作。（　）</p></div>
+<div class="q-item"><p><strong>28.</strong> 俄国构成主义受立体派、未来主义影响。（　）</p></div>
+<div class="q-item"><p><strong>29.</strong> 现代主义设计反对任何形式的装饰。（　）</p></div>
+<div class="q-item"><p><strong>30.</strong> 后现代主义主张新旧糅合、兼容并蓄。（　）</p></div>
+
+<h4>四、名词解释（4题，每题5分，共20分）</h4>
+<div class="q-item"><p><strong>31.</strong> 红屋</p></div>
+<div class="q-item"><p><strong>32.</strong> 风格派</p></div>
+<div class="q-item"><p><strong>33.</strong> 包豪斯</p></div>
+<div class="q-item"><p><strong>34.</strong> 后现代主义</p></div>
+
+<h4>五、简答题（3题，每题10分，共30分）</h4>
+<div class="q-item"><p><strong>35.</strong> 简述德国工业同盟宣言的六条内容。（10分）</p></div>
+<div class="q-item"><p><strong>36.</strong> 简述装饰艺术运动的历史影响。（10分）</p></div>
+<div class="q-item"><p><strong>37.</strong> 简述现代主义设计的特点。（10分）</p></div>
+
+<!-- 答案 -->
+<details class="answer-box">
+<summary>📋 模拟卷A　参考答案（点击展开）</summary>
+<div class="answer-content">
+<p><strong>一、单选（每题2分）</strong></p>
+<table><tr><td>1. B</td><td>2. C</td><td>3. B</td><td>4. D</td><td>5. B</td><td>6. C</td><td>7. C</td><td>8. C</td><td>9. B</td><td>10. C</td></tr></table>
+
+<p style="margin-top:8px;"><strong>二、填空（每空2分）</strong></p>
+<p>11. 日本浮世绘（江户时期）　12. 形式追随功能　13. 装饰　14. 创作能力　15. 流通空间　16. 保罗·布瓦列特　17. 红黄蓝的构图　18. Less is a bore　19. 1953　20. 时装</p>
+
+<p style="margin-top:8px;"><strong>三、判断（每题1分）</strong></p>
+<p>21. ×　22. √　23. √　24. ×（走非官方路线）　25. √　26. √　27. ×（柯布西耶）　28. √　29. √　30. √</p>
+
+<p style="margin-top:8px;"><strong>四、名词解释（每题5分，要点赋分）</strong></p>
+<p><strong>31. 红屋</strong>：工艺美术运动代表人物<strong>莫里斯</strong>的代表作，体现了该运动反对机械化、推崇手工艺、提倡自然主义和哥特风格的核心理念。（人物1分+流派2分+意义2分）</p>
+<p><strong>32. 风格派</strong>：即荷兰风格派，1917年由杜斯伯格创立。主张抽象几何造型，使用原色（红黄蓝）+黑白灰。代表人物：蒙德里安（《红黄蓝的构图》）、里特维尔德（《红蓝椅》）。对包豪斯和现代主义有重要影响。</p>
+<p><strong>33. 包豪斯</strong>：1919年格罗皮乌斯创立于德国的设计学院（1933年关闭），核心理念"艺术与技术统一"。贡献包括建立设计教学体系、实现技术与艺术统一、造就德国理性功能风格；局限性包括忽视人的心理需求、导致国际主义千篇一律。</p>
+<p><strong>34. 后现代主义</strong>：1970年代兴起，反抗现代主义纯而又纯的方法论。以文丘里为代表，口号"少即乏味"。核心主张：反对形式单一化、反对理性主义、强调形态的隐喻与符号、关注设计与环境关系。三大特征：历史主义与装饰主义、折衷主义、娱乐性与含糊性。</p>
+
+<p style="margin-top:8px;"><strong>五、简答（每题10分，要点赋分）</strong></p>
+<p><strong>35. 德国工业同盟宣言六条</strong>（每条约1.7分）：①倡导艺术、工业、手工业相结合；②通过教育、宣传，把不同项目的设计综合在一起，完善艺术、工业设计和手工艺；③联盟走非官方路线，避免政治干扰设计；④大力宣传和主张功能主义，承认现代工业；⑤坚决反对任何装饰；⑥主张标准化下的批量化。</p>
+<p><strong>36. 装饰艺术运动历史影响</strong>：①它是装饰运动在20世纪初的最后一次尝试，采用手工艺和工业化双重特点，设计折衷主义立场；（3分）②与现代主义几乎同时发生和结束，但因强调为上层顾客服务，二战后未能再次发展；（3分）③装饰和设计手法为后世（尤其80年代后现代主义）提供大量参考：东方与西方结合、人情化与机械化结合。（4分）</p>
+<p><strong>37. 现代主义设计特点</strong>：①突出的功能主义特征，讲究设计的科学性（2.5分）；②形式上提倡非装饰的简单几何造型，摒弃装饰以降低成本为大众服务，彻底改变了设计服务对象（3分）；③重视空间考虑，强调整体设计，在模型基础上进行设计规划（2.5分）；④在设计过程中考虑经济问题，达到实用、经济的目的（2分）。</p>
+</div>
+</details>
+</div>
+
+<!-- ===== 模拟卷B ===== -->
+<div class="no-break">
+<div class="exam-header page-break-before">
+  <h3>模拟卷 B（综合卷）</h3>
+  <p class="exam-meta">满分 100 分　|　建议用时 90 分钟　|　题型：单选 · 填空 · 连线 · 名词解释 · 简答 · 论述</p>
+</div>
+
+<h4>一、单项选择题（10题，每题2分，共20分）</h4>
+
+<div class="q-item"><p><strong>1.</strong> 以下哪位不是工艺美术运动的代表性人物？（　）</p>
+<ul class="q-options">
+  <li data-label="A">德莱赛</li><li data-label="B">阿什比</li><li data-label="C">沙利文</li><li data-label="D">莫里斯</li>
+</ul></div>
+
+<div class="q-item"><p><strong>2.</strong> "现代海报之父"儒勒·舍雷属于哪个运动？（　）</p>
+<ul class="q-options">
+  <li data-label="A">工艺美术运动</li><li data-label="B">新艺术运动</li><li data-label="C">装饰艺术运动</li><li data-label="D">现代主义</li>
+</ul></div>
+
+<div class="q-item"><p><strong>3.</strong> 包豪斯的办学时间跨度是（　）</p>
+<ul class="q-options">
+  <li data-label="A">1907–1919</li><li data-label="B">1919–1933</li><li data-label="C">1917–1930</li><li data-label="D">1920–1945</li>
+</ul></div>
+
+<div class="q-item"><p><strong>4.</strong> 关于装饰艺术运动，以下说法正确的是（　）</p>
+<ul class="q-options">
+  <li data-label="A">完全拒绝工业化生产</li><li data-label="B">与工艺美术运动同期发生</li><li data-label="C">采用手工艺和工业化的双重特点</li><li data-label="D">口号是"形式追随功能"</li>
+</ul></div>
+
+<div class="q-item"><p><strong>5.</strong> 密斯·凡·德罗的代表作是（　）</p>
+<ul class="q-options">
+  <li data-label="A">萨伏伊别墅</li><li data-label="B">马赛公寓</li><li data-label="C">西格拉姆大厦</li><li data-label="D">克莱斯勒大厦</li>
+</ul></div>
+
+<div class="q-item"><p><strong>6.</strong> 文丘里"少即乏味"所反对的口号是（　）</p>
+<ul class="q-options">
+  <li data-label="A">形式追随功能</li><li data-label="B">回到自然去</li><li data-label="C">少即是多</li><li data-label="D">为时代的艺术</li>
+</ul></div>
+
+<div class="q-item"><p><strong>7.</strong> 包豪斯局限中"导致千篇一律的国际主义风格"的原因是（　）</p>
+<ul class="q-options">
+  <li data-label="A">过分强调手工艺</li><li data-label="B">抨击旧艺术形式、排斥各民族历史</li><li data-label="C">忽视功能考虑</li><li data-label="D">追求奢华装饰</li>
+</ul></div>
+
+<div class="q-item"><p><strong>8.</strong> 下列哪个时间线是正确的？（　）</p>
+<ul class="q-options">
+  <li data-label="A">包豪斯→德国工业同盟→现代主义</li><li data-label="B">德国工业同盟→包豪斯→现代主义→后现代主义</li><li data-label="C">后现代主义→现代主义→包豪斯</li><li data-label="D">现代主义→德国工业同盟→包豪斯</li>
+</ul></div>
+
+<div class="q-item"><p><strong>9.</strong> 柯布西耶"机器美学"的代表性建筑是（　）</p>
+<ul class="q-options">
+  <li data-label="A">范斯沃斯别墅</li><li data-label="B">栗子山母亲之家</li><li data-label="C">萨伏伊别墅</li><li data-label="D">红屋</li>
+</ul></div>
+
+<div class="q-item"><p><strong>10.</strong> 装饰艺术运动在二战后未能再次发展的根本原因是（　）</p>
+<ul class="q-options">
+  <li data-label="A">设计水平太差</li><li data-label="B">强调为上层顾客服务，与现代主义意识形态对立</li><li data-label="C">完全拒绝工业化</li><li data-label="D">发生在19世纪</li>
+</ul></div>
+
+<h4>二、填空题（10空，每空2分，共20分）</h4>
+
+<div class="q-item"><p><strong>11.</strong> 1895年12月，萨穆尔·宾在<span class="q-blank"></span>开设了"新艺术之家"。</p></div>
+<div class="q-item"><p><strong>12.</strong> 德国工业同盟的代表设计师<span class="q-blank"></span>于1907年受聘担任AEG的艺术顾问。</p></div>
+<div class="q-item"><p><strong>13.</strong> 包豪斯真正实现了<span class="q-blank wide"></span>与艺术的统一。</p></div>
+<div class="q-item"><p><strong>14.</strong> 装饰艺术运动中，<span class="q-blank"></span>·格雷的代表作是E-1027边桌。</p></div>
+<div class="q-item"><p><strong>15.</strong> 蒙德里安的代表作《<span class="q-blank wide"></span>》是风格派的标志性作品。</p></div>
+<div class="q-item"><p><strong>16.</strong> 美国工业设计"四大元老"是罗维、蒂格、德莱福斯和<span class="q-blank"></span>。</p></div>
+<div class="q-item"><p><strong>17.</strong> 现代主义设计的意义在于兴起于1920s欧洲，二战后在<span class="q-blank"></span>迅速发展，最后影响世界各国。</p></div>
+<div class="q-item"><p><strong>18.</strong> 后现代主义的三大典型特征之一，是对历史风格采取抽出、混合、<span class="q-blank"></span>的方法。</p></div>
+<div class="q-item"><p><strong>19.</strong> 柯布西耶的建筑五要素包括自由平面、自由立面、<span class="q-blank wide"></span>、底层架空柱和屋顶花园。</p></div>
+<div class="q-item"><p><strong>20.</strong> 后现代主义以科技和<span class="q-blank wide"></span>革命为特征，以后工业文明为基础。</p></div>
+
+<h4>三、连线题（2题，每题5分，共10分）</h4>
+
+<div class="q-item">
+<p><strong>21.</strong> 将人物与其正确的描述连线：</p>
+<div style="display:flex; gap:30px; margin:8px 0; font-size:13px;">
+<div style="line-height:2.2;">
+  <p>A. 拉斯金</p><p>B. 慕卡</p><p>C. 密斯·凡·德罗</p><p>D. 文丘里</p><p>E. 沙利文</p>
+</div>
+<div style="line-height:2.2;">
+  <p>① 芝加哥学派，"形式追随功能"</p>
+  <p>② 后现代主义，"少即乏味"</p>
+  <p>③ 工艺美术运动思想奠基人</p>
+  <p>④ 新艺术运动平面设计师</p>
+  <p>⑤ 现代主义，"少即是多"</p>
+</div>
+</div>
+</div>
+
+<div class="q-item">
+<p><strong>22.</strong> 将建筑作品与所属流派/风格连线：</p>
+<div style="display:flex; gap:30px; margin:8px 0; font-size:13px;">
+<div style="line-height:2.2;">
+  <p>A. 红屋</p><p>B. 包豪斯校舍</p><p>C. 克莱斯勒大厦</p><p>D. 栗子山母亲之家</p><p>E. 巴黎地铁入口</p>
+</div>
+<div style="line-height:2.2;">
+  <p>① 装饰艺术运动</p>
+  <p>② 新艺术运动</p>
+  <p>③ 工艺美术运动</p>
+  <p>④ 后现代主义</p>
+  <p>⑤ 现代主义/包豪斯</p>
+</div>
+</div>
+</div>
+
+<h4>四、名词解释（3题，每题5分，共15分）</h4>
+<div class="q-item"><p><strong>23.</strong> 荷兰风格派</p></div>
+<div class="q-item"><p><strong>24.</strong> 装饰艺术运动（Art Deco）</p></div>
+<div class="q-item"><p><strong>25.</strong> 维也纳分离派</p></div>
+
+<h4>五、简答题（2题，每题10分，共20分）</h4>
+<div class="q-item"><p><strong>26.</strong> 简述包豪斯的教育体系及其历史局限性。（10分）</p></div>
+<div class="q-item"><p><strong>27.</strong> 比较现代主义设计与后现代主义设计的核心差异。（10分）</p></div>
+
+<h4>六、论述题（1题，15分）</h4>
+<div class="q-item">
+<p><strong>28.</strong> 试论述工业革命以来，设计领域对待"装饰"的态度经历了怎样的演变。请结合工艺美术运动、新艺术运动、现代主义和后现代主义四个阶段具体分析。（15分）</p>
+</div>
+
+<!-- 答案 -->
+<details class="answer-box">
+<summary>📋 模拟卷B　参考答案（点击展开）</summary>
+<div class="answer-content">
+
+<p><strong>一、单选（每题2分）</strong></p>
+<table><tr><td>1. C</td><td>2. B</td><td>3. B</td><td>4. C</td><td>5. C</td><td>6. C</td><td>7. B</td><td>8. B</td><td>9. C</td><td>10. B</td></tr></table>
+
+<p style="margin-top:8px;"><strong>二、填空（每空2分）</strong></p>
+<p>11. 巴黎　12. 彼得·贝伦斯　13. 技术　14. 艾琳　15. 红黄蓝的构图　16. 盖茨　17. 美国　18. 拼接　19. 水平长窗　20. 信息</p>
+
+<p style="margin-top:8px;"><strong>三、连线（每题5分）</strong></p>
+<p>21. A-③　B-④　C-⑤　D-②　E-①</p>
+<p>22. A-③　B-⑤　C-①　D-④　E-②</p>
+
+<p style="margin-top:8px;"><strong>四、名词解释（每题5分）</strong></p>
+<p><strong>23. 荷兰风格派</strong>：1917年由杜斯伯格在荷兰创立的前卫艺术流派。主张纯粹的抽象几何造型，色彩仅限于原色（红、黄、蓝）加黑白灰。代表人物：蒙德里安（《红黄蓝的构图》）、里特维尔德（《红蓝椅》）。对包豪斯和现代主义设计产生了深远影响。</p>
+<p><strong>24. 装饰艺术运动（Art Deco）</strong>：1920s–1930s兴起的国际性设计运动，以几何奢华风格著称。采用手工艺与工业化双重特点，采取折衷主义立场。六大影响因素：埃及古代装饰、原始艺术、几何外形、舞台艺术、色彩系列（原色+金属色）、汽车。代表建筑：克莱斯勒大厦、帝国大厦。因强调为上层服务，二战后未能延续。</p>
+<p><strong>25. 维也纳分离派</strong>：1897年19位艺术家脱离维也纳学院派建立的前卫流派，是新艺术运动直线派的代表。口号"为时代的艺术，为艺术的自由"。代表人物：约瑟夫·奥尔布里希、霍夫曼、莫塞。</p>
+
+<p style="margin-top:8px;"><strong>五、简答（每题10分）</strong></p>
+<p><strong>26. 包豪斯教育体系与局限</strong>——贡献（6分）：①建立整套设计教学方法体系，认清"技术知识可传授，创作能力只能启发"；②真正实现技术与艺术统一，形成理性主义原则；③造就德国设计风格：高度理性化+严谨功能化；④培养大批杰出设计师。局限（4分）：①过于重视构成主义，忽视人的心理需求，形式机械呆板；②抨击旧艺术形式、排斥各民族历史→导致千篇一律的国际主义风格；③产品设计停步在传统产品，对现代汽车、家电少有探讨；④未处理好工业与传统工艺关系，趋向抽象美学追求。</p>
+<p><strong>27. 现代主义 vs 后现代主义核心差异</strong>（每个对比维度2分，共5个维度）：①<strong>设计哲学</strong>：现代主义"少即是多"（极简理性）vs 后现代主义"少即乏味"（丰富折衷）；②<strong>对装饰</strong>：现代主义反装饰，追求简单几何造型 vs 后现代主义回复装饰，从历史中吸取营养；③<strong>服务对象</strong>：现代主义面向大众 vs 后现代主义多元包容；④<strong>设计方法</strong>：现代主义功能主义、标准化 vs 后现代主义强调隐喻、符号、新旧糅合；⑤<strong>对待历史</strong>：现代主义排斥各民族历史 vs 后现代主义采取抽出、混合、拼接的折衷方法。</p>
+
+<p style="margin-top:8px;"><strong>六、论述题（15分）</strong></p>
+<p><strong>28. 装饰态度的演变</strong>（建议答题框架）：</p>
+<p><strong>引言（2分）</strong>：工业革命以来，设计对"装饰"的态度经历了从推崇→保留→否弃→回复的曲折演变，反映了设计与社会、技术、意识形态间的深刻互动。</p>
+<p><strong>阶段一：工艺美术运动（3分）</strong>——<strong>装饰是道德</strong>。反对机械化生产造成的粗制滥造和维多利亚风格的过度装饰，但<strong>并非反对装饰本身</strong>，而是推崇自然主义装饰（卷草、花卉、鸟类），提倡哥特式和中世纪朴实风格。装饰代表着诚恳的设计态度。</p>
+<p><strong>阶段二：新艺术运动（3分）</strong>——<strong>装饰是艺术</strong>。追求与传统决裂的全新风格，师从自然的有机曲线成为核心装饰语言。但维也纳分离派（直线派）和麦金托什开始将曲线→直线，从自然主义→抽象主义，为现代主义埋下伏笔。</p>
+<p><strong>阶段三：现代主义（4分）</strong>——<strong>装饰是罪恶</strong>。彻底转向反装饰立场。德国工业同盟"坚决反对任何装饰"；包豪斯追求理性主义；柯布西耶"机器美学"；密斯"少即是多"。理由：摒弃装饰降低成本为大众服务，讲究功能主义和科学性。但代价是形式的单一化和对人的心理需求的忽视。</p>
+<p><strong>阶段四：后现代主义（3分）</strong>——<strong>装饰是意义</strong>。文丘里以"少即乏味"反叛现代主义。三大特征：历史主义与装饰主义（回复装饰性）、折衷主义（对历史风格抽出/混合/拼接）、娱乐性与含糊性（戏谑调侃）。装饰不再是道德或罪恶，而是文化符号、历史记忆和人性表达的载体。</p>
+<p><strong>总结（1分）</strong>：装饰态度的演变本质上是设计价值观的演变——从手工艺时代的道德诉求，到工业时代的理性追求，再到后工业时代对人性和文化多样性的回归。</p>
+</div>
+</details>
+</div>
+
+<!-- ===== 十一、综述题精选 ===== -->
+<h2 class="page-break-before">十一、综述题精选</h2>
+<p style="color:#888; margin-bottom:16px;">分析后现代代表作品 · 踩点作答 · 约200字</p>
+
+<h3>以意大利广场为例分析后现代主义设计特征</h3>
+
+<div class="q-item">
+<p>意大利广场（摩尔，1978，新奥尔良）是后现代主义代表性公共空间。</p>
+
+<p>作品以意大利地图为平面，五种罗马柱式围成弧形柱廊，但柱身用不锈钢、柱头换为霓虹灯管——古典语汇保留，材料与结构逻辑被替换。</p>
+
+<p>这一点集中体现了后现代三大特征：柱式回归为装饰符号而非结构还原，对应历史主义与装饰主义；罗马柱式与不锈钢、霓虹灯的并置，对应抽出、混合、拼接的折衷手法；霓虹灯消解柱式的结构庄严，广场功能属性模糊，对应娱乐性与语义的含糊性。</p>
+
+<p>广场选址于意大利裔社区，平面指向移民的身份记忆，设计服务于具体人群而非抽象"大众"，亦呼应了后现代关注设计与环境关系的主张。</p>
+</div>
+
+<details class="answer-box">
+<summary>📋 得分要点（点击展开）</summary>
+<div class="answer-content">
+<table>
+<thead><tr><th>得分点</th><th>关键表述</th></tr></thead>
+<tbody>
+<tr><td>作品定位</td><td>摩尔 / 1978 / 新奥尔良 / 后现代公共空间</td></tr>
+<tr><td>核心操作</td><td>古典柱式保留 + 材料替换（不锈钢、霓虹灯）</td></tr>
+<tr><td>历史主义与装饰主义</td><td>柱式作为装饰符号回归，不还原结构</td></tr>
+<tr><td>折衷主义</td><td>罗马柱式、不锈钢、霓虹灯——抽出、混合、拼接</td></tr>
+<tr><td>娱乐性与含糊性</td><td>霓虹灯消解结构庄严，功能属性模糊</td></tr>
+<tr><td>设计与环境</td><td>意大利裔社区、移民身份记忆、具体人群</td></tr>
+</tbody>
+</table>
+</div>
+</details>
+
+<p class="footer-note">《现代设计史》复习笔记 · 共十一大模块 · 涵盖九大流派 · 论述核心考点 · 针对训练 · 模拟套卷 · 综述题</p>
 
 </body>
 </html>
