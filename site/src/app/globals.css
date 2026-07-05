@@ -2,19 +2,19 @@
 
 /* ===== 配色系统 ===== */
 :root {
-  --bg: #fdfaf2;
-  --bg-card: #fffefa;
+  --bg: #fafaf8;
+  --bg-card: #ffffff;
   --text: #1a1a1a;
   --text-muted: #6b6b6b;
   --text-soft: #94948c;
-  --border: #ece8df;
-  --border-light: #f3efe8;
+  --border: #e8e8e4;
+  --border-light: #f0f0ec;
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
   --accent-soft: #eff6ff;
   --accent-2: #7c3aed;
   --accent-3: #059669;
-  --code-bg: #f6f2ea;
+  --code-bg: #f3f3f0;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.04);
