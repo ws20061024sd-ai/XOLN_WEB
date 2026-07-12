@@ -5,12 +5,12 @@ import TabBar from "./components/TabBar";
 import BottomStatusBar from "./components/BottomStatusBar";
 import FlashcardModule from "./components/FlashcardModule";
 import GrammarModule from "./components/GrammarModule";
+import ReadingModule from "./components/ReadingModule";
+import ListeningModule from "./components/ListeningModule";
+import TranslateModule from "./components/TranslateModule";
 import { useProgress } from "./hooks/useProgress";
 
 const PLACEHOLDER = "text-center text-[var(--text-muted)] py-20";
-function ReadingModule() { return <div className={PLACEHOLDER}>📖 阅读模块 — 即将实现</div>; }
-function ListeningModule() { return <div className={PLACEHOLDER}>🎧 听力模块 — 即将实现</div>; }
-function TranslateModule() { return <div className={PLACEHOLDER}>✍️ 翻译模块 — 即将实现</div>; }
 function StatsModule() { return <div className={PLACEHOLDER}>📊 统计模块 — 即将实现</div>; }
 
 const MODULES: Record<string, React.ComponentType> = {
