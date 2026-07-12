@@ -1,3 +1,4 @@
+// NOTE: This module uses browser-only APIs (localStorage) and will fail on the server side.
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -31,6 +32,10 @@ export const storage = {
   },
 
   async set<T>(key: string, value: T): Promise<void> {
-    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+    try {
+      localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+    } catch {
+      // Silently ignore storage errors (quota exceeded, private browsing, etc.)
+    }
   },
 };
