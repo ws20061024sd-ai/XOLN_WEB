@@ -3,11 +3,11 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import TabBar from "./components/TabBar";
 import BottomStatusBar from "./components/BottomStatusBar";
+import FlashcardModule from "./components/FlashcardModule";
 import { useProgress } from "./hooks/useProgress";
 
 const PLACEHOLDER = "text-center text-[var(--text-muted)] py-20";
 
-function FlashcardModule() { return <div className={PLACEHOLDER}>🔤 闪卡模块 — 即将实现</div>; }
 function GrammarModule() { return <div className={PLACEHOLDER}>📝 语法模块 — 即将实现</div>; }
 function ReadingModule() { return <div className={PLACEHOLDER}>📖 阅读模块 — 即将实现</div>; }
 function ListeningModule() { return <div className={PLACEHOLDER}>🎧 听力模块 — 即将实现</div>; }

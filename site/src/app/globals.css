@@ -229,6 +229,11 @@ body {
 .decorative-hr::before { background: linear-gradient(to left, var(--border), transparent); }
 .decorative-hr::after { background: linear-gradient(to right, var(--border), transparent); }
 
+/* ===== 3D 卡片翻转 ===== */
+@utility perspective-500 {
+  perspective: 500px;
+}
+
 /* ===== 动画工具类 ===== */
 
 /* 滚动入场 */
