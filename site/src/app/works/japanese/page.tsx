@@ -8,11 +8,8 @@ import GrammarModule from "./components/GrammarModule";
 import ReadingModule from "./components/ReadingModule";
 import ListeningModule from "./components/ListeningModule";
 import TranslateModule from "./components/TranslateModule";
-import MockExamModule from "./components/MockExamModule";
+import StatsModule from "./components/StatsModule";
 import { useProgress } from "./hooks/useProgress";
-
-const PLACEHOLDER = "text-center text-[var(--text-muted)] py-20";
-function StatsModule() { return <MockExamModule />; }
 
 const MODULES: Record<string, React.ComponentType> = {
   flashcard: FlashcardModule,
