@@ -26,7 +26,8 @@ export function useFlashcards() {
       const fresh: VocabCard[] = [];
 
       for (const card of vocabulary) {
-        const state = saved?.[card.id] ?? getInitialState(card.id);
+        const raw = saved?.[card.id];
+        const state: CardState = raw ? { ...raw, nextReview: new Date(raw.nextReview) } : getInitialState(card.id);
         states.set(card.id, state);
 
         if (state.nextReview <= now && state.totalReviews > 0) {
@@ -45,29 +46,35 @@ export function useFlashcards() {
 
   const currentCard = queue[0] ?? null;
 
-  const scoreCard = useCallback(async (score: 0 | 3 | 5) => {
-    if (!currentCard) return;
+  // 状态变更后自动持久化到存储
+  useEffect(() => {
+    if (cardStates.size === 0) return;
+    const obj: Record<string, CardState> = {};
+    cardStates.forEach((v, k) => { obj[k] = v; });
+    storage.set("card_states", obj);
+  }, [cardStates]);
 
-    const oldState = cardStates.get(currentCard.id) ?? getInitialState(currentCard.id);
+  const scoreCard = useCallback((score: 0 | 3 | 5) => {
+    const card = currentCard;  // snapshot current card to avoid it becoming null mid-call
+    if (!card) return;
+
+    const oldState = cardStates.get(card.id) ?? getInitialState(card.id);
     const newState = review(oldState, score);
     const newStates = new Map(cardStates);
-    newStates.set(currentCard.id, newState);
+    newStates.set(card.id, newState);
     setCardStates(newStates);
 
-    // 保存到存储
-    const obj: Record<string, CardState> = {};
-    newStates.forEach((v, k) => { obj[k] = v; });
-    await storage.set("card_states", obj);
-
-    // 从队列移除当前卡片，如果是当天需复习的则插入后面
-    const rest = queue.slice(1);
-    if (score === 0) {
-      rest.push(currentCard);  // 不会的马上再出现
-    }
-    setQueue(rest);
+    // 使用 functional update 避免闭包捕获旧 queue
+    setQueue(prev => {
+      const rest = prev.slice(1);
+      if (score === 0) {
+        rest.push(card);  // 不会的马上再出现
+      }
+      return rest;
+    });
     setIsFlipped(false);
     setReviewedToday(n => n + 1);
-  }, [currentCard, cardStates, queue]);
+  }, [currentCard, cardStates]);
 
   return {
     currentCard,
