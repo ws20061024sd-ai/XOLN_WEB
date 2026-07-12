@@ -8,10 +8,11 @@ import GrammarModule from "./components/GrammarModule";
 import ReadingModule from "./components/ReadingModule";
 import ListeningModule from "./components/ListeningModule";
 import TranslateModule from "./components/TranslateModule";
+import MockExamModule from "./components/MockExamModule";
 import { useProgress } from "./hooks/useProgress";
 
 const PLACEHOLDER = "text-center text-[var(--text-muted)] py-20";
-function StatsModule() { return <div className={PLACEHOLDER}>📊 统计模块 — 即将实现</div>; }
+function StatsModule() { return <MockExamModule />; }
 
 const MODULES: Record<string, React.ComponentType> = {
   flashcard: FlashcardModule,
