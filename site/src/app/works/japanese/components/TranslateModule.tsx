@@ -30,7 +30,7 @@ export default function TranslateModule() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
-        <span>✍️ 翻译写作</span>
+        <span className="font-medium text-[var(--text)]">翻译写作</span>
       </div>
 
       {/* 子标签 */}
@@ -49,7 +49,7 @@ export default function TranslateModule() {
         <div className="flex flex-col gap-4">
           <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5">
             <p className="text-sm text-[var(--text)] leading-relaxed">{task.prompt}</p>
-            {task.hint && <p className="mt-2 text-xs text-[var(--text-soft)]">💡 {task.hint}</p>}
+            {task.hint && <p className="mt-2 text-xs text-[var(--text-soft)]">提示：{task.hint}</p>}
           </div>
 
           <textarea

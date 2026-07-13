@@ -49,7 +49,7 @@ export default function ListeningModule() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
-        <span>🎧 听力</span>
+        <span className="font-medium text-[var(--text)]">听力</span>
         <span className="rounded-full bg-[var(--border-light)] px-2 py-0.5 text-xs">{script.difficulty}</span>
       </div>
 
@@ -57,7 +57,7 @@ export default function ListeningModule() {
       <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4">
         <button onClick={play} disabled={playing}
           className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
-          {playing ? "🔊 播放中..." : played ? "🔁 重播" : "🔊 播放"}
+          {playing ? "播放中..." : played ? "重播" : "播放"}
         </button>
         <select value={rate} onChange={e => setRate(Number(e.target.value))}
           className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-2 py-1.5 text-xs text-[var(--text)]">

@@ -1,13 +1,14 @@
 "use client";
 import { motion } from "motion/react";
+import { FlashcardIcon, GrammarIcon, ReadingIcon, ListeningIcon, TranslateIcon, StatsIcon } from "./Icons";
 
 const TABS = [
-  { key: "flashcard", label: "闪卡", icon: "🔤" },
-  { key: "grammar", label: "语法", icon: "📝" },
-  { key: "reading", label: "阅读", icon: "📖" },
-  { key: "listening", label: "听力", icon: "🎧" },
-  { key: "translate", label: "翻译", icon: "✍️" },
-  { key: "stats", label: "统计", icon: "📊" },
+  { key: "flashcard", label: "闪卡", Icon: FlashcardIcon },
+  { key: "grammar", label: "语法", Icon: GrammarIcon },
+  { key: "reading", label: "阅读", Icon: ReadingIcon },
+  { key: "listening", label: "听力", Icon: ListeningIcon },
+  { key: "translate", label: "翻译", Icon: TranslateIcon },
+  { key: "stats", label: "统计", Icon: StatsIcon },
 ];
 
 interface TabBarProps {
@@ -28,11 +29,11 @@ export default function TabBar({ activeTab, onTabChange }: TabBarProps) {
               : "text-[var(--text-muted)] hover:text-[var(--text)]"
           }`}
         >
-          <span className="text-base">{tab.icon}</span>
+          <tab.Icon />
           <span className="hidden sm:inline">{tab.label}</span>
           {activeTab === tab.key && (
             <motion.div
-              layoutId="activeTab"
+              layoutId="japanese-tab-indicator"
               className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-[var(--accent)]"
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             />

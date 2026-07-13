@@ -23,8 +23,8 @@ export default function ErrorBookModule({ onBack }: { onBack: () => void }) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex items-center gap-3">
-        <button onClick={onBack} className="text-sm text-[var(--text-muted)]">← 返回统计</button>
-        <h3 className="text-lg font-bold text-[var(--text)]">📋 错题本</h3>
+        <button onClick={onBack} className="text-sm text-[var(--text-muted)]">返回统计</button>
+        <h3 className="text-lg font-bold text-[var(--text)]">错题本</h3>
       </div>
 
       {enriched.length === 0 ? (

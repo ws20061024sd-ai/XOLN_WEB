@@ -52,8 +52,8 @@ export default function GrammarModule() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
-        <span>📝 语法</span>
-        <span>📊 正确率: {totalAnswered > 0 ? Math.round(correctCount / totalAnswered * 100) : 0}%</span>
+        <span className="font-medium text-[var(--text)]">语法</span>
+        <span>正确率 {totalAnswered > 0 ? Math.round(correctCount / totalAnswered * 100) : 0}%</span>
       </div>
 
       <AnimatePresence mode="wait">
@@ -103,7 +103,7 @@ export default function GrammarModule() {
               className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5"
             >
               <p className="font-semibold text-sm mb-2">
-                {isCorrect ? "✅ 正确！" : "❌ 错误"}
+                {isCorrect ? "正确" : "错误"}
               </p>
               <p className="text-sm text-[var(--text)] leading-relaxed">{question.explanation}</p>
               <button

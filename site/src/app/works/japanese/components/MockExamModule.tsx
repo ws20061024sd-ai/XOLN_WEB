@@ -60,7 +60,12 @@ export default function MockExamModule() {
   if (state.phase === "ready") {
     return (
       <div className="flex flex-col items-center gap-6 py-12 text-center">
-        <p className="text-4xl">🏆</p>
+        <div className="mb-2 h-14 w-14 rounded-2xl bg-[var(--accent-soft)] flex items-center justify-center">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accent)]">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
         <div>
           <p className="text-xl font-bold text-[var(--text)]">真题模考</p>
           <p className="mt-2 text-sm text-[var(--text-muted)]">
@@ -84,9 +89,9 @@ export default function MockExamModule() {
     return (
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-[var(--text-muted)]">🏆 真题模考</span>
+          <span className="text-sm text-[var(--text-muted)]">真题模考</span>
           <span className={`text-lg font-mono font-bold ${state.timeLeft < 300 ? "text-red-500" : "text-[var(--text)]"}`}>
-            ⏱ {formatTime(state.timeLeft)}
+            {formatTime(state.timeLeft)}
           </span>
         </div>
 
@@ -130,7 +135,7 @@ export default function MockExamModule() {
   const score = 62; // 模拟评分
   return (
     <div className="flex flex-col items-center gap-6 py-12 text-center">
-      <p className="text-4xl">{score >= 60 ? "🎉" : "💪"}</p>
+      <p className="text-4xl">{score >= 60 ? "合格" : "加油"}</p>
       <p className="text-2xl font-bold text-[var(--text)]">{score} 分</p>
       <p className="text-sm text-[var(--text-muted)]">{score >= 60 ? "恭喜，达到合格线！" : "差一点，继续加油！"}</p>
       <div className="flex gap-3">

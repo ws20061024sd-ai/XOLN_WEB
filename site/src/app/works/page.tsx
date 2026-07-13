@@ -87,7 +87,12 @@ export default function WorksPage() {
           href="/works/japanese"
           className="card-hover group mb-6 flex items-center gap-4 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent-soft)]/30 p-5 no-underline shadow-sm"
         >
-          <span className="flex-shrink-0 rounded-lg bg-[var(--accent)] p-3 text-2xl">🇯🇵</span>
+          <span className="flex-shrink-0 rounded-lg bg-[var(--accent)] p-3 text-white">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+          </span>
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-[var(--text)] transition-colors group-hover:text-[var(--accent)]">
               日语四级学习舱

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import type { VocabCard } from "../lib/data/vocabulary";
 import { vocabulary } from "../lib/data/vocabulary";
 import type { CardState } from "../lib/cardScheduler";
@@ -7,21 +7,30 @@ import { getInitialState, review } from "../lib/cardScheduler";
 import { storage } from "../lib/supabase";
 
 const DAILY_NEW_LIMIT = 10;
+const OPTION_COUNT = 4;
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 export function useFlashcards() {
   const [queue, setQueue] = useState<VocabCard[]>([]);
   const [cardStates, setCardStates] = useState<Map<string, CardState>>(new Map());
-  const [isFlipped, setIsFlipped] = useState(false);
   const [reviewedToday, setReviewedToday] = useState(0);
+  const [correctToday, setCorrectToday] = useState(0);
+  const [lastResult, setLastResult] = useState<boolean | null>(null); // null=未作答, true=对, false=错
 
-  // 初始化：加载词汇 + 状态
   useEffect(() => {
     const load = async () => {
       const saved = await storage.get<Record<string, CardState>>("card_states");
       const states = new Map<string, CardState>();
       const now = new Date();
 
-      // 按 SM-2 排程：先出到期需要复习的，再出未学过的
       const due: VocabCard[] = [];
       const fresh: VocabCard[] = [];
 
@@ -38,15 +47,22 @@ export function useFlashcards() {
       }
 
       setCardStates(states);
-      // 每日新词上限
-      setQueue([...due, ...fresh.slice(0, Math.max(0, DAILY_NEW_LIMIT - due.length))]);
+      setQueue(shuffle([...due, ...fresh.slice(0, Math.max(0, DAILY_NEW_LIMIT - due.length))]));
     };
     load();
   }, []);
 
   const currentCard = queue[0] ?? null;
 
-  // 状态变更后自动持久化到存储
+  // 生成当前题目的4个选项（1正确 + 3干扰）
+  const options = useMemo(() => {
+    if (!currentCard) return [];
+    const others = vocabulary.filter(c => c.id !== currentCard.id);
+    const shuffledOthers = shuffle(others);
+    const distractors = shuffledOthers.slice(0, OPTION_COUNT - 1).map(c => c.meaning);
+    return shuffle([currentCard.meaning, ...distractors]);
+  }, [currentCard]);
+
   useEffect(() => {
     if (cardStates.size === 0) return;
     const obj: Record<string, CardState> = {};
@@ -54,34 +70,42 @@ export function useFlashcards() {
     storage.set("card_states", obj);
   }, [cardStates]);
 
-  const scoreCard = useCallback((score: 0 | 3 | 5) => {
-    const card = currentCard;  // snapshot current card to avoid it becoming null mid-call
+  const checkAnswer = useCallback((selectedMeaning: string) => {
+    const card = currentCard;
     if (!card) return;
 
+    const isCorrect = selectedMeaning === card.meaning;
+    setLastResult(isCorrect);
+
     const oldState = cardStates.get(card.id) ?? getInitialState(card.id);
-    const newState = review(oldState, score);
+    const newState = review(oldState, isCorrect);
     const newStates = new Map(cardStates);
     newStates.set(card.id, newState);
     setCardStates(newStates);
 
-    // 使用 functional update 避免闭包捕获旧 queue
-    setQueue(prev => {
-      const rest = prev.slice(1);
-      if (score === 0) {
-        rest.push(card);  // 不会的马上再出现
-      }
-      return rest;
-    });
-    setIsFlipped(false);
     setReviewedToday(n => n + 1);
+    if (isCorrect) setCorrectToday(n => n + 1);
+
+    // 延迟切换下一题，让用户看到反馈
+    setTimeout(() => {
+      setQueue(prev => {
+        const rest = prev.slice(1);
+        if (!isCorrect) rest.push(card);
+        return rest;
+      });
+      setLastResult(null);
+    }, isCorrect ? 600 : 1200);
   }, [currentCard, cardStates]);
+
+  const accuracy = reviewedToday > 0 ? Math.round(correctToday / reviewedToday * 100) : 0;
 
   return {
     currentCard,
-    isFlipped,
-    setIsFlipped,
+    options,
     queueLength: queue.length,
     reviewedToday,
-    scoreCard,
+    accuracy,
+    lastResult,
+    checkAnswer,
   };
 }

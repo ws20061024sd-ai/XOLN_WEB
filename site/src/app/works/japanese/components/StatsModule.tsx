@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { useProgress } from "../hooks/useProgress";
 import { storage } from "../lib/supabase";
+import { GrammarIcon, ReadingIcon, ListeningIcon, TranslateIcon, StatsIcon } from "./Icons";
 import ErrorBookModule from "./ErrorBookModule";
 import MockExamModule from "./MockExamModule";
 
@@ -22,7 +23,6 @@ export default function StatsModule() {
   const [view, setView] = useState<"dashboard" | "errors" | "exam">("dashboard");
 
   useEffect(() => {
-    // 加载各模块统计
     (async () => {
       const gErrors = await storage.get<any[]>("grammar_errors") ?? [];
       setModuleStats(s => ({ ...s, grammar: { total: gErrors.length + 10, correct: 10 } }));
@@ -34,36 +34,40 @@ export default function StatsModule() {
 
   const pct = (c: number, t: number) => t > 0 ? Math.round(c / t * 100) : 0;
 
+  const MODULE_LIST = [
+    { label: "语法", Icon: GrammarIcon, rate: pct(moduleStats.grammar.correct, moduleStats.grammar.total) },
+    { label: "阅读", Icon: ReadingIcon, rate: pct(moduleStats.reading.correct, moduleStats.reading.total) },
+    { label: "听力", Icon: ListeningIcon, rate: pct(moduleStats.listening.correct, moduleStats.listening.total) },
+    { label: "翻译", Icon: TranslateIcon, rate: 0 },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
-      <h3 className="text-lg font-bold text-[var(--text)]">📊 学习统计</h3>
+      <h3 className="text-lg font-bold text-[var(--text)]">学习统计</h3>
 
       {/* 概览卡片 */}
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 text-center">
           <p className="text-2xl font-bold text-[var(--accent)]">{stats.streakDays}</p>
-          <p className="text-xs text-[var(--text-muted)] mt-1">🔥 连续打卡</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">连续打卡</p>
         </div>
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 text-center">
           <p className="text-2xl font-bold text-[var(--text)]">{Math.floor(stats.totalMinutes / 60)}h</p>
-          <p className="text-xs text-[var(--text-muted)] mt-1">⏱ 累计学习</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">累计学习</p>
         </div>
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 text-center">
           <p className="text-2xl font-bold text-[var(--text)]">{stats.cardsReviewed}</p>
-          <p className="text-xs text-[var(--text-muted)] mt-1">📝 刷词量</p>
+          <p className="text-xs text-[var(--text-muted)] mt-1">刷词量</p>
         </div>
       </div>
 
       {/* 各模块正确率 */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {([
-          ["📝 语法", pct(moduleStats.grammar.correct, moduleStats.grammar.total)],
-          ["📖 阅读", pct(moduleStats.reading.correct, moduleStats.reading.total)],
-          ["🎧 听力", pct(moduleStats.listening.correct, moduleStats.listening.total)],
-          ["✍️ 翻译", 0],
-        ] as const).map(([label, rate]) => (
+        {MODULE_LIST.map(({ label, Icon, rate }) => (
           <div key={label} className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4 text-center">
-            <p className="text-xs text-[var(--text-muted)]">{label}</p>
+            <p className="flex items-center justify-center gap-1.5 text-xs text-[var(--text-muted)]">
+              <Icon />{label}
+            </p>
             <p className={`text-xl font-bold mt-1 ${rate >= 60 ? "text-green-500" : "text-orange-500"}`}>
               {rate > 0 ? `${rate}%` : "--"}
             </p>
@@ -89,11 +93,11 @@ export default function StatsModule() {
       <div className="flex gap-3">
         <button onClick={() => setView("exam")}
           className="flex-1 rounded-lg bg-[var(--accent)] py-3 text-sm font-medium text-white">
-          🏆 真题模考
+          真题模考
         </button>
         <button onClick={() => setView("errors")}
           className="flex-1 rounded-lg border border-[var(--border)] py-3 text-sm font-medium text-[var(--text)]">
-          📋 错题本
+          错题本
         </button>
       </div>
     </div>

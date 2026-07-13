@@ -37,7 +37,7 @@ export default function ReadingModule() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
-        <span>📖 阅读</span>
+        <span className="font-medium text-[var(--text)]">阅读</span>
         <span className="rounded-full bg-[var(--border-light)] px-2 py-0.5 text-xs">{passage.difficulty}</span>
       </div>
 
