@@ -58,7 +58,6 @@ export default function GrammarModule() {
         >
           {/* 题目 */}
           <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6">
-            <p className="text-xs text-[var(--text-muted)] mb-2">{question.knowledgePoint} · {question.jlptLevel}</p>
             <p className="text-lg font-medium text-[var(--text)]">{question.question}</p>
           </div>
 
@@ -121,6 +120,7 @@ export default function GrammarModule() {
               ) : (
                 <>
                   <p className="text-sm text-green-600 mb-1">正确答案：{question.options[question.answer]}</p>
+                  <p className="text-xs text-[var(--text-soft)] mb-2">{question.knowledgePoint} · {question.jlptLevel}</p>
                   <p className="text-sm text-[var(--text)] leading-relaxed">{question.explanation}</p>
                   <button
                     onClick={nextQuestion}
