@@ -3,13 +3,7 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { grammarQuestions } from "../lib/data/grammar";
 import { useProgress } from "../hooks/useProgress";
-import { storage } from "../lib/supabase";
-
-interface QuizRecord {
-  questionId: string;
-  isCorrect: boolean;
-  date: string;
-}
+import { addError } from "../lib/errorStore";
 
 export default function GrammarModule() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -32,14 +26,11 @@ export default function GrammarModule() {
 
     // 存错题
     if (index !== question.answer) {
-      const record: QuizRecord = {
+      await addError({
         questionId: question.id,
-        isCorrect: false,
+        module: "grammar",
         date: new Date().toISOString(),
-      };
-      const existing = await storage.get<QuizRecord[]>("grammar_errors") ?? [];
-      existing.push(record);
-      await storage.set("grammar_errors", existing);
+      });
     }
   }, [showResult, question, markActivity]);
 

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { readings, type ReadingPassage } from "../lib/data/readings";
 import { useProgress } from "../hooks/useProgress";
+import { addError } from "../lib/errorStore";
 
 export default function ReadingModule() {
   const [index, setIndex] = useState(0);
@@ -20,9 +21,19 @@ export default function ReadingModule() {
     setAnswers(next);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmitted(true);
     markActivity();
+    // 错题入库
+    for (let qi = 0; qi < passage.questions.length; qi++) {
+      if (answers.get(qi) !== passage.questions[qi].answer) {
+        await addError({
+          questionId: `${passage.id}-q${qi}`,
+          module: "reading",
+          date: new Date().toISOString(),
+        });
+      }
+    }
   };
 
   const nextPassage = () => {
