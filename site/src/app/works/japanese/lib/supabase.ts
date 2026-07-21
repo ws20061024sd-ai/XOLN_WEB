@@ -26,9 +26,11 @@ export const storage = {
   },
 };
 
-// ===== 用户进度：Supabase 优先 → localStorage 降级 =====
+// ===== 用户进度：localStorage 优先，Supabase 补充 =====
 export async function loadProgress(): Promise<Record<string, unknown> | null> {
-  if (supabase) {
+  const local = storage.get("cjt4_progress") as Record<string, unknown> | null;
+  if (!supabase) return local;
+  if (!local) {
     try {
       const { data, error } = await (supabase as any)
         .from("user_progress").select("*").limit(1).maybeSingle();
@@ -49,9 +51,9 @@ export async function loadProgress(): Promise<Record<string, unknown> | null> {
           },
         };
       }
-    } catch { /* fall through to localStorage */ }
+    } catch { /* ignore */ }
   }
-  return storage.get("cjt4_progress") as Record<string, unknown> | null;
+  return local;
 }
 
 export async function saveProgress(value: Record<string, unknown>): Promise<void> {
@@ -78,27 +80,31 @@ export async function saveProgress(value: Record<string, unknown>): Promise<void
   storage.set("cjt4_progress", value);
 }
 
-// ===== 闪卡状态：Supabase 优先 → localStorage 降级 =====
+// ===== 闪卡状态：localStorage 优先，Supabase 补充 =====
 export async function loadCardStates(): Promise<Record<string, unknown> | null> {
-  if (supabase) {
-    try {
-      const { data } = await (supabase as any).from("card_progress").select("*");
-      if (data && data.length > 0) {
-        const result: Record<string, unknown> = {};
-        for (const row of data as any[]) {
-          result[row.word_id] = {
-            wordId: row.word_id,
-            level: row.level ?? 0,
-            nextReview: row.next_review ?? new Date().toISOString(),
-            totalReviews: row.total_reviews ?? 0,
-            totalCorrect: row.total_correct ?? 0,
-          };
-        }
-        return result;
+  // localStorage 是最新数据，始终优先
+  const local = storage.get("card_states") as Record<string, unknown> | null;
+  if (!supabase) return local;
+
+  // Supabase 在后台静默同步（用于跨设备），不阻塞返回
+  try {
+    const { data } = await (supabase as any).from("card_progress").select("*");
+    if (data && data.length > 0 && !local) {
+      // 只有 localStorage 为空时才用 Supabase（如新设备首次打开）
+      const result: Record<string, unknown> = {};
+      for (const row of data as any[]) {
+        result[row.word_id] = {
+          wordId: row.word_id,
+          level: row.level ?? 0,
+          nextReview: row.next_review ?? new Date().toISOString(),
+          totalReviews: row.total_reviews ?? 0,
+          totalCorrect: row.total_correct ?? 0,
+        };
       }
-    } catch { /* fall through to localStorage */ }
-  }
-  return storage.get("card_states") as Record<string, unknown> | null;
+      return result;
+    }
+  } catch { /* ignore — localStorage is the source of truth */ }
+  return local;
 }
 
 export async function saveCardState(wordId: string, state: { level: number; nextReview: Date | string; totalReviews: number; totalCorrect: number }): Promise<void> {
@@ -115,16 +121,18 @@ export async function saveCardState(wordId: string, state: { level: number; next
   }
 }
 
-// ===== 错题：Supabase 优先 → localStorage 降级 =====
+// ===== 错题：localStorage 优先，Supabase 补充 =====
 export async function loadErrors(): Promise<Record<string, unknown>[] | null> {
-  if (supabase) {
+  const local = storage.get("cjt4_errors") as Record<string, unknown>[] | null;
+  if (!supabase) return local;
+  if (!local || local.length === 0) {
     try {
       const { data } = await (supabase as any)
         .from("error_records").select("*").order("created_at", { ascending: false });
-      if (data) return data as Record<string, unknown>[];
-    } catch { /* fall through to localStorage */ }
+      if (data && data.length > 0) return data as Record<string, unknown>[];
+    } catch { /* ignore */ }
   }
-  return storage.get("cjt4_errors") as Record<string, unknown>[] | null;
+  return local;
 }
 
 export async function saveError(record: { questionId: string; module: string; date: string }): Promise<void> {
