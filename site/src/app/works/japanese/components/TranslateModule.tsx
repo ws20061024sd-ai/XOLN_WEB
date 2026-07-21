@@ -18,7 +18,7 @@ export default function TranslateModule() {
 
   const handleSubmit = () => {
     setShowRef(true);
-    recordModuleAnswer("grammar", true); // 翻译写作暂归类到grammar统计
+    recordModuleAnswer("translate", true);
   };
 
   const nextTask = () => {
