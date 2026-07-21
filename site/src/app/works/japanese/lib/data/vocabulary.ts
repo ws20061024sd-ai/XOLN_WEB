@@ -361,7 +361,7 @@ export const vocabulary: VocabCard[] = [
   { id:"a340", word:"例えば", reading:"たとえば", meaning:"例如", partOfSpeech:"副詞", example:"例えばどんな本が好きですか。", exampleMeaning:"比如说喜欢什么书？", jlptLevel:"N4" },
   { id:"a341", word:"確実", reading:"かくじつ", meaning:"确实的", partOfSpeech:"ナ形", example:"確実な情報だけを信じよう。", exampleMeaning:"只相信确实的信息。", jlptLevel:"N3" },
   { id:"a342", word:"可能な限り", reading:"かのうなかぎり", meaning:"尽可能", partOfSpeech:"連語", example:"可能な限り早く連絡します。", exampleMeaning:"我会尽快联系。", jlptLevel:"N3" },
-  { id:"a342", word:"片付ける", reading:"かたづける", meaning:"收拾整理", partOfSpeech:"一段", example:"部屋を片付けなさい。", exampleMeaning:"把房间收拾好。", jlptLevel:"N4" },
+  { id:"a430", word:"片付ける", reading:"かたづける", meaning:"收拾整理", partOfSpeech:"一段", example:"部屋を片付けなさい。", exampleMeaning:"把房间收拾好。", jlptLevel:"N4" },
   { id:"a343", word:"申し込む", reading:"もうしこむ", meaning:"申请", partOfSpeech:"五段", example:"留学を申し込んだ。", exampleMeaning:"申请了留学。", jlptLevel:"N3" },
   { id:"a344", word:"断る", reading:"ことわる", meaning:"拒绝", partOfSpeech:"五段", example:"誘いを断った。", exampleMeaning:"拒绝了邀请。", jlptLevel:"N3" },
   { id:"a345", word:"譲る", reading:"ゆずる", meaning:"让出", partOfSpeech:"五段", example:"お年寄りに席を譲った。", exampleMeaning:"给老人让了座。", jlptLevel:"N3" },
