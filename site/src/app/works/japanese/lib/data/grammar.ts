@@ -75,4 +75,64 @@ export const grammarQuestions: GrammarQuestion[] = [
   { id:"g-088", question:"この本を読めば読む（　　　）面白くなる。", options:["ほど","だけ","まで","より"], answer:0, explanation:"〜ば〜ほど表越…越…。読めば読むほど=越读越有趣。", knowledgePoint:"複合·ほど", jlptLevel:"N3" },
   { id:"g-089", question:"日本語が（　　　）につれて、日本の文化にも興味を持つようになった。", options:["上手","上手な","上手になる","上手になった"], answer:2, explanation:"〜につれて表随着变化。上手になる+につれて=随着变好。", knowledgePoint:"複合·につれて", jlptLevel:"N3" },
   { id:"g-090", question:"彼はまるで何も（　　　）かのように振る舞った。", options:["知らない","知らなかった","知っている","知っていた"], answer:1, explanation:"まるで〜かのように表好像…一样（与事实相反）。知らなかったかのように=好像什么都不知道似的。注意用过去式。", knowledgePoint:"複合·かのように", jlptLevel:"N3" },
+  // ===== 尊他·謙讓·丁寧 補充 =====
+  { id:"g-101", question:"お客様、どうぞこちらに（　　　）ください。", options:["お座り","お座って","お座りして","座られて"], answer:0, explanation:"尊敬语请求：お+ます形+ください。座る→座ります→お座りください=请坐。", knowledgePoint:"敬語·お〜ください", jlptLevel:"N4" },
+  { id:"g-102", question:"部長は今、会議に（　　　）います。", options:["出て","出られて","お出でになって","お出て"], answer:2, explanation:"尊敬语：お+ます形+になる。出る→お出でになる→お出でになっています=部长正在开会。", knowledgePoint:"敬語·お〜になる", jlptLevel:"N4" },
+  { id:"g-103", question:"私が（　　　）ますので、ご安心ください。", options:["やり","いたし","なさい","され"], answer:1, explanation:"谦让语：する→いたす。私がいたします=我来做。", knowledgePoint:"敬語·いたす", jlptLevel:"N4" },
+  // ===== 自他動詞·補助動詞 =====
+  { id:"g-120", question:"ドアが（　　　）います。", options:["開けて","開いて","開けって","開くって"], answer:1, explanation:"自动词表状态。開く（自动）→開いている=门开着。開ける（他动）→開けてある=（被人）开着。", knowledgePoint:"自他動詞·ている", jlptLevel:"N4" },
+  { id:"g-121", question:"冷蔵庫にビールが（　　　）あります。", options:["冷やす","冷やして","冷やし","冷え"], answer:1, explanation:"他动词+てある表人为状态。冷やす→冷やしてある=冰着。", knowledgePoint:"補助·てある", jlptLevel:"N4" },
+  { id:"g-122", question:"ちょっと（　　　）みてください。", options:["食べ","食べて","食べた","食べる"], answer:1, explanation:"〜てみる表尝试。食べてみる=尝尝看。", knowledgePoint:"補助·てみる", jlptLevel:"N4" },
+  { id:"g-123", question:"毎日ジョギングを（　　　）います。", options:["して","する","した","し"], answer:0, explanation:"〜ている表习惯。ジョギングをしている=有在跑步。", knowledgePoint:"補助·ている", jlptLevel:"N4" },
+  { id:"g-124", question:"友達が駅まで（　　　）くれました。", options:["送って","送られて","送らせて","送り"], answer:0, explanation:"〜てくれる表别人为我做。送ってくれた=送了我。", knowledgePoint:"授受·てくれる", jlptLevel:"N4" },
+  { id:"g-125", question:"母に料理を（　　　）もらいました。", options:["作って","作られて","作らせて","作り"], answer:0, explanation:"〜てもらう表请别人做。作ってもらった=让妈妈做了。", knowledgePoint:"授受·てもらう", jlptLevel:"N4" },
+  { id:"g-126", question:"友達の宿題を（　　　）あげました。", options:["手伝って","手伝われて","手伝わせて","手伝い"], answer:0, explanation:"〜てあげる表我为别人做。手伝ってあげた=帮了朋友。", knowledgePoint:"授受·てあげる", jlptLevel:"N4" },
+  { id:"g-127", question:"一緒に（　　　）か。", options:["行く","行こう","行きます","行って"], answer:1, explanation:"意向形（〜う）表劝诱。行こうか=一起去吧？", knowledgePoint:"意向形", jlptLevel:"N4" },
+  { id:"g-128", question:"もう遅いから、（　　　）ほうがいい。", options:["帰る","帰った","帰ります","帰って"], answer:1, explanation:"〜たほうがいい表建议。帰ったほうがいい=最好回去。", knowledgePoint:"助言·たほうがいい", jlptLevel:"N4" },
+  { id:"g-129", question:"ここで（　　　）な。", options:["吸う","吸い","吸え","吸って"], answer:0, explanation:"〜な表禁止。吸うな=别抽烟。", knowledgePoint:"禁止·な", jlptLevel:"N4" },
+  // ===== 比較·程度 =====
+  { id:"g-150", question:"彼は私（　　　）若く見えます。", options:["より","ほど","だけ","まで"], answer:0, explanation:"より表比较基准。私より若い=比我年轻。", knowledgePoint:"比較·より", jlptLevel:"N5" },
+  { id:"g-151", question:"彼（　　　）親切な人に会ったことがない。", options:["より","ほど","こそ","さえ"], answer:1, explanation:"〜ほど〜ない表否定最高级。彼ほど親切な人はいない=没有比他更热心的了。", knowledgePoint:"比較·ほど", jlptLevel:"N4" },
+  { id:"g-152", question:"雨の（　　　）、運動会は中止になった。", options:["ため","せい","おかげ","わけ"], answer:0, explanation:"〜ため表客观原因。雨のため=因为下雨。", knowledgePoint:"原因·ため", jlptLevel:"N4" },
+  { id:"g-153", question:"薬を飲んだ（　　　）、熱が下がった。", options:["せいで","おかげで","ために","ように"], answer:1, explanation:"おかげで表正面原因。薬のおかげで=多亏了药。", knowledgePoint:"原因·おかげで", jlptLevel:"N4" },
+  { id:"g-154", question:"彼は来月結婚する（　　　）だ。", options:["そう","よう","らしい","みたい"], answer:0, explanation:"传闻そうだ前接简体形。結婚するそうだ=听说他要结婚。", knowledgePoint:"伝聞·そうだ", jlptLevel:"N4" },
+  { id:"g-155", question:"今日は（　　　）雨が降りそうです。", options:["今にも","もう","もうすぐ","さっき"], answer:0, explanation:"今にも+そうだ=眼看就要…。今にも降りそうだ=眼看就要下雨了。", knowledgePoint:"様態·今にも", jlptLevel:"N4" },
+  { id:"g-156", question:"彼女は（　　　）泣き出しそうな顔をしている。", options:["今にも","もう","すぐ","さっき"], answer:0, explanation:"今にも+そうだ=眼看就要…。今にも泣き出しそう=眼看就要哭出来了。", knowledgePoint:"様態·今にも", jlptLevel:"N4" },
+  // ===== 受身·使役 補充 =====
+  { id:"g-180", question:"先生に名前を（　　　）ました。", options:["呼んだ","呼ばれ","呼ばれられ","呼んで"], answer:1, explanation:"被动态。呼ぶ→呼ばれる→呼ばれました=被老师叫了名字。", knowledgePoint:"受身·直接", jlptLevel:"N4" },
+  { id:"g-181", question:"雨に（　　　）て、服が濡れた。", options:["降ら","降られ","降らせ","降り"], answer:1, explanation:"受害被动（迷惑の受身）。雨に降られて=被雨淋了（受害）。", knowledgePoint:"受身·迷惑", jlptLevel:"N4" },
+  { id:"g-182", question:"母は私に部屋を（　　　）。", options:["掃除した","掃除させた","掃除された","掃除できた"], answer:1, explanation:"使役。掃除する→掃除させる→掃除させた=妈妈让我打扫房间。", knowledgePoint:"使役", jlptLevel:"N4" },
+  { id:"g-183", question:"毎日、母に野菜を（　　　）ます。", options:["食べ","食べられ","食べさせられ","食べたい"], answer:2, explanation:"使役被动=被迫。食べさせられる=被逼着吃。", knowledgePoint:"使役受身", jlptLevel:"N4" },
+  // ===== 可能 補充 =====
+  { id:"g-185", question:"漢字がなかなか（　　　）ません。", options:["覚え","覚えられ","覚えさせ","覚えよう"], answer:1, explanation:"可能态。覚える→覚えられる=记不住。", knowledgePoint:"可能·一段", jlptLevel:"N4" },
+  { id:"g-186", question:"この魚は（　　　）ますか。", options:["食べ","食べられ","食べさせ","食べよう"], answer:1, explanation:"可能态。食べる→食べられる=能吃吗。注意与被动同形。", knowledgePoint:"可能·一段", jlptLevel:"N4" },
+  { id:"g-187", question:"一人で病院に（　　　）ますか。", options:["行き","行け","行かれ","行か"], answer:1, explanation:"五段可能态。行く→行ける=能去吗。", knowledgePoint:"可能·五段", jlptLevel:"N4" },
+  // ===== 形式名詞 =====
+  { id:"g-190", question:"趣味は映画を見る（　　　）です。", options:["の","こと","もの","ところ"], answer:1, explanation:"こと表抽象事物。趣味は〜こと=爱好是…。", knowledgePoint:"形式名詞·こと", jlptLevel:"N4" },
+  { id:"g-191", question:"彼が来る（　　　）を知っていますか。", options:["の","こと","もの","ところ"], answer:1, explanation:"知っている的对象用こと。〜ことを知っている=知道…。", knowledgePoint:"形式名詞·こと", jlptLevel:"N4" },
+  { id:"g-192", question:"星が光っている（　　　）が見える。", options:["の","こと","もの","ところ"], answer:0, explanation:"感官动词（見える/聞こえる）的对象用の。光っているのが見える=能看到星星在发光。", knowledgePoint:"形式名詞·の", jlptLevel:"N4" },
+  { id:"g-193", question:"大切な（　　　）は諦めないことだ。", options:["の","こと","もの","ところ"], answer:1, explanation:"〜ことは〜ことだ句型。大切なことは=重要的是。", knowledgePoint:"形式名詞·こと", jlptLevel:"N4" },
+  { id:"g-194", question:"若い（　　　）は何でもできる。", options:["の","こと","もの","うち"], answer:2, explanation:"〜うちに表在…期间。若いうちに=趁着年轻。", knowledgePoint:"形式名詞·うち", jlptLevel:"N4" },
+  { id:"g-195", question:"ちょうど出かけようとした（　　　）、電話が鳴った。", options:["の","こと","もの","ところ"], answer:3, explanation:"〜ところ表正要做…的时候。出かけようとしたところ=正要出门的时候。", knowledgePoint:"形式名詞·ところ", jlptLevel:"N4" },
+  // ===== 接続 =====
+  { id:"g-200", question:"雨が降った（　　　）、試合は行われた。", options:["のに","けど","ので","から"], answer:0, explanation:"〜のに表逆接（却/居然）。雨が降ったのに=虽然下雨了却。", knowledgePoint:"接続·のに", jlptLevel:"N4" },
+  { id:"g-201", question:"その店は高い（　　　）、サービスが悪い。", options:["し","が","のに","から"], answer:0, explanation:"〜し表并列理由。高いしサービスも悪い=又贵服务又差。", knowledgePoint:"接続·し", jlptLevel:"N4" },
+  { id:"g-202", question:"遊んで（　　　）いないで、勉強しなさい。", options:["ばかり","だけ","しか","のみ"], answer:0, explanation:"〜てばかり表净是/光是做…。遊んでばかり=光玩。", knowledgePoint:"接続·ばかり", jlptLevel:"N4" },
+  { id:"g-203", question:"彼は忙しい（　　　）、毎日残業している。", options:["らしく","ように","そうに","みたく"], answer:0, explanation:"らしく表有根据的推测。忙しいらしく=好像很忙（根据他每天加班）。", knowledgePoint:"接続·らしく", jlptLevel:"N4" },
+  // ===== 副詞·程度 =====
+  { id:"g-210", question:"この映画は（　　　）面白くなかった。", options:["あまり","とても","たいへん","よく"], answer:0, explanation:"あまり+否定=不太…。あまり面白くなかった=不太有趣。", knowledgePoint:"副詞·あまり", jlptLevel:"N5" },
+  { id:"g-211", question:"宿題を（　　　）忘れてしまった。", options:["全部","とても","あまり","ちょっと"], answer:0, explanation:"全部+肯定=全都。全部忘れた=全忘了。", knowledgePoint:"副詞·全部", jlptLevel:"N5" },
+  { id:"g-212", question:"（　　　）待ってください。", options:["ちょっと","とても","あまり","ぜんぜん"], answer:0, explanation:"ちょっと=稍微/一下。ちょっと待って=等一下。", knowledgePoint:"副詞·ちょっと", jlptLevel:"N5" },
+  { id:"g-213", question:"（　　　）準備はできました。", options:["もう","まだ","ずっと","ときどき"], answer:0, explanation:"もう表已经。もう準備できた=已经准备好了。", knowledgePoint:"副詞·もう", jlptLevel:"N5" },
+  { id:"g-214", question:"彼は（　　　）来ていません。", options:["もう","まだ","ずっと","いつも"], answer:1, explanation:"まだ+否定=还没。まだ来ていない=还没来。", knowledgePoint:"副詞·まだ", jlptLevel:"N5" },
+  // ===== 助詞 補充 =====
+  { id:"g-220", question:"電車（　　　）降りる。", options:["を","に","で","から"], answer:0, explanation:"从交通工具下来用を。電車を降りる=下电车。", knowledgePoint:"助詞·を（降車）", jlptLevel:"N5" },
+  { id:"g-221", question:"9時（　　　）会議が始まります。", options:["に","で","を","が"], answer:0, explanation:"具体时间点+に。9時に=在9点。", knowledgePoint:"助詞·に（時間）", jlptLevel:"N5" },
+  { id:"g-222", question:"友達（　　　）いっしょに帰った。", options:["と","に","を","で"], answer:0, explanation:"一起做某事的人用と。友達と=和朋友一起。", knowledgePoint:"助詞·と（同伴）", jlptLevel:"N5" },
+  { id:"g-223", question:"誕生日は5月10日（　　　）終わります。", options:["に","で","まで","から"], answer:1, explanation:"时间截止用で。5月10日で終わる=到5月10日结束。", knowledgePoint:"助詞·で（期限）", jlptLevel:"N4" },
+  // ===== 連体修飾 =====
+  { id:"g-230", question:"机の上に（　　　）本は私のです。", options:["ある","いる","おく","いく"], answer:0, explanation:"ある表无生命存在。机の上にある本=在桌上的书。", knowledgePoint:"連体·ある", jlptLevel:"N5" },
+  { id:"g-231", question:"（　　　）人は誰ですか。", options:["歌う","歌っている","歌った","歌って"], answer:1, explanation:"ている作定语表正在进行。歌っている人=正在唱歌的人。", knowledgePoint:"連体·ている", jlptLevel:"N4" },
+  { id:"g-232", question:"これは昨日（　　　）ケーキです。", options:["食べる","食べた","食べている","食べよう"], answer:1, explanation:"过去式作定语。昨日食べたケーキ=昨天吃的蛋糕。", knowledgePoint:"連体·た形", jlptLevel:"N5" },
+
 ];
