@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import TabBar from "./components/TabBar";
 import BottomStatusBar from "./components/BottomStatusBar";
+import ErrorBoundary from "./components/ErrorBoundary";
 import FlashcardModule from "./components/FlashcardModule";
 import GrammarModule from "./components/GrammarModule";
 import ReadingModule from "./components/ReadingModule";
@@ -41,7 +42,9 @@ export default function JapanesePage() {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.15 }}
           >
-            <Module />
+            <ErrorBoundary>
+              <Module />
+            </ErrorBoundary>
           </motion.div>
         </AnimatePresence>
       </div>
