@@ -2,22 +2,27 @@
 import { useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { useProgress } from "../hooks/useProgress";
-import { GrammarIcon, ReadingIcon, ListeningIcon, TranslateIcon } from "./Icons";
+import { GrammarIcon, ReadingIcon, ListeningIcon, TranslateIcon, FlashcardIcon } from "./Icons";
 import ErrorBookModule from "./ErrorBookModule";
 import MockExamModule from "./MockExamModule";
 
-const DAILY_GOAL = 15; // 每日目标：15 次答题
-
 export default function StatsModule() {
   const {
-    stats, moduleStats, getWeeklyTrend, getMonthHeatmap, getTodayCount,
+    stats, moduleStats, getWeeklyTrend, getMonthHeatmap, getTodayCounts,
   } = useProgress();
   const [view, setView] = useState<"dashboard" | "errors" | "exam">("dashboard");
 
   const weeklyTrend = useMemo(() => getWeeklyTrend(), [getWeeklyTrend]);
   const heatmap = useMemo(() => getMonthHeatmap(), [getMonthHeatmap]);
-  const todayCount = useMemo(() => getTodayCount(), [getTodayCount]);
+  const todayCounts = useMemo(() => getTodayCounts(), [getTodayCounts]);
   const maxTrend = Math.max(...weeklyTrend, 1);
+
+  const GOALS = [
+    { label: "词汇", icon: FlashcardIcon, done: todayCounts.cards, target: 10, key: "cards" as const },
+    { label: "语法", icon: GrammarIcon, done: todayCounts.grammar, target: 5, key: "grammar" as const },
+    { label: "阅读", icon: ReadingIcon, done: todayCounts.reading, target: 1, key: "reading" as const },
+    { label: "听力", icon: ListeningIcon, done: todayCounts.listening, target: 1, key: "listening" as const },
+  ];
 
   if (view === "errors") return <ErrorBookModule onBack={() => setView("dashboard")} />;
   if (view === "exam") return <MockExamModule />;
@@ -37,17 +42,30 @@ export default function StatsModule() {
     <div className="flex flex-col gap-6">
       {/* 今日目标 */}
       <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-medium text-[var(--text)]">今日目标</p>
-          <p className="text-xs text-[var(--text-muted)]">{todayCount} / {DAILY_GOAL}</p>
-        </div>
-        <div className="h-2 w-full rounded-full bg-[var(--border-light)] overflow-hidden">
-          <motion.div
-            className="h-full rounded-full bg-[var(--accent)]"
-            initial={{ width: 0 }}
-            animate={{ width: `${Math.min(100, (todayCount / DAILY_GOAL) * 100)}%` }}
-            transition={{ duration: 0.5 }}
-          />
+        <p className="text-sm font-medium text-[var(--text)] mb-3">今日目标</p>
+        <div className="flex flex-col gap-3">
+          {GOALS.map(g => {
+            const pct = Math.min(100, Math.round((g.done / g.target) * 100));
+            const done = g.done >= g.target;
+            return (
+              <div key={g.key} className="flex items-center gap-3">
+                <span className={`flex items-center gap-1 w-14 text-xs ${done ? "text-green-600" : "text-[var(--text-muted)]"}`}>
+                  <g.icon />{g.label}
+                </span>
+                <div className="flex-1 h-1.5 rounded-full bg-[var(--border-light)] overflow-hidden">
+                  <motion.div
+                    className={`h-full rounded-full ${done ? "bg-green-500" : "bg-[var(--accent)]"}`}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${pct}%` }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </div>
+                <span className={`w-14 text-right text-xs ${done ? "text-green-600 font-medium" : "text-[var(--text-muted)]"}`}>
+                  {g.done}/{g.target}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 

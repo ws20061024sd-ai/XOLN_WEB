@@ -183,10 +183,16 @@ export function useProgress() {
     return result;
   }, [persisted.dailyLog]);
 
-  // 今日完成数
-  const getTodayCount = useCallback((): number => {
+  // 今日各模块完成数
+  const getTodayCounts = useCallback((): { cards: number; grammar: number; reading: number; listening: number; translate: number } => {
     const found = persisted.dailyLog.find(l => l.date === todayStr());
-    return found?.total ?? 0;
+    return {
+      cards: found?.cards ?? 0,
+      grammar: found?.grammar ?? 0,
+      reading: found?.reading ?? 0,
+      listening: found?.listening ?? 0,
+      translate: found?.translate ?? 0,
+    };
   }, [persisted.dailyLog]);
 
   return {
@@ -197,6 +203,6 @@ export function useProgress() {
     recordModuleAnswer,
     getWeeklyTrend,
     getMonthHeatmap,
-    getTodayCount,
+    getTodayCounts,
   };
 }
