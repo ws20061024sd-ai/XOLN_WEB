@@ -3,7 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { readings, type ReadingPassage } from "../lib/data/readings";
 import { useProgress } from "../hooks/useProgress";
-import { addError } from "../lib/errorStore";
+import { addErrors } from "../lib/errorStore";
 
 export default function ReadingModule() {
   const [index, setIndex] = useState(0);
@@ -23,17 +23,19 @@ export default function ReadingModule() {
 
   const handleSubmit = async () => {
     setSubmitted(true);
+    const errors: { questionId: string; module: "reading"; date: string }[] = [];
     for (let qi = 0; qi < passage.questions.length; qi++) {
       const correct = answers.get(qi) === passage.questions[qi].answer;
       recordModuleAnswer("reading", correct);
       if (!correct) {
-        await addError({
+        errors.push({
           questionId: `${passage.id}-q${qi}`,
-          module: "reading",
+          module: "reading" as const,
           date: new Date().toISOString(),
         });
       }
     }
+    if (errors.length > 0) await addErrors(errors);
   };
 
   const nextPassage = () => {

@@ -66,7 +66,6 @@ export default function FlashcardModule() {
           <div className="grid w-full max-w-sm grid-cols-1 gap-2.5">
             {options.map((meaning, i) => {
               const isCorrectOption = meaning === currentCard.meaning;
-              const isSelectedWrong = lastResult === false && !isCorrectOption && false; // 需要根据实际选中判断
               // 简化：lastResult为false时高亮正确答案，lastResult为true时高亮选中的
               let borderClass = "border-[var(--border)] hover:border-[var(--accent)]";
               let bgClass = "";

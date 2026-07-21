@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { listeningScripts } from "../lib/data/listening";
 import { speakJapanese } from "../lib/tts";
 import { useProgress } from "../hooks/useProgress";
-import { addError } from "../lib/errorStore";
+import { addErrors } from "../lib/errorStore";
 
 export default function ListeningModule() {
   const [index, setIndex] = useState(0);
@@ -34,17 +34,19 @@ export default function ListeningModule() {
 
   const handleSubmit = async () => {
     setSubmitted(true);
+    const errors: { questionId: string; module: "listening"; date: string }[] = [];
     for (let qi = 0; qi < script.questions.length; qi++) {
       const correct = answers.get(qi) === script.questions[qi].answer;
       recordModuleAnswer("listening", correct);
       if (!correct) {
-        await addError({
+        errors.push({
           questionId: `${script.id}-q${qi}`,
-          module: "listening",
+          module: "listening" as const,
           date: new Date().toISOString(),
         });
       }
     }
+    if (errors.length > 0) await addErrors(errors);
   };
 
   const nextScript = () => {

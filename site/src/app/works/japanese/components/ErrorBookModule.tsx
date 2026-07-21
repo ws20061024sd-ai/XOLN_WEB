@@ -86,7 +86,7 @@ export default function ErrorBookModule({ onBack }: { onBack: () => void }) {
       ) : (
         <div className="space-y-3">
           {enriched.map((err, i) => (
-            <details key={i} className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4">
+            <details key={err.questionId} className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4">
               <summary className="flex cursor-pointer items-center justify-between gap-2">
                 <span className="text-sm font-medium text-[var(--text)]">{err.detail!.question}</span>
                 <span className="flex-shrink-0 rounded-full bg-[var(--border-light)] px-2 py-0.5 text-xs text-[var(--text-muted)]">

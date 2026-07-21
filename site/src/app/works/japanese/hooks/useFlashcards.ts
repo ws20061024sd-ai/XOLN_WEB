@@ -1,10 +1,10 @@
 "use client";
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import type { VocabCard } from "../lib/data/vocabulary";
 import { vocabulary } from "../lib/data/vocabulary";
 import type { CardState } from "../lib/cardScheduler";
 import { getInitialState, review } from "../lib/cardScheduler";
-import { storage } from "../lib/supabase";
+import { storage, loadCardStates, saveCardState } from "../lib/supabase";
 
 const DAILY_NEW_LIMIT = 10;
 const OPTION_COUNT = 4;
@@ -42,13 +42,16 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
   const [cardStates, setCardStates] = useState<Map<string, CardState>>(new Map());
   const [dailies, setDailies] = useState(loadDaily);
   const [lastResult, setLastResult] = useState<boolean | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 
   const reviewedToday = dailies.reviewed;
   const correctToday = dailies.correct;
 
   useEffect(() => {
     const load = async () => {
-      const saved = await storage.get<Record<string, CardState>>("card_states");
+      const saved = (await loadCardStates()) as Record<string, CardState> | null
+        ?? await storage.get<Record<string, CardState>>("card_states");
       const states = new Map<string, CardState>();
       const now = new Date();
 
@@ -103,6 +106,8 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
     const newStates = new Map(cardStates);
     newStates.set(card.id, newState);
     setCardStates(newStates);
+    // Supabase 同步
+    saveCardState(card.id, newState);
 
     const next = { ...dailies, reviewed: dailies.reviewed + 1, correct: dailies.correct + (isCorrect ? 1 : 0) };
     setDailies(next);
@@ -111,8 +116,9 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
     }
     recordModuleAnswer?.("flashcard", isCorrect);
 
-    // 延迟切换下一题，让用户看到反馈
-    setTimeout(() => {
+    // 延迟切换下一题，让用户看到反馈（组件卸载时自动清理）
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
       setQueue(prev => {
         const rest = prev.slice(1);
         if (!isCorrect) rest.push(card);
@@ -120,7 +126,7 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
       });
       setLastResult(null);
     }, isCorrect ? 600 : 1200);
-  }, [currentCard, cardStates]);
+  }, [currentCard, cardStates, dailies]);
 
   const accuracy = reviewedToday > 0 ? Math.round(correctToday / reviewedToday * 100) : 0;
 

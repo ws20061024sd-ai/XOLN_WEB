@@ -16,24 +16,28 @@ export default function MockExamModule() {
   const [showParse, setShowParse] = useState(false);
   const { recordModuleAnswer } = useProgress();
 
-  // 生成试卷（稳定引用）
-  const exam = useMemo(() => {
-    const grammar = [...grammarQuestions].sort(() => Math.random() - 0.5).slice(0, 20);
-    const reading = [...readings].sort(() => Math.random() - 0.5).slice(0, 2);
-    return { grammar, reading };
-  }, [phase === "ready"]); // 每次重新进入 ready 时刷新
+  function genExam() {
+    return {
+      grammar: [...grammarQuestions].sort(() => Math.random() - 0.5).slice(0, 20),
+      reading: [...readings].sort(() => Math.random() - 0.5).slice(0, 2),
+    };
+  }
+  const [exam, setExam] = useState(() => genExam());
 
   // 倒计时
   useEffect(() => {
     if (phase !== "running") return;
     if (timeLeft <= 0) { setPhase("finished"); return; }
-    const t = setInterval(() => setTimeLeft(p => p - 1), 1000);
+    const t = setInterval(() => setTimeLeft(p => {
+      if (p <= 1) { setPhase("finished"); return 0; }
+      return p - 1;
+    }), 1000);
     return () => clearInterval(t);
-  }, [phase, timeLeft]);
+  }, [phase]);
 
   // 计算分数
   const scoreResult = useMemo(() => {
-    if (phase !== "finished") return null;
+    if (phase !== "finished" || !exam) return null;
     let grammarCorrect = 0;
     exam.grammar.forEach((q) => {
       if (answers[q.id] === q.answer) grammarCorrect++;
@@ -56,6 +60,7 @@ export default function MockExamModule() {
   }, [phase, answers, exam]);
 
   const startExam = () => {
+    setExam(genExam());
     setAnswers({});
     setTimeLeft(examConfig.totalTime * 60);
     setPhase("running");

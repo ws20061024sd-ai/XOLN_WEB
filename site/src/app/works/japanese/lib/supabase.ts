@@ -3,169 +3,139 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-let _client: ReturnType<typeof createClient> | null = null;
+export const supabase = (supabaseUrl && supabaseKey)
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
-function getClient() {
-  if (_client) return _client;
-  if (supabaseUrl && supabaseKey) {
-    _client = createClient(supabaseUrl, supabaseKey);
-    return _client;
-  }
-  return null;
-}
-
-export const supabase = getClient();
-
-// ===== 存储层：Supabase 优先 → localStorage 降级 =====
-const STORAGE_PREFIX = "cjt4_";
+// ===== localStorage 通用存储（始终可用，兜底方案） =====
+const PREFIX = "cjt4_";
 
 export const storage = {
-  async get<T>(key: string): Promise<T | null> {
-    const client = getClient();
-    if (client) {
-      try {
-        const { data, error } = await client
-          .from("user_progress")
-          .select("*")
-          .limit(1)
-          .maybeSingle();
-
-        if (!error && data) {
-          const d = data as Record<string, unknown>;
-          const restored: Record<string, unknown> = {
-            daily: {
-              cardsReviewed: (d.cards_reviewed as number) ?? 0,
-              streakDays: (d.streak_days as number) ?? 0,
-              totalMinutes: (d.total_minutes as number) ?? 0,
-            },
-            modules: {
-              grammar: { total: (d.grammar_total as number) ?? 0, correct: (d.grammar_correct as number) ?? 0 },
-              reading: { total: (d.reading_total as number) ?? 0, correct: (d.reading_correct as number) ?? 0 },
-              listening: { total: (d.listening_total as number) ?? 0, correct: (d.listening_correct as number) ?? 0 },
-              flashcard: { total: (d.flashcard_total as number) ?? 0, correct: (d.flashcard_correct as number) ?? 0 },
-            },
-          };
-          return (restored as unknown) as T;
-        }
-      } catch {}
-    }
-
-    // localStorage 降级
+  get<T>(key: string): T | null {
+    if (typeof window === "undefined") return null;
     try {
-      if (typeof window === "undefined") return null;
-      const raw = localStorage.getItem(STORAGE_PREFIX + key);
+      const raw = localStorage.getItem(PREFIX + key);
       return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
+    } catch { return null; }
   },
-
-  async set<T>(key: string, value: T): Promise<void> {
-    const client = getClient();
-    const json = value as Record<string, unknown>;
-
-    if (client && json.daily && json.modules) {
-      try {
-        const d = json.daily as Record<string, number>;
-        const m = json.modules as Record<string, Record<string, number>>;
-        await (client as any).from("user_progress").upsert(
-          {
-            id: "00000000-0000-0000-0000-000000000001",
-            cards_reviewed: d.cardsReviewed ?? 0,
-            streak_days: d.streakDays ?? 0,
-            total_minutes: d.totalMinutes ?? 0,
-            grammar_total: m.grammar?.total ?? 0,
-            grammar_correct: m.grammar?.correct ?? 0,
-            reading_total: m.reading?.total ?? 0,
-            reading_correct: m.reading?.correct ?? 0,
-            listening_total: m.listening?.total ?? 0,
-            listening_correct: m.listening?.correct ?? 0,
-            flashcard_total: m.flashcard?.total ?? 0,
-            flashcard_correct: m.flashcard?.correct ?? 0,
-            last_active: new Date().toISOString().split("T")[0],
-          },
-          { onConflict: "id" }
-        );
-      } catch {
-        // Supabase 写失败时只写 localStorage
-      }
-    }
-
-    // 始终写一份 localStorage 兜底
+  set<T>(key: string, value: T): void {
+    if (typeof window === "undefined") return;
     try {
-      if (typeof window !== "undefined") {
-        localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
-      }
-    } catch {}
+      localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    } catch { /* quota exceeded / private browsing */ }
   },
 };
 
-// ===== 闪卡状态专用的 Supabase 读写 =====
-export const cardStorage = {
-  async loadAll(): Promise<Record<string, unknown> | null> {
-    const client = getClient();
-    if (!client) return null;
+// ===== 用户进度：Supabase 优先 → localStorage 降级 =====
+export async function loadProgress(): Promise<Record<string, unknown> | null> {
+  if (supabase) {
     try {
-      const { data } = await (client as any).from("card_progress").select("*");
-      if (!data || data.length === 0) return null;
-      const result: Record<string, unknown> = {};
-      for (const row of data as any[]) {
-        result[row.word_id] = {
-          wordId: row.word_id,
-          level: row.level ?? 0,
-          nextReview: row.next_review ?? new Date().toISOString(),
-          totalReviews: row.total_reviews ?? 0,
-          totalCorrect: row.total_correct ?? 0,
+      const { data, error } = await (supabase as any)
+        .from("user_progress").select("*").limit(1).maybeSingle();
+      if (!error && data) {
+        const d = data as Record<string, unknown>;
+        return {
+          daily: {
+            cardsReviewed: (d.cards_reviewed as number) ?? 0,
+            streakDays: (d.streak_days as number) ?? 0,
+            totalMinutes: (d.total_minutes as number) ?? 0,
+          },
+          modules: {
+            grammar: { total: (d.grammar_total as number) ?? 0, correct: (d.grammar_correct as number) ?? 0 },
+            reading: { total: (d.reading_total as number) ?? 0, correct: (d.reading_correct as number) ?? 0 },
+            listening: { total: (d.listening_total as number) ?? 0, correct: (d.listening_correct as number) ?? 0 },
+            flashcard: { total: (d.flashcard_total as number) ?? 0, correct: (d.flashcard_correct as number) ?? 0 },
+            translate: { total: 0, correct: 0 },
+          },
         };
       }
-      return result;
-    } catch {
-      return null;
-    }
-  },
+    } catch { /* fall through to localStorage */ }
+  }
+  return storage.get("cjt4_progress") as Record<string, unknown> | null;
+}
 
-  async save(wordId: string, state: Record<string, unknown>): Promise<void> {
-    const client = getClient();
-    if (!client) return;
+export async function saveProgress(value: Record<string, unknown>): Promise<void> {
+  const json = value as any;
+  if (supabase && json.daily && json.modules) {
     try {
-      await (client as any).from("card_progress").upsert(
-        {
-          word_id: wordId,
-          level: state.level ?? 0,
-          next_review: state.nextReview instanceof Date ? state.nextReview.toISOString() : state.nextReview,
-          total_reviews: state.totalReviews ?? 0,
-          total_correct: state.totalCorrect ?? 0,
-        },
-        { onConflict: "word_id" }
-      );
-    } catch {}
-  },
-};
+      await (supabase as any).from("user_progress").upsert({
+        id: "00000000-0000-0000-0000-000000000001",
+        cards_reviewed: json.daily.cardsReviewed ?? 0,
+        streak_days: json.daily.streakDays ?? 0,
+        total_minutes: json.daily.totalMinutes ?? 0,
+        grammar_total: json.modules.grammar?.total ?? 0,
+        grammar_correct: json.modules.grammar?.correct ?? 0,
+        reading_total: json.modules.reading?.total ?? 0,
+        reading_correct: json.modules.reading?.correct ?? 0,
+        listening_total: json.modules.listening?.total ?? 0,
+        listening_correct: json.modules.listening?.correct ?? 0,
+        flashcard_total: json.modules.flashcard?.total ?? 0,
+        flashcard_correct: json.modules.flashcard?.correct ?? 0,
+        last_active: new Date().toISOString().split("T")[0],
+      }, { onConflict: "id" });
+    } catch { /* fall through to localStorage */ }
+  }
+  storage.set("cjt4_progress", value);
+}
 
-// ===== 错题记录专用的 Supabase 读写 =====
-export const errorStorage = {
-  async loadAll(): Promise<Record<string, unknown>[] | null> {
-    const client = getClient();
-    if (!client) return null;
+// ===== 闪卡状态：Supabase 优先 → localStorage 降级 =====
+export async function loadCardStates(): Promise<Record<string, unknown> | null> {
+  if (supabase) {
     try {
-      const { data } = await (client as any).from("error_records").select("*").order("created_at", { ascending: false });
-      return data ?? [];
-    } catch {
-      return null;
-    }
-  },
+      const { data } = await (supabase as any).from("card_progress").select("*");
+      if (data && data.length > 0) {
+        const result: Record<string, unknown> = {};
+        for (const row of data as any[]) {
+          result[row.word_id] = {
+            wordId: row.word_id,
+            level: row.level ?? 0,
+            nextReview: row.next_review ?? new Date().toISOString(),
+            totalReviews: row.total_reviews ?? 0,
+            totalCorrect: row.total_correct ?? 0,
+          };
+        }
+        return result;
+      }
+    } catch { /* fall through to localStorage */ }
+  }
+  return storage.get("card_states") as Record<string, unknown> | null;
+}
 
-  async add(record: { questionId: string; module: string; date: string }): Promise<void> {
-    const client = getClient();
-    if (!client) return;
+export async function saveCardState(wordId: string, state: { level: number; nextReview: Date | string; totalReviews: number; totalCorrect: number }): Promise<void> {
+  if (supabase) {
     try {
-      // 去重：先删旧记录再插入
-      await (client as any).from("error_records").delete().eq("question_id", record.questionId);
-      await (client as any).from("error_records").insert({
+      await (supabase as any).from("card_progress").upsert({
+        word_id: wordId,
+        level: state.level ?? 0,
+        next_review: state.nextReview instanceof Date ? state.nextReview.toISOString() : state.nextReview,
+        total_reviews: state.totalReviews ?? 0,
+        total_correct: state.totalCorrect ?? 0,
+      }, { onConflict: "word_id" });
+    } catch { /* fall through to localStorage */ }
+  }
+}
+
+// ===== 错题：Supabase 优先 → localStorage 降级 =====
+export async function loadErrors(): Promise<Record<string, unknown>[] | null> {
+  if (supabase) {
+    try {
+      const { data } = await (supabase as any)
+        .from("error_records").select("*").order("created_at", { ascending: false });
+      if (data) return data as Record<string, unknown>[];
+    } catch { /* fall through to localStorage */ }
+  }
+  return storage.get("cjt4_errors") as Record<string, unknown>[] | null;
+}
+
+export async function saveError(record: { questionId: string; module: string; date: string }): Promise<void> {
+  if (supabase) {
+    try {
+      await (supabase as any).from("error_records").delete().eq("question_id", record.questionId);
+      await (supabase as any).from("error_records").insert({
         question_id: record.questionId,
         module: record.module,
         date: record.date,
       });
-    } catch {}
-  },
-};
+    } catch { /* fall through to localStorage */ }
+  }
+}
