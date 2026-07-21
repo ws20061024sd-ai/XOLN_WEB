@@ -1,9 +1,10 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { grammarQuestions } from "../lib/data/grammar";
 import { useProgress } from "../hooks/useProgress";
 import { addError } from "../lib/errorStore";
+import { getAvailable, markCorrect } from "../lib/correctStore";
 
 export default function GrammarModule() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -12,15 +13,19 @@ export default function GrammarModule() {
   const { recordModuleAnswer, moduleStats } = useProgress();
   const grammarStats = moduleStats.grammar;
 
-  const question = grammarQuestions[currentIndex % grammarQuestions.length];
-  const isCorrect = selected === question.answer;
+  const available = useMemo(() => getAvailable(grammarQuestions, "grammar"), []);
+  const question = available.length > 0 ? available[currentIndex % available.length] : null;
+  const isCorrect = selected === question?.answer;
 
   const handleSelect = useCallback(async (index: number) => {
-    if (selected !== null) return;
+    if (selected !== null || !question) return;
     setSelected(index);
-    recordModuleAnswer("grammar", index === question.answer);
+    const correct = index === question.answer;
+    recordModuleAnswer("grammar", correct);
 
-    if (index !== question.answer) {
+    if (correct) {
+      markCorrect(question.id, "grammar");
+    } else {
       await addError({
         questionId: question.id,
         module: "grammar",
@@ -34,8 +39,22 @@ export default function GrammarModule() {
   const nextQuestion = () => {
     setSelected(null);
     setShowExplain(false);
-    setCurrentIndex(i => (i + 1) % grammarQuestions.length);
+    setCurrentIndex(i => i + 1);
   };
+
+  if (!question) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="mb-3 h-12 w-12 rounded-full bg-[var(--accent-soft)] flex items-center justify-center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[var(--accent)]">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <p className="text-lg font-medium text-[var(--text)]">语法全部完成</p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">所有语法题都已答对，去错题本回顾错题吧</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
