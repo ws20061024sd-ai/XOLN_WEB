@@ -13,7 +13,9 @@ export default function ReadingModule() {
   const [submitted, setSubmitted] = useState(false);
   const { recordModuleAnswer } = useProgress();
 
-  const available = useMemo(() => getAvailable(readings, "reading"), []);
+  const available = useMemo(() =>
+    getAvailable(readings, "reading").sort(() => Math.random() - 0.5),
+  []);
   const passage: ReadingPassage | undefined = available.length > 0 ? available[index % available.length] : undefined;
 
   const handleSelect = (qi: number, oi: number) => {

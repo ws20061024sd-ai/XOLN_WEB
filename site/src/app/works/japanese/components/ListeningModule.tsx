@@ -17,7 +17,9 @@ export default function ListeningModule() {
   const [rate, setRate] = useState(1.0);
   const { recordModuleAnswer } = useProgress();
 
-  const available = useMemo(() => getAvailable(listeningScripts, "listening"), []);
+  const available = useMemo(() =>
+    getAvailable(listeningScripts, "listening").sort(() => Math.random() - 0.5),
+  []);
   const script = available.length > 0 ? available[index % available.length] : null;
 
   const play = useCallback(async () => {

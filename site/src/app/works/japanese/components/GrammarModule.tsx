@@ -13,7 +13,9 @@ export default function GrammarModule() {
   const { recordModuleAnswer, moduleStats } = useProgress();
   const grammarStats = moduleStats.grammar;
 
-  const available = useMemo(() => getAvailable(grammarQuestions, "grammar"), []);
+  const available = useMemo(() =>
+    getAvailable(grammarQuestions, "grammar").sort(() => Math.random() - 0.5),
+  []);
   const question = available.length > 0 ? available[currentIndex % available.length] : null;
   const isCorrect = selected === question?.answer;
 
