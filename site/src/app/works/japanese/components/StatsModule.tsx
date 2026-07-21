@@ -1,33 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "motion/react";
 import { useProgress } from "../hooks/useProgress";
-import { storage } from "../lib/supabase";
-import { GrammarIcon, ReadingIcon, ListeningIcon, TranslateIcon, StatsIcon } from "./Icons";
+import { GrammarIcon, ReadingIcon, ListeningIcon, TranslateIcon } from "./Icons";
 import ErrorBookModule from "./ErrorBookModule";
 import MockExamModule from "./MockExamModule";
 
-interface ModuleStats {
-  grammar: { total: number; correct: number };
-  reading: { total: number; correct: number };
-  listening: { total: number; correct: number };
-}
-
 export default function StatsModule() {
-  const { stats } = useProgress();
-  const [moduleStats, setModuleStats] = useState<ModuleStats>({
-    grammar: { total: 0, correct: 0 },
-    reading: { total: 0, correct: 0 },
-    listening: { total: 0, correct: 0 },
-  });
+  const { stats, moduleStats } = useProgress();
   const [view, setView] = useState<"dashboard" | "errors" | "exam">("dashboard");
-
-  useEffect(() => {
-    (async () => {
-      const gErrors = await storage.get<any[]>("grammar_errors") ?? [];
-      setModuleStats(s => ({ ...s, grammar: { total: gErrors.length + 10, correct: 10 } }));
-    })();
-  }, []);
 
   if (view === "errors") return <ErrorBookModule onBack={() => setView("dashboard")} />;
   if (view === "exam") return <MockExamModule />;

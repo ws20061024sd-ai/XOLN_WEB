@@ -18,12 +18,33 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export function useFlashcards() {
+const TODAY_KEY = "cjt4_flashcard_today";
+const TODAY_COUNT_KEY = "cjt4_flashcard_count";
+
+function loadDaily(): { date: string; reviewed: number; correct: number } {
+  if (typeof window === "undefined") return { date: "", reviewed: 0, correct: 0 };
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem(TODAY_KEY);
+  if (savedDate !== today) {
+    localStorage.setItem(TODAY_KEY, today);
+    localStorage.setItem(TODAY_COUNT_KEY, JSON.stringify({ reviewed: 0, correct: 0 }));
+    return { date: today, reviewed: 0, correct: 0 };
+  }
+  try {
+    const raw = localStorage.getItem(TODAY_COUNT_KEY);
+    if (raw) { const p = JSON.parse(raw); return { date: today, reviewed: p.reviewed ?? 0, correct: p.correct ?? 0 }; }
+  } catch {}
+  return { date: today, reviewed: 0, correct: 0 };
+}
+
+export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "grammar" | "reading" | "listening", correct: boolean) => void) {
   const [queue, setQueue] = useState<VocabCard[]>([]);
   const [cardStates, setCardStates] = useState<Map<string, CardState>>(new Map());
-  const [reviewedToday, setReviewedToday] = useState(0);
-  const [correctToday, setCorrectToday] = useState(0);
-  const [lastResult, setLastResult] = useState<boolean | null>(null); // null=未作答, true=对, false=错
+  const [dailies, setDailies] = useState(loadDaily);
+  const [lastResult, setLastResult] = useState<boolean | null>(null);
+
+  const reviewedToday = dailies.reviewed;
+  const correctToday = dailies.correct;
 
   useEffect(() => {
     const load = async () => {
@@ -83,8 +104,12 @@ export function useFlashcards() {
     newStates.set(card.id, newState);
     setCardStates(newStates);
 
-    setReviewedToday(n => n + 1);
-    if (isCorrect) setCorrectToday(n => n + 1);
+    const next = { ...dailies, reviewed: dailies.reviewed + 1, correct: dailies.correct + (isCorrect ? 1 : 0) };
+    setDailies(next);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(TODAY_COUNT_KEY, JSON.stringify({ reviewed: next.reviewed, correct: next.correct }));
+    }
+    recordModuleAnswer?.("flashcard", isCorrect);
 
     // 延迟切换下一题，让用户看到反馈
     setTimeout(() => {

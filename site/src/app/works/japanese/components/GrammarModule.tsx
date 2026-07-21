@@ -9,9 +9,8 @@ export default function GrammarModule() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [showExplain, setShowExplain] = useState(false);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [totalAnswered, setTotalAnswered] = useState(0);
-  const { markActivity } = useProgress();
+  const { recordModuleAnswer, moduleStats } = useProgress();
+  const grammarStats = moduleStats.grammar;
 
   const question = grammarQuestions[currentIndex % grammarQuestions.length];
   const isCorrect = selected === question.answer;
@@ -19,9 +18,7 @@ export default function GrammarModule() {
   const handleSelect = useCallback(async (index: number) => {
     if (selected !== null) return;
     setSelected(index);
-    setTotalAnswered(n => n + 1);
-    if (index === question.answer) setCorrectCount(n => n + 1);
-    markActivity();
+    recordModuleAnswer("grammar", index === question.answer);
 
     if (index !== question.answer) {
       await addError({
@@ -30,7 +27,7 @@ export default function GrammarModule() {
         date: new Date().toISOString(),
       });
     }
-  }, [selected, question, markActivity]);
+  }, [selected, question]);
 
   const handleShowExplain = () => setShowExplain(true);
 
@@ -44,7 +41,7 @@ export default function GrammarModule() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
         <span className="font-medium text-[var(--text)]">语法</span>
-        <span>正确率 {totalAnswered > 0 ? Math.round(correctCount / totalAnswered * 100) : 0}%</span>
+        <span>正确率 {grammarStats.total > 0 ? Math.round(grammarStats.correct / grammarStats.total * 100) : 0}%</span>
       </div>
 
       <AnimatePresence mode="wait">

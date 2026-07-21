@@ -4,12 +4,11 @@ import { useFlashcards } from "../hooks/useFlashcards";
 import { useProgress } from "../hooks/useProgress";
 
 export default function FlashcardModule() {
-  const { currentCard, options, queueLength, reviewedToday, accuracy, lastResult, checkAnswer } = useFlashcards();
-  const { markActivity } = useProgress();
+  const { recordModuleAnswer } = useProgress();
+  const { currentCard, options, queueLength, reviewedToday, accuracy, lastResult, checkAnswer } = useFlashcards(recordModuleAnswer);
 
   const handleSelect = (meaning: string) => {
-    if (lastResult !== null) return; // 已经作答，等切换
-    markActivity();
+    if (lastResult !== null) return;
     checkAnswer(meaning);
   };
 

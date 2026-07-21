@@ -10,7 +10,7 @@ export default function ReadingModule() {
   const [showQuestions, setShowQuestions] = useState(false);
   const [answers, setAnswers] = useState<Map<number, number>>(new Map());
   const [submitted, setSubmitted] = useState(false);
-  const { markActivity } = useProgress();
+  const { recordModuleAnswer } = useProgress();
 
   const passage: ReadingPassage = readings[index % readings.length];
 
@@ -23,10 +23,10 @@ export default function ReadingModule() {
 
   const handleSubmit = async () => {
     setSubmitted(true);
-    markActivity();
-    // 错题入库
     for (let qi = 0; qi < passage.questions.length; qi++) {
-      if (answers.get(qi) !== passage.questions[qi].answer) {
+      const correct = answers.get(qi) === passage.questions[qi].answer;
+      recordModuleAnswer("reading", correct);
+      if (!correct) {
         await addError({
           questionId: `${passage.id}-q${qi}`,
           module: "reading",

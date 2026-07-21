@@ -11,14 +11,14 @@ export default function TranslateModule() {
   const [subTab, setSubTab] = useState<"ja2zh" | "zh2ja" | "writing">("ja2zh");
   const [userInput, setUserInput] = useState("");
   const [showRef, setShowRef] = useState(false);
-  const { markActivity } = useProgress();
+  const { recordModuleAnswer } = useProgress();
 
   const filtered = translateTasks.filter(t => t.type === subTab);
   const task: TranslateTask | undefined = filtered[index % Math.max(1, filtered.length)];
 
   const handleSubmit = () => {
     setShowRef(true);
-    markActivity();
+    recordModuleAnswer("grammar", true); // 翻译写作暂归类到grammar统计
   };
 
   const nextTask = () => {

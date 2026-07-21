@@ -14,7 +14,7 @@ export default function MockExamModule() {
   const [timeLeft, setTimeLeft] = useState(examConfig.totalTime * 60);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [showParse, setShowParse] = useState(false);
-  const { markActivity } = useProgress();
+  const { recordModuleAnswer } = useProgress();
 
   // 生成试卷（稳定引用）
   const exam = useMemo(() => {
@@ -64,18 +64,25 @@ export default function MockExamModule() {
 
   const submitExam = async () => {
     setPhase("finished");
-    markActivity();
-    // 错题入库
+    // 记录统计 + 错题入库
     for (const q of exam.grammar) {
-      if (answers[q.id] !== undefined && answers[q.id] !== q.answer) {
-        await addError({ questionId: q.id, module: "grammar", date: new Date().toISOString() });
+      const userAns = answers[q.id];
+      if (userAns !== undefined) {
+        recordModuleAnswer("grammar", userAns === q.answer);
+        if (userAns !== q.answer) {
+          await addError({ questionId: q.id, module: "grammar", date: new Date().toISOString() });
+        }
       }
     }
     for (const r of exam.reading) {
       for (let qi = 0; qi < r.questions.length; qi++) {
         const q = r.questions[qi];
-        if (answers[`${r.id}-q${qi}`] !== undefined && answers[`${r.id}-q${qi}`] !== q.answer) {
-          await addError({ questionId: `${r.id}-q${qi}`, module: "reading", date: new Date().toISOString() });
+        const userAns = answers[`${r.id}-q${qi}`];
+        if (userAns !== undefined) {
+          recordModuleAnswer("reading", userAns === q.answer);
+          if (userAns !== q.answer) {
+            await addError({ questionId: `${r.id}-q${qi}`, module: "reading", date: new Date().toISOString() });
+          }
         }
       }
     }

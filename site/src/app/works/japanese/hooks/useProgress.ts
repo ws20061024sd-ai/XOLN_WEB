@@ -1,22 +1,51 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 
+export interface ModuleStats {
+  grammar: { total: number; correct: number };
+  reading: { total: number; correct: number };
+  listening: { total: number; correct: number };
+  flashcard: { total: number; correct: number };
+}
+
 export interface DailyStats {
   cardsReviewed: number;
   streakDays: number;
   totalMinutes: number;
 }
 
+interface PersistedState {
+  daily: DailyStats;
+  modules: ModuleStats;
+}
+
 const STORAGE_KEY = "cjt4_progress";
 const LAST_ACTIVE_KEY = "cjt4_last_active";
 
-function loadStats(): DailyStats {
-  if (typeof window === "undefined") return { cardsReviewed: 0, streakDays: 0, totalMinutes: 0 };
+function getEmptyModuleStats(): ModuleStats {
+  return {
+    grammar: { total: 0, correct: 0 },
+    reading: { total: 0, correct: 0 },
+    listening: { total: 0, correct: 0 },
+    flashcard: { total: 0, correct: 0 },
+  };
+}
+
+function loadPersisted(): PersistedState {
+  if (typeof window === "undefined") {
+    return { daily: { cardsReviewed: 0, streakDays: 0, totalMinutes: 0 }, modules: getEmptyModuleStats() };
+  }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        daily: parsed.daily ?? { cardsReviewed: 0, streakDays: 0, totalMinutes: 0 },
+        modules: { ...getEmptyModuleStats(), ...parsed.modules },
+      };
+    }
   } catch {}
-  return { cardsReviewed: 0, streakDays: 0, totalMinutes: 0 };
+  return { daily: { cardsReviewed: 0, streakDays: 0, totalMinutes: 0 }, modules: getEmptyModuleStats() };
 }
 
 function getYesterdayStr(): string {
@@ -26,46 +55,63 @@ function getYesterdayStr(): string {
 }
 
 export function useProgress() {
-  const [stats, setStats] = useState<DailyStats>(loadStats);
+  const [persisted, setPersisted] = useState<PersistedState>(loadPersisted);
 
-  // Sync stats to localStorage whenever they change (side effect outside setState)
+  // Auto-save
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
     }
-  }, [stats]);
+  }, [persisted]);
 
   const markActivity = useCallback(() => {
     const today = new Date().toDateString();
     const yesterday = getYesterdayStr();
-    const lastActive =
-      typeof window !== "undefined" ? localStorage.getItem(LAST_ACTIVE_KEY) : null;
+    const lastActive = typeof window !== "undefined" ? localStorage.getItem(LAST_ACTIVE_KEY) : null;
 
-    setStats(prev => {
+    setPersisted(prev => {
       let newStreak: number;
       if (lastActive === today) {
-        // Same day: keep current streak
-        newStreak = prev.streakDays;
+        newStreak = prev.daily.streakDays;
       } else if (lastActive === yesterday) {
-        // Consecutive day: increment streak
-        newStreak = prev.streakDays + 1;
+        newStreak = prev.daily.streakDays + 1;
       } else {
-        // Gap (skipped day or first time): reset to 1
         newStreak = 1;
       }
 
       return {
-        cardsReviewed: prev.cardsReviewed + 1,
-        streakDays: newStreak,
-        totalMinutes: prev.totalMinutes + 1,
+        ...prev,
+        daily: {
+          cardsReviewed: prev.daily.cardsReviewed + 1,
+          streakDays: newStreak,
+          totalMinutes: prev.daily.totalMinutes + 1,
+        },
       };
     });
 
-    // Record last active date outside setState (pure updater)
     if (typeof window !== "undefined") {
       localStorage.setItem(LAST_ACTIVE_KEY, today);
     }
   }, []);
 
-  return { stats, markActivity };
+  const recordModuleAnswer = useCallback((module: keyof ModuleStats, correct: boolean) => {
+    markActivity();
+    setPersisted(prev => ({
+      ...prev,
+      modules: {
+        ...prev.modules,
+        [module]: {
+          total: prev.modules[module].total + 1,
+          correct: prev.modules[module].correct + (correct ? 1 : 0),
+        },
+      },
+    }));
+  }, [markActivity]);
+
+  return {
+    stats: persisted.daily,
+    moduleStats: persisted.modules,
+    markActivity,
+    recordModuleAnswer,
+  };
 }

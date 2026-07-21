@@ -14,7 +14,7 @@ export default function ListeningModule() {
   const [submitted, setSubmitted] = useState(false);
   const [showScript, setShowScript] = useState(false);
   const [rate, setRate] = useState(1.0);
-  const { markActivity } = useProgress();
+  const { recordModuleAnswer } = useProgress();
 
   const script = listeningScripts[index % listeningScripts.length];
 
@@ -34,9 +34,10 @@ export default function ListeningModule() {
 
   const handleSubmit = async () => {
     setSubmitted(true);
-    markActivity();
     for (let qi = 0; qi < script.questions.length; qi++) {
-      if (answers.get(qi) !== script.questions[qi].answer) {
+      const correct = answers.get(qi) === script.questions[qi].answer;
+      recordModuleAnswer("listening", correct);
+      if (!correct) {
         await addError({
           questionId: `${script.id}-q${qi}`,
           module: "listening",
