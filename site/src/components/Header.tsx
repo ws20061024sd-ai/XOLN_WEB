@@ -10,6 +10,7 @@ const navItems = [
   { href: "/about", label: "关于" },
   { href: "/beliefs", label: "观念" },
   { href: "/works", label: "作品" },
+  { href: "/apps", label: "程序" },
   { href: "/favorites", label: "喜爱" },
   { href: "/guestbook", label: "留言板" },
   { href: "/community", label: "共创" },
