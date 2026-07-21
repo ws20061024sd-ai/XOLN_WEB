@@ -135,7 +135,7 @@ export async function loadErrors(): Promise<Record<string, unknown>[] | null> {
   return local;
 }
 
-export async function saveError(record: { questionId: string; module: string; date: string }): Promise<void> {
+export async function saveError(record: { questionId: string; module: string; date: string; count?: number }): Promise<void> {
   if (supabase) {
     try {
       await (supabase as any).from("error_records").delete().eq("question_id", record.questionId);

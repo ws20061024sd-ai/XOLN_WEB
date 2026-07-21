@@ -89,14 +89,21 @@ export default function ErrorBookModule({ onBack }: { onBack: () => void }) {
             <details key={err.questionId} className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4">
               <summary className="flex cursor-pointer items-center justify-between gap-2">
                 <span className="text-sm font-medium text-[var(--text)]">{err.detail!.question}</span>
-                <span className="flex-shrink-0 rounded-full bg-[var(--border-light)] px-2 py-0.5 text-xs text-[var(--text-muted)]">
-                  {MODULE_LABELS[err.module]}
-                </span>
+                <div className="flex flex-shrink-0 items-center gap-1.5">
+                  {err.count > 1 && (
+                    <span className="rounded-full bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-600 dark:bg-red-900 dark:text-red-400">
+                      {err.count}次
+                    </span>
+                  )}
+                  <span className="rounded-full bg-[var(--border-light)] px-2 py-0.5 text-xs text-[var(--text-muted)]">
+                    {MODULE_LABELS[err.module]}
+                  </span>
+                </div>
               </summary>
               <div className="mt-3 text-sm text-[var(--text)] leading-relaxed border-t border-[var(--border)] pt-3">
                 <p className="text-[var(--text-muted)]">{err.detail!.explanation}</p>
                 <p className="mt-2 text-xs text-[var(--text-soft)]">
-                  收录于 {new Date(err.date).toLocaleDateString("zh-CN")}
+                  最近错于 {new Date(err.date).toLocaleDateString("zh-CN")}{err.count > 1 ? ` · 累计 ${err.count} 次` : ""}
                 </p>
               </div>
             </details>
