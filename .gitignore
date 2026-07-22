@@ -7,3 +7,5 @@ out/
 .vercel
 *.tsbuildinfo
 .claude/
+site/.superpowers/
+site/docs/superpowers/
