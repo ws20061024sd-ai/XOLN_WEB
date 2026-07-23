@@ -86,6 +86,18 @@ const sections = [
     ),
   },
   {
+    href: "/apps",
+    title: "应用",
+    desc: "日语学习舱——词汇、语法、阅读、听力、模考一站式备考工具。",
+    color: "#0ea5e9",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2" />
+        <path d="M8 21h8" /><path d="M12 17v4" />
+      </svg>
+    ),
+  },
+  {
     href: "/search",
     title: "搜索",
     desc: "搜索全站内容，快速找到你想要的文章。",
