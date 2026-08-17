@@ -33,12 +33,21 @@ community.get("/:id", async (c) => {
 // 提交投稿
 community.post("/", async (c) => {
   const { title, author, content, tags } = await c.req.json();
+  if (
+    typeof title !== "string" || typeof author !== "string" || typeof content !== "string"
+  ) {
+    return c.json({ ok: false, error: "字段格式错误" }, 400);
+  }
   if (!title || !author || !content) return c.json({ ok: false, error: "标题、作者和内容不能为空" }, 400);
   if (title.length > 100 || author.length > 50 || content.length > 50000)
     return c.json({ ok: false, error: "内容过长" }, 400);
+  const tagsValue = typeof tags === "string" ? tags : "";
+  if (tagsValue.length > 500) {
+    return c.json({ ok: false, error: "标签过长" }, 400);
+  }
   const db = await getDb();
   db.run("INSERT INTO community_posts (title, author, content, tags, created_at) VALUES (?, ?, ?, ?, datetime('now', '+8 hours'))",
-    [title, author, content, tags || ""]);
+    [title, author, content, tagsValue]);
   saveDb();
   return c.json({ ok: true, msg: "投稿已提交，审核后显示" }, 201);
 });

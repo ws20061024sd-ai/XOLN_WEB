@@ -19,6 +19,9 @@ guestbook.get("/", async (c) => {
 // 提交留言
 guestbook.post("/", async (c) => {
   const { author, content } = await c.req.json();
+  if (typeof author !== "string" || typeof content !== "string") {
+    return c.json({ ok: false, error: "字段格式错误" }, 400);
+  }
   if (!author || !content) return c.json({ ok: false, error: "请填写昵称和内容" }, 400);
   if (author.length > 50 || content.length > 2000) return c.json({ ok: false, error: "内容过长" }, 400);
   const db = await getDb();

@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 我的网站（xolnxoln.cn）
 
-## Getting Started
+个人网站静态前端 + Hono API 后端。
 
-First, run the development server:
+## 目录结构
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+博客/
+├── docs/                  # 项目文档、架构方案、部署清单
+├── site/                  # Next.js 前端（静态导出到 out/）
+│   ├── content/           # Markdown 内容
+│   ├── server/            # Hono + sql.js API 后端
+│   ├── upload.js          # 增量上传 out/ 到腾讯云 COS
+│   └── upload-quant.js    # 上传量化仪表盘到 COS works/quant/
+└── 废弃文件/              # 历史归档
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 本地开发
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd site
+npm install
+npm run dev -- --port 3099
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+环境变量放在 `site/.env.local`（前端）和 `site/server/.env`（后端，不入库）。
 
-## Learn More
+后端开发：
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cd site/server
+npm install
+npm run dev        # 自动读取 .env；ADMIN_KEY 未配置会拒绝启动
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 构建与部署
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cd site
+npm run build                 # 生成 out/
+node upload.js                # 增量上传前端到 COS
+npm run upload:quant          # 量化仪表盘生成后同步上传
+```
 
-## Deploy on Vercel
+后端 Docker 多阶段构建：
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+cd site/server
+cp .env.example .env          # 配置 ADMIN_KEY
+docker compose up -d --build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+详见 `docs/开发审查清单.md` 和 `docs/后端架构方案.md`。
+
+## 管理面板
+
+入口：页脚 `©` 或 `/admin`。密钥为 `server/.env` 中的 `ADMIN_KEY`，通过请求头 `x-admin-key` 校验。

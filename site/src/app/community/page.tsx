@@ -45,10 +45,16 @@ function CommunityContent() {
       return;
     }
     setSubmitting(true);
-    const res = await submitCommunityPost(form);
-    setMsg(res.error || res.msg || (res.ok ? "投稿已提交，审核后显示" : "提交失败"));
-    if (res.ok) { setForm({ title: "", author: "", content: "", tags: "" }); setShowForm(false); }
-    setSubmitting(false);
+    setMsg("");
+    try {
+      const res = await submitCommunityPost(form);
+      setMsg(res.error || res.msg || (res.ok ? "投稿已提交，审核后显示" : "提交失败"));
+      if (res.ok) { setForm({ title: "", author: "", content: "", tags: "" }); setShowForm(false); }
+    } catch {
+      setMsg("网络异常，请稍后重试");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // 详情视图

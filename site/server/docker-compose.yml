@@ -2,9 +2,13 @@ services:
   api:
     build: .
     ports:
-      - "3001:3001"
+      # 只绑定本机，避免绕过 Nginx 直接暴露 3001 端口
+      - "127.0.0.1:3001:3001"
     volumes:
       - ./data:/app/data
     restart: always
     environment:
       - PORT=3001
+      - NODE_ENV=production
+      # 在 server/.env 中配置，未配置时 compose 会直接报错
+      - ADMIN_KEY=${ADMIN_KEY:?请在 server/.env 中设置 ADMIN_KEY}

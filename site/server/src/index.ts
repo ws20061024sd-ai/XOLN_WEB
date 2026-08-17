@@ -1,3 +1,4 @@
+import "./load-env.js";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serve } from "@hono/node-server";
@@ -28,12 +29,21 @@ app.use(
 // 限流中间件（简易版：每 IP 每秒最多 5 次请求）
 const rateLimit = new Map<string, { count: number; reset: number }>();
 app.use("/api/*", async (c, next) => {
-  const ip =
+  const forwarded = c.req.header("x-forwarded-for") || "";
+  const ip = (
     c.req.header("x-real-ip") ||
-    c.req.header("x-forwarded-for") ||
-    "unknown";
+    forwarded.split(",")[0] ||
+    "unknown"
+  ).trim();
   const now = Date.now();
   const entry = rateLimit.get(ip);
+
+  // 防止长期运行后 Map 无限增长
+  if (rateLimit.size > 10000) {
+    for (const [key, value] of rateLimit) {
+      if (value.reset <= now) rateLimit.delete(key);
+    }
+  }
 
   if (entry && now < entry.reset) {
     if (entry.count >= 5) {

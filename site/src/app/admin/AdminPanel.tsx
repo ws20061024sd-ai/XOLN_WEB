@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const API = "https://api.xolnxoln.cn";
+import { API_BASE as API } from "@/lib/api";
 
 interface Comment {
   id: number; slug: string; section: string; author: string;

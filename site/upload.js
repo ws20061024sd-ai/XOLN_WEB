@@ -83,18 +83,30 @@ async function fetchRemoteManifest() {
   });
 }
 
-/** 上传单个文件 */
-async function uploadFile(key, filePath) {
+/** 上传单个文件（失败自动重试 2 次） */
+async function uploadFile(key, filePath, attempts = 3) {
   const contentType = getMimeType(filePath);
-  return new Promise((resolve, reject) => {
-    cos.putObject(
-      { Bucket: bucket, Region: region, Key: key, Body: fs.createReadStream(filePath), ContentType: contentType },
-      (err) => {
-        if (err) reject(err);
-        else resolve();
+  let lastErr = null;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      await new Promise((resolve, reject) => {
+        cos.putObject(
+          { Bucket: bucket, Region: region, Key: key, Body: fs.createReadStream(filePath), ContentType: contentType },
+          (err) => {
+            if (err) reject(err);
+            else resolve();
+          }
+        );
+      });
+      return;
+    } catch (e) {
+      lastErr = e;
+      if (i < attempts - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 300 * (i + 1)));
       }
-    );
-  });
+    }
+  }
+  throw lastErr;
 }
 
 /** 上传 manifest JSON */
@@ -103,7 +115,10 @@ async function uploadManifest(manifest) {
   return new Promise((resolve, reject) => {
     cos.putObject(
       { Bucket: bucket, Region: region, Key: manifestKey, Body: Buffer.from(body), ContentType: "application/json" },
-      (err) => resolve() // manifest 上传失败不阻塞
+      (err) => {
+        if (err) reject(err);
+        else resolve();
+      }
     );
   });
 }
@@ -171,6 +186,15 @@ async function main() {
 
   // 上传
   if (toUpload.length === 0) {
+    // 没有文件要传，但如果刚清理过旧文件，需要同步 manifest
+    if (toDelete.length > 0 && remoteManifest) {
+      const nextManifest = {};
+      for (const key of localKeys) {
+        if (remoteManifest[key]) nextManifest[key] = remoteManifest[key];
+      }
+      await uploadManifest(nextManifest);
+      console.log("manifest 已同步删除记录");
+    }
     console.log("\n无需上传，所有文件已是最新。");
     return;
   }
@@ -178,6 +202,8 @@ async function main() {
   console.log("");
   let ok = 0, fail = 0, idx = 0;
   const concurrency = 10; // 并发数
+  const uploadedKeys = new Set();
+  const failedKeys = new Set();
 
   async function worker() {
     while (idx < toUpload.length) {
@@ -187,8 +213,10 @@ async function main() {
       try {
         await uploadFile(key, filePath);
         ok++;
+        uploadedKeys.add(key);
       } catch (e) {
         fail++;
+        failedKeys.add(key);
         console.error(`  ✗ ${key}: ${e.message}`);
       }
       const done = ok + fail;
@@ -200,10 +228,29 @@ async function main() {
   await Promise.all(workers);
   console.log(`\n上传完成: ${ok} 成功, ${fail} 失败, ${skipped} 跳过`);
 
-  // 更新 manifest
-  await uploadManifest(localManifest);
+  // 生成下一轮 manifest：
+  // - 上传成功的文件记录新 hash
+  // - 上传失败的文件保留旧 hash（下一轮会重新对比并重试）
+  // - 新文件上传失败时不写入 manifest（下一轮会重新上传）
+  // 这样部分失败不会导致后续运行误判为“已上传”。
+  const nextManifest = {};
+  for (const key of localKeys) {
+    if (uploadedKeys.has(key)) {
+      nextManifest[key] = localManifest[key];
+    } else if (remoteManifest && remoteManifest[key]) {
+      nextManifest[key] = remoteManifest[key];
+    }
+  }
+
+  await uploadManifest(nextManifest);
   console.log("manifest 已更新");
   console.log("请到 CDN 控制台刷新缓存。");
+
+  if (fail > 0) {
+    console.error(`\n注意：${fail} 个文件上传失败，已保留旧 manifest 状态，下次运行会自动重试。`);
+    console.error("失败文件：\n  " + [...failedKeys].join("\n  "));
+    process.exitCode = 1;
+  }
 }
 
 main().catch((err) => {

@@ -174,7 +174,7 @@ export default async function WorksNodePage({
       <div className="mt-10 prose">
         <MarkdownRenderer content={node.content || ""} />
       </div>
-      <CommentSection slug={`works-${node.name}`} section="works" />
+      <CommentSection slug={`works-${pathSegments.join("-")}`} section="works" />
     </article>
   );
 }

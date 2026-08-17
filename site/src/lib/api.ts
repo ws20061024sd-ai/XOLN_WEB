@@ -1,7 +1,8 @@
 // Phase 2 API 调用层
-// 设置 NEXT_PUBLIC_API_URL 后生效，为空时静默降级
+// 所有组件统一从这里取 API 地址，避免 AdminPanel/GuestbookClient 各自硬编码。
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "https://api.xolnxoln.cn";
 
 // ===== 评论 =====
 
@@ -17,9 +18,9 @@ export interface Comment {
 export async function fetchComments(
   slug: string
 ): Promise<Comment[]> {
-  if (!API_BASE) return [];
   try {
-    const res = await fetch(`${API_BASE}/api/comments/${slug}`);
+    const res = await fetch(`${API_BASE}/api/comments/${encodeURIComponent(slug)}`);
+    if (!res.ok) throw new Error(`评论加载失败: ${res.status}`);
     return res.json();
   } catch {
     return [];
@@ -32,24 +33,30 @@ export async function postComment(data: {
   author: string;
   content: string;
 }) {
-  if (!API_BASE) return { ok: false, error: "评论暂未开放" };
-  const res = await fetch(`${API_BASE}/api/comments`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/api/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  } catch {
+    return { ok: false, error: "网络异常，请稍后重试" };
+  }
 }
 
 // ===== 统计 =====
 
 export async function trackPageview(path: string) {
-  if (!API_BASE) return;
-  fetch(`${API_BASE}/api/stats/pageview`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ path }),
-  }).catch(() => {});
+  try {
+    fetch(`${API_BASE}/api/stats/pageview`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path }),
+    }).catch(() => {});
+  } catch {
+    // 统计失败不影响浏览
+  }
 }
 
 // ===== 联系表单 =====
@@ -59,13 +66,16 @@ export async function submitContact(data: {
   email: string;
   content: string;
 }) {
-  if (!API_BASE) return { ok: false, error: "联系功能暂未开放" };
-  const res = await fetch(`${API_BASE}/api/contact`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/api/contact`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  } catch {
+    return { ok: false, error: "网络异常，请稍后重试" };
+  }
 }
 
 // ===== 共创投稿 =====
@@ -81,9 +91,9 @@ export interface CommunityPost {
 }
 
 export async function fetchCommunityPosts(): Promise<CommunityPost[]> {
-  if (!API_BASE) return [];
   try {
     const res = await fetch(`${API_BASE}/api/community`);
+    if (!res.ok) throw new Error(`投稿加载失败: ${res.status}`);
     return res.json();
   } catch {
     return [];
@@ -91,9 +101,10 @@ export async function fetchCommunityPosts(): Promise<CommunityPost[]> {
 }
 
 export async function fetchCommunityPost(id: number): Promise<CommunityPost | null> {
-  if (!API_BASE) return null;
+  if (!Number.isInteger(id) || id <= 0) return null;
   try {
     const res = await fetch(`${API_BASE}/api/community/${id}`);
+    if (!res.ok) return null;
     return res.json();
   } catch {
     return null;
@@ -106,11 +117,14 @@ export async function submitCommunityPost(data: {
   content: string;
   tags?: string;
 }) {
-  if (!API_BASE) return { ok: false, error: "投稿暂未开放" };
-  const res = await fetch(`${API_BASE}/api/community`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/api/community`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  } catch {
+    return { ok: false, error: "网络异常，请稍后重试" };
+  }
 }

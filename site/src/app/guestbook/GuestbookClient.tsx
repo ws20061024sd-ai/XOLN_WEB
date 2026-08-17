@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ScrollReveal from "@/components/ScrollReveal";
-
-const API = process.env.NEXT_PUBLIC_API_URL || "https://api.xolnxoln.cn";
+import { API_BASE as API } from "@/lib/api";
 
 interface Msg {
   id: number;
@@ -22,8 +21,12 @@ export default function GuestbookClient() {
 
   const load = () => {
     fetch(`${API}/api/guestbook`)
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error(`加载失败: ${r.status}`);
+        return r.json();
+      })
       .then(setMsgs)
+      .catch(() => setStatus("留言加载失败，请稍后刷新重试"))
       .finally(() => setLoading(false));
   };
 
@@ -33,15 +36,20 @@ export default function GuestbookClient() {
     if (!author.trim() || !content.trim()) return;
     setSubmitting(true);
     setStatus("");
-    const res = await fetch(`${API}/api/guestbook`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ author: author.trim(), content: content.trim() }),
-    });
-    const data = await res.json();
-    setStatus(data.ok ? data.msg : data.error);
-    if (data.ok) { setContent(""); load(); }
-    setSubmitting(false);
+    try {
+      const res = await fetch(`${API}/api/guestbook`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ author: author.trim(), content: content.trim() }),
+      });
+      const data = await res.json();
+      setStatus(data.ok ? data.msg : data.error);
+      if (data.ok) { setContent(""); load(); }
+    } catch {
+      setStatus("网络异常，请稍后重试");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

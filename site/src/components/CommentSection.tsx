@@ -27,14 +27,19 @@ export default function CommentSection({ slug, section }: CommentSectionProps) {
     if (!author.trim() || !content.trim()) return;
     setSubmitting(true);
     setMsg("");
-    const res = await postComment({ slug, section, author: author.trim(), content: content.trim() });
-    if (res.ok) {
-      setContent("");
-      setMsg(res.msg || "已提交");
-    } else {
-      setMsg(res.error || "提交失败");
+    try {
+      const res = await postComment({ slug, section, author: author.trim(), content: content.trim() });
+      if (res.ok) {
+        setContent("");
+        setMsg(res.msg || "已提交");
+      } else {
+        setMsg(res.error || "提交失败");
+      }
+    } catch {
+      setMsg("网络异常，请稍后重试");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   };
 
   return (

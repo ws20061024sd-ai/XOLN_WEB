@@ -1,12 +1,25 @@
 import { Hono } from "hono";
 import { getDb, saveDb } from "../db/schema.js";
 
-const ADMIN_KEY = process.env.ADMIN_KEY || "admin123";
+const ADMIN_KEY = process.env.ADMIN_KEY;
+
+if (
+  !ADMIN_KEY ||
+  ADMIN_KEY.length < 12 ||
+  ADMIN_KEY === "please_change_me_to_a_long_random_value"
+) {
+  console.error(
+    "[admin] ADMIN_KEY 未设置、长度不足 12 位或仍为示例值，拒绝启动。\n" +
+    "请通过环境变量 ADMIN_KEY 配置强密钥，例如：openssl rand -hex 24"
+  );
+  process.exit(1);
+}
 
 const admin = new Hono();
 
 // 密钥校验中间件
-admin.use("/api/admin/*", async (c, next) => {
+// 注意：admin 子应用挂载在 /api/admin 下，因此这里必须是 /* 而不是 /api/admin/*
+admin.use("/*", async (c, next) => {
   const key = c.req.header("x-admin-key");
   if (key !== ADMIN_KEY) {
     return c.json({ error: "未授权" }, 401);

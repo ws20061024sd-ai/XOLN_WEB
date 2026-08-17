@@ -4,6 +4,7 @@ out/
 .DS_Store
 *.pem
 .env*
+!.env.example
 .vercel
 *.tsbuildinfo
 .claude/

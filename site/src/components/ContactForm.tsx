@@ -14,14 +14,19 @@ export default function ContactForm() {
     if (!name.trim() || !email.trim() || !content.trim()) return;
     setSubmitting(true);
     setMsg("");
-    const res = await submitContact({
-      name: name.trim(),
-      email: email.trim(),
-      content: content.trim(),
-    });
-    setMsg(res.ok ? (res.msg || "已发送") : res.error || "发送失败");
-    if (res.ok) { setName(""); setEmail(""); setContent(""); }
-    setSubmitting(false);
+    try {
+      const res = await submitContact({
+        name: name.trim(),
+        email: email.trim(),
+        content: content.trim(),
+      });
+      setMsg(res.ok ? (res.msg || "已发送") : res.error || "发送失败");
+      if (res.ok) { setName(""); setEmail(""); setContent(""); }
+    } catch {
+      setMsg("网络异常，请稍后重试");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

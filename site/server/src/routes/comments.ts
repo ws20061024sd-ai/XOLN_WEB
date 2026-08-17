@@ -20,8 +20,17 @@ comments.get("/:slug", async (c) => {
 // 提交评论
 comments.post("/", async (c) => {
   const { slug, section, author, content } = await c.req.json();
+  if (
+    typeof slug !== "string" || typeof author !== "string" || typeof content !== "string"
+  ) {
+    return c.json({ ok: false, error: "字段格式错误" }, 400);
+  }
   if (!slug || !author || !content) {
     return c.json({ ok: false, error: "请填写所有字段" }, 400);
+  }
+  const sectionValue = typeof section === "string" ? section : "";
+  if (slug.length > 200 || sectionValue.length > 50) {
+    return c.json({ ok: false, error: "文章标识或栏目过长" }, 400);
   }
   if (author.length > 50 || content.length > 5000) {
     return c.json({ ok: false, error: "内容过长" }, 400);
@@ -29,7 +38,7 @@ comments.post("/", async (c) => {
   const db = await getDb();
   db.run("INSERT INTO comments (slug, section, author, content, approved, created_at) VALUES (?, ?, ?, ?, 1, datetime('now', '+8 hours'))", [
     slug,
-    section || "",
+    sectionValue,
     author,
     content,
   ]);

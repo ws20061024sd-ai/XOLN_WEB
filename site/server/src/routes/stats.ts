@@ -5,7 +5,8 @@ const stats = new Hono();
 
 stats.post("/pageview", async (c) => {
   const { path } = await c.req.json();
-  if (!path) return c.json({ ok: false }, 400);
+  if (typeof path !== "string" || !path) return c.json({ ok: false }, 400);
+  if (path.length > 300) return c.json({ ok: false, error: "路径过长" }, 400);
   const db = await getDb();
   db.run("INSERT INTO pageviews (path, ip, created_at) VALUES (?, ?, datetime('now', '+8 hours'))", [
     path,
