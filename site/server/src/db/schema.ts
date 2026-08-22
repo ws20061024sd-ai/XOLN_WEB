@@ -30,20 +30,20 @@ async function initDb(): Promise<Database> {
     author TEXT NOT NULL,
     content TEXT NOT NULL,
     approved INTEGER NOT NULL DEFAULT 1,
-    created_at DATETIME DEFAULT datetime('now', '+8 hours')
+    created_at DATETIME DEFAULT (datetime('now', '+8 hours'))
   )`);
   instance.run(`CREATE TABLE IF NOT EXISTS pageviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     path TEXT NOT NULL,
     ip TEXT,
-    created_at DATETIME DEFAULT datetime('now', '+8 hours')
+    created_at DATETIME DEFAULT (datetime('now', '+8 hours'))
   )`);
   instance.run(`CREATE TABLE IF NOT EXISTS guestbook (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     author TEXT NOT NULL,
     content TEXT NOT NULL,
     approved INTEGER NOT NULL DEFAULT 1,
-    created_at DATETIME DEFAULT datetime('now', '+8 hours')
+    created_at DATETIME DEFAULT (datetime('now', '+8 hours'))
   )`);
   instance.run(`CREATE TABLE IF NOT EXISTS community_posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,7 +52,7 @@ async function initDb(): Promise<Database> {
     content TEXT NOT NULL,
     tags TEXT DEFAULT '',
     approved INTEGER NOT NULL DEFAULT 0,
-    created_at DATETIME DEFAULT datetime('now', '+8 hours')
+    created_at DATETIME DEFAULT (datetime('now', '+8 hours'))
   )`);
   instance.run(`CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,7 +60,7 @@ async function initDb(): Promise<Database> {
     email TEXT NOT NULL,
     content TEXT NOT NULL,
     \`read\` INTEGER NOT NULL DEFAULT 0,
-    created_at DATETIME DEFAULT datetime('now', '+8 hours')
+    created_at DATETIME DEFAULT (datetime('now', '+8 hours'))
   )`);
 
   return instance;
