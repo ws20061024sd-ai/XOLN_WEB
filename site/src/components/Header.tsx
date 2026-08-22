@@ -103,10 +103,13 @@ export default function Header() {
       {/* 移动端菜单 */}
       <div
         className={`overflow-hidden transition-all duration-300 md:hidden ${
-          open ? "max-h-96" : "max-h-0"
+          open ? "max-h-[32rem]" : "max-h-0"
         }`}
       >
         <div className="border-t border-[var(--border)] bg-[var(--bg)] px-4 py-3 flex flex-col gap-1">
+          <div className="px-3 py-2">
+            <ThemeToggle />
+          </div>
           {navItems.map(({ href, label }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
             return (
@@ -123,9 +126,6 @@ export default function Header() {
               </Link>
             );
           })}
-          <div className="px-3 py-2">
-            <ThemeToggle />
-          </div>
           <Link
             href="/search"
             className={`rounded-md px-3 py-2 text-sm font-medium no-underline transition-colors ${
