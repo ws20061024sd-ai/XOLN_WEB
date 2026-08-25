@@ -44,19 +44,20 @@ cd site/server && npm run build
 site/
 ├── content/              # Markdown 内容文件（前端读取渲染）
 │   ├── about.md          # 单页
-│   ├── changelog/        # 更新日志（12 篇，按 order 排序）
+│   ├── changelog/        # 更新日志（14 篇，按 order 排序）
 │   ├── beliefs/          # 观念（6 篇：世界观/人生观/价值观/爱情/亲情/友情）
 │   ├── works/            # 作品（子目录=系列，201 篇文章）
 │   ├── favorites/        # 喜爱（4 篇）
 │   └── misc/             # 杂项
 ├── src/
 │   ├── app/              # Next.js App Router 页面
-│   │   ├── page.tsx      # 首页
+│   │   ├── page.tsx      # 首页（Hero + 探索卡片 + 内容动态）
 │   │   ├── [section]/[slug]/page.tsx  # 列表+详情通用路由
 │   │   ├── guestbook/    # 留言板
 │   │   ├── countdown/    # 倒计时
 │   │   ├── search/       # 搜索
 │   │   ├── community/    # 共创投稿
+│   │   ├── apps/         # 应用（日语学习舱入口）
 │   │   ├── works/[...path]/ # 作品 catch-all
 │   │   └── admin/        # 管理面板
 │   ├── components/
@@ -64,10 +65,12 @@ site/
 │   │   ├── Header.tsx           # 导航栏（毛玻璃效果/移动端汉堡菜单）
 │   │   ├── ScrollReveal.tsx     # 滚动动画（默认可见策略）
 │   │   ├── ThemeScript.tsx      # 暗色模式防闪烁脚本
-│   │   └── PageTransition.tsx   # 路由切换动画
+│   │   ├── PageTransition.tsx   # 路由切换动画
+│   │   └── ContentUpdates.tsx   # 首页内容动态（时间线+展开）
 │   ├── lib/
 │   │   ├── content.ts     # .md 文件读取 + frontmatter 解析（gray-matter）
-│   │   └── api.ts         # API 调用层（API_BASE 解耦）
+│   │   ├── api.ts         # API 调用层（API_BASE 解耦）
+│   │   └── updates.ts     # 首页内容动态（git 提交历史扫描，仅服务端）
 │   └── app/globals.css    # 完整设计系统（CSS 变量/暗色模式/动画/排版）
 ├── server/                # 后端 API（独立部署到 Lighthouse）
 │   ├── src/
@@ -116,7 +119,17 @@ site/
 ### 服务端部署
 - 服务器 `193.112.220.113`，项目路径 `/srv/blog-api/server/`
 - 更新流程：上传 `server/` 源码 → 服务器 `docker compose up -d --build`（容器内编译，`restart` 不加载新代码）
-- **首次切换新目录时**：旧数据库在 `/srv/blog-api/data/blog.db`，需复制到 `/srv/blog-api/server/data/blog.db` 再启动
+- **数据库在 `/srv/blog-api/server/data/blog.db`**（旧备份在 `/srv/blog-api/data/blog.db`）
 - SSH 被阻断时用 Lighthouse WebShell
-- 数据库 SQLite 单文件 `/srv/blog-api/server/data/blog.db`
-- 管理密钥：`server/.env` 中的 `ADMIN_KEY`，前后端管理面板使用同一个密钥
+- 管理密钥：`server/.env` 中的 `ADMIN_KEY`（本地与服务器保持一致，密钥不入库）
+- 容器名是 `server-api-1`（不是 api-1）
+
+### SSL 证书（两条线）
+- **API**（`api.xolnxoln.cn`）：服务器上 Let's Encrypt，certbot 自动续期。曾因 8-21 过期导致整个 API 不可访问（页面像"数据丢失"），续期命令：`certbot renew --nginx && systemctl reload nginx`。注意：`xolnxoln.cn` 在服务器上的 LE 证书续期失败可忽略（前端走 CDN 证书）
+- **前端**（`xolnxoln.cn`）：CDN TrustAsia 证书，腾讯云控制台手动续期（每 90 天）
+
+### 首页内容动态机制
+- 首页"内容动态"区块自动扫描 git 提交历史（`src/lib/updates.ts`，构建时执行）
+- 每次 git 提交 → 重新构建上传 → 首页动态自动更新，无需手动维护
+- 排除了 changelog 目录（那是技术方向）；works 下 title 为空的空模板自动跳过
+- 重要：`updates.ts` 只在服务端用，不能 import 到客户端组件（child_process 会被 Turbopack 拒绝）
