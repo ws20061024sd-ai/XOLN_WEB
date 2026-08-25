@@ -6,7 +6,6 @@ const sections = [
     href: "/about",
     title: "个人简介",
     desc: "经历、身份、在做的事。（独立页）",
-    color: "#2563eb",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -18,7 +17,6 @@ const sections = [
     href: "/beliefs",
     title: "观念",
     desc: "世界观、人生观、价值观——关于爱情、友情、亲情的思考。（列表+详情）",
-    color: "#7c3aed",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -31,7 +29,6 @@ const sections = [
     href: "/works",
     title: "作品",
     desc: "文稿、设计作品。（列表+详情）",
-    color: "#059669",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="3" width="20" height="14" rx="2" />
@@ -43,7 +40,6 @@ const sections = [
     href: "/favorites",
     title: "喜爱",
     desc: "电影、音乐、书籍、活动——塑造了我的那些事物。（列表+详情）",
-    color: "#d97706",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -54,7 +50,6 @@ const sections = [
     href: "/changelog",
     title: "更新日志",
     desc: "这个网站的版本记录与改动。（列表+详情）",
-    color: "#dc2626",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10" />
@@ -66,7 +61,6 @@ const sections = [
     href: "/guestbook",
     title: "留言板",
     desc: "想说点什么，来这里。",
-    color: "#f59e0b",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -77,7 +71,6 @@ const sections = [
     href: "/community",
     title: "共创",
     desc: "读者投稿——你也可以在这里发表文章。",
-    color: "#0891b2",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 20h9" />
@@ -89,7 +82,6 @@ const sections = [
     href: "/apps",
     title: "应用",
     desc: "日语学习舱——词汇、语法、阅读、听力、模考一站式备考工具。",
-    color: "#0ea5e9",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <rect x="2" y="3" width="20" height="14" rx="2" />
@@ -101,7 +93,6 @@ const sections = [
     href: "/search",
     title: "搜索",
     desc: "搜索全站内容，快速找到你想要的文章。",
-    color: "#6366f1",
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="11" cy="11" r="8" />
@@ -116,12 +107,6 @@ export default function Home() {
     <div>
       {/* Hero */}
       <section className="relative mx-auto max-w-3xl overflow-hidden px-4 pb-16 pt-16 sm:pt-28 sm:pb-20">
-        {/* 几何装饰 */}
-        <div className="geo-blob absolute -top-20 -left-20 h-72 w-72 bg-blue-200 sm:h-96 sm:w-96" />
-        <div className="geo-blob absolute top-20 -right-16 h-56 w-56 bg-purple-200 sm:top-10 sm:h-80 sm:w-80" style={{ opacity: 0.10 }} />
-        <div className="geo-blob absolute bottom-0 left-1/3 h-40 w-40 bg-amber-100 sm:h-56 sm:w-56" style={{ opacity: 0.08 }} />
-        <div className="geo-grid absolute inset-0" />
-
         <div className="slide-up relative">
           <p className="text-sm font-medium tracking-widest text-[var(--accent)] uppercase">
             Personal Website
@@ -133,7 +118,7 @@ export default function Home() {
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-[var(--text-muted)]">
-            这里是我的数字花园。记录思考，展示作品，整理一切塑造了我的事物。
+            欢迎来这
           </p>
           <div className="mt-8 flex gap-3">
             <Link
@@ -146,10 +131,10 @@ export default function Home() {
               </svg>
             </Link>
             <Link
-              href="/works"
+              href="/beliefs"
               className="btn-ripple inline-flex items-center rounded-lg border border-[var(--border)] bg-white/80 px-5 py-2.5 text-sm font-medium text-[var(--text)] no-underline backdrop-blur transition-all hover:border-[var(--accent)] hover:shadow-md"
             >
-              查看作品
+              查看观念
             </Link>
           </div>
         </div>
@@ -162,23 +147,14 @@ export default function Home() {
         </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {sections.map(({ href, title, desc, color, icon }, i) => (
+          {sections.map(({ href, title, desc, icon }, i) => (
             <ScrollReveal key={href} delay={i * 60}>
               <Link
                 href={href}
                 className="glass-card group relative flex items-start gap-4 rounded-xl p-5 no-underline"
-                style={{ "--card-color": color } as React.CSSProperties}
               >
-                {/* 彩色微光 */}
                 <span
-                  className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                  style={{
-                    background: `radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), ${color}08 0%, transparent 60%)`,
-                  }}
-                />
-                <span
-                  className="icon-bounce relative mt-0.5 flex-shrink-0 rounded-lg p-2.5 text-white transition-colors"
-                  style={{ backgroundColor: color }}
+                  className="icon-bounce relative mt-0.5 flex-shrink-0 rounded-lg bg-[var(--accent)] p-2.5 text-[var(--bg)] transition-all duration-300 group-hover:border group-hover:border-[var(--accent)] group-hover:bg-transparent group-hover:text-[var(--accent)]"
                 >
                   {icon}
                 </span>
