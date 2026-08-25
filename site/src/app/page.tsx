@@ -1,5 +1,7 @@
 import Link from "next/link";
 import ScrollReveal from "@/components/ScrollReveal";
+import ContentUpdates from "@/components/ContentUpdates";
+import { getContentUpdates } from "@/lib/updates";
 
 const sections = [
   {
@@ -103,6 +105,8 @@ const sections = [
 ];
 
 export default function Home() {
+  const updates = getContentUpdates();
+
   return (
     <div>
       {/* Hero */}
@@ -170,6 +174,8 @@ export default function Home() {
             </ScrollReveal>
           ))}
         </div>
+
+        <ContentUpdates updates={updates} />
       </section>
     </div>
   );
