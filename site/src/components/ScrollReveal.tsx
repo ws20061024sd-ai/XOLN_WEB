@@ -23,6 +23,9 @@ export default function ScrollReveal({
     const node = ref.current;
     if (!node) return;
 
+    // 延迟封顶：长列表第 N 条的 delay 无限叠加会导致滑到后内容迟迟不出现
+    const cappedDelay = Math.min(delay, 300);
+
     // 检查元素是否已在视口内
     const alreadyVisible = node.getBoundingClientRect().top < window.innerHeight;
     if (alreadyVisible) {
@@ -35,7 +38,7 @@ export default function ScrollReveal({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), delay);
+          setTimeout(() => setVisible(true), cappedDelay);
           observer.unobserve(node);
         }
       },
