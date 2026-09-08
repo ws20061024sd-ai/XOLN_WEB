@@ -6,6 +6,7 @@ import { grammarQuestions } from "../lib/data/grammar";
 import { readings } from "../lib/data/readings";
 import { useProgress } from "../hooks/useProgress";
 import { addError } from "../lib/errorStore";
+import { todayLocalDate } from "../lib/date";
 
 type AnswerMap = Record<string, number>; // questionId -> selected option index
 
@@ -75,7 +76,7 @@ export default function MockExamModule() {
       if (userAns !== undefined) {
         recordModuleAnswer("grammar", userAns === q.answer);
         if (userAns !== q.answer) {
-          await addError({ questionId: q.id, module: "grammar", date: new Date().toISOString() });
+          await addError({ questionId: q.id, module: "grammar", date: todayLocalDate() });
         }
       }
     }
@@ -86,7 +87,7 @@ export default function MockExamModule() {
         if (userAns !== undefined) {
           recordModuleAnswer("reading", userAns === q.answer);
           if (userAns !== q.answer) {
-            await addError({ questionId: `${r.id}-q${qi}`, module: "reading", date: new Date().toISOString() });
+            await addError({ questionId: `${r.id}-q${qi}`, module: "reading", date: todayLocalDate() });
           }
         }
       }
@@ -115,13 +116,16 @@ export default function MockExamModule() {
         <div>
           <p className="text-xl font-bold text-[var(--text)]">真题模考</p>
           <p className="mt-2 text-sm text-[var(--text-muted)]">
-            按四级题型比例组卷 · {examConfig.totalTime}分钟 · 语法{exam.grammar.length}题 + 阅读{exam.reading.length}篇
+            模拟卷 · 限时 {examConfig.totalTime} 分钟 · 文法 {exam.grammar.length} 题 + 読解 {exam.reading.length} 篇（
+            {exam.grammar.length + exam.reading.reduce((s, r) => s + r.questions.length, 0)} 题）
           </p>
         </div>
         <div className="text-left text-sm text-[var(--text-muted)] space-y-1">
-          {examConfig.sections.map(s => (
-            <p key={s.name}>· {s.name}: {s.questionCount}题 ({s.weight}分)</p>
-          ))}
+          <p>· 真考结构：{examConfig.sections.map(s => `${s.name} ${s.weight}%`).join(" · ")}</p>
+          <p>· 计分：答对率折算百分制，60 分合格</p>
+          <p className="text-xs text-[var(--text-soft)]">
+            本卷暂只覆盖文法与読解两大板块，听力 / 文字词汇 / 翻译写作请用对应标签页专项练习
+          </p>
         </div>
         <button onClick={startExam}
           className="rounded-lg bg-[var(--accent)] px-8 py-3 text-base font-medium text-white transition-opacity hover:opacity-90">

@@ -42,15 +42,7 @@ export async function addErrors(records: Omit<ErrorRecord, "count">[]): Promise<
 export async function getAllErrors(): Promise<ErrorRecord[]> {
   const remote = await loadErrors();
   if (remote && remote.length > 0) {
-    return (remote as unknown as ErrorRecord[]).map((r: any) => ({
-      ...r,
-      count: r.count ?? 1,
-    }));
+    return remote;
   }
   return storage.get<ErrorRecord[]>(ERROR_KEY) ?? [];
-}
-
-export async function removeError(questionId: string): Promise<void> {
-  const all = storage.get<ErrorRecord[]>(ERROR_KEY) ?? [];
-  storage.set(ERROR_KEY, all.filter(e => e.questionId !== questionId));
 }

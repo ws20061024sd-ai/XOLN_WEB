@@ -1,22 +1,23 @@
 "use client";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { grammarQuestions } from "../lib/data/grammar";
 import { useProgress } from "../hooks/useProgress";
 import { addError } from "../lib/errorStore";
 import { getAvailable, markCorrect } from "../lib/correctStore";
+import { todayLocalDate } from "../lib/date";
 
 export default function GrammarModule() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [queue, setQueue] = useState(() =>
+    getAvailable(grammarQuestions, "grammar").sort(() => Math.random() - 0.5),
+  );
   const [selected, setSelected] = useState<number | null>(null);
   const [showExplain, setShowExplain] = useState(false);
   const { recordModuleAnswer, moduleStats } = useProgress();
   const grammarStats = moduleStats.grammar;
 
-  const available = useMemo(() =>
-    getAvailable(grammarQuestions, "grammar").sort(() => Math.random() - 0.5),
-  []);
-  const question = available.length > 0 ? available[currentIndex % available.length] : null;
+  // 当前题固定在队首：答题与反馈期间队列不变，点"下一题"才结算
+  const question = queue[0] ?? null;
   const isCorrect = selected === question?.answer;
 
   const handleSelect = useCallback(async (index: number) => {
@@ -31,17 +32,25 @@ export default function GrammarModule() {
       await addError({
         questionId: question.id,
         module: "grammar",
-        date: new Date().toISOString(),
+        date: todayLocalDate(),
       });
     }
-  }, [selected, question]);
+  }, [selected, question, recordModuleAnswer]);
 
   const handleShowExplain = () => setShowExplain(true);
 
   const nextQuestion = () => {
+    if (!question) return;
+    const wasCorrect = selected === question.answer;
     setSelected(null);
     setShowExplain(false);
-    setCurrentIndex(i => i + 1);
+    if (wasCorrect) {
+      // 答对：永久出队（已 markCorrect，刷新后也不会重现）
+      setQueue(prev => prev.slice(1));
+    } else {
+      // 答错：移到队尾，本会话内稍后可再遇
+      setQueue(prev => [...prev.slice(1), prev[0]]);
+    }
   };
 
   if (!question) {
@@ -67,7 +76,7 @@ export default function GrammarModule() {
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={question.id + currentIndex}
+          key={question.id}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}

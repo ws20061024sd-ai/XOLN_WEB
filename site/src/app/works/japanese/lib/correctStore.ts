@@ -1,6 +1,5 @@
 // 记录已答对的题目 ID，避免它们再次出现
 const KEY = "cjt4_correct";
-const FLASHCARD_KEY = "cjt4_correct_flashcard";
 
 function loadSet(key: string): Set<string> {
   if (typeof window === "undefined") return new Set();
@@ -27,23 +26,8 @@ export function getAvailable<T extends { id: string }>(
 }
 
 // 标记为答对
-export function markCorrect(id: string, module: "grammar" | "reading" | "listening" | "flashcard") {
-  const fullId = `${module}:${id}`;
-  if (module === "flashcard") {
-    const set = loadSet(FLASHCARD_KEY);
-    set.add(id);
-    saveSet(FLASHCARD_KEY, set);
-  } else {
-    const set = loadSet(KEY);
-    set.add(fullId);
-    saveSet(KEY, set);
-  }
-}
-
-// 是否为已答对的题
-export function isCorrect(id: string, module: string): boolean {
-  if (module === "flashcard") {
-    return loadSet(FLASHCARD_KEY).has(id);
-  }
-  return loadSet(KEY).has(`${module}:${id}`);
+export function markCorrect(id: string, module: "grammar" | "reading" | "listening") {
+  const set = loadSet(KEY);
+  set.add(`${module}:${id}`);
+  saveSet(KEY, set);
 }

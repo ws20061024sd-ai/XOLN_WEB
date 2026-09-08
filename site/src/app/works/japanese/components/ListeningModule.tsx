@@ -1,26 +1,28 @@
 "use client";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "motion/react";
 import { listeningScripts } from "../lib/data/listening";
 import { speakJapanese } from "../lib/tts";
 import { useProgress } from "../hooks/useProgress";
 import { addErrors } from "../lib/errorStore";
 import { getAvailable, markCorrect } from "../lib/correctStore";
+import { todayLocalDate } from "../lib/date";
 
 export default function ListeningModule() {
-  const [index, setIndex] = useState(0);
+  const [queue, setQueue] = useState(() =>
+    getAvailable(listeningScripts, "listening").sort(() => Math.random() - 0.5),
+  );
   const [played, setPlayed] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [answers, setAnswers] = useState<Map<number, number>>(new Map());
   const [submitted, setSubmitted] = useState(false);
+  const [allCorrect, setAllCorrect] = useState(false);
   const [showScript, setShowScript] = useState(false);
   const [rate, setRate] = useState(1.0);
   const { recordModuleAnswer } = useProgress();
 
-  const available = useMemo(() =>
-    getAvailable(listeningScripts, "listening").sort(() => Math.random() - 0.5),
-  []);
-  const script = available.length > 0 ? available[index % available.length] : null;
+  // 当前段固定在队首：提交评分期间队列不变，点"下一段"才结算
+  const script = queue[0] ?? null;
 
   const play = useCallback(async () => {
     if (!script) return;
@@ -41,29 +43,38 @@ export default function ListeningModule() {
     if (!script) return;
     setSubmitted(true);
     const errors: { questionId: string; module: "listening"; date: string }[] = [];
-    let allCorrect = true;
+    let correctAll = true;
     for (let qi = 0; qi < script.questions.length; qi++) {
       const correct = answers.get(qi) === script.questions[qi].answer;
       recordModuleAnswer("listening", correct);
       if (!correct) {
-        allCorrect = false;
+        correctAll = false;
         errors.push({
           questionId: `${script.id}-q${qi}`,
           module: "listening" as const,
-          date: new Date().toISOString(),
+          date: todayLocalDate(),
         });
       }
     }
-    if (allCorrect) markCorrect(script.id, "listening");
+    setAllCorrect(correctAll);
+    if (correctAll) markCorrect(script.id, "listening");
     if (errors.length > 0) await addErrors(errors);
   };
 
   const nextScript = () => {
-    setIndex(i => i + 1);
+    if (!script) return;
     setPlayed(false);
     setAnswers(new Map());
     setSubmitted(false);
+    setAllCorrect(false);
     setShowScript(false);
+    if (allCorrect) {
+      // 整段全对：永久出队（已 markCorrect，刷新后也不会重现）
+      setQueue(prev => prev.slice(1));
+    } else {
+      // 有错：移到队尾，之后可重听
+      setQueue(prev => [...prev.slice(1), prev[0]]);
+    }
   };
 
   if (!script) {
@@ -87,7 +98,7 @@ export default function ListeningModule() {
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
         <span className="font-medium text-[var(--text)]">听力</span>
         <span className="rounded-full bg-[var(--border-light)] px-2 py-0.5 text-xs">{script.difficulty}</span>
-        <span>剩余 {available.length} 段</span>
+        <span>剩余 {queue.length} 段</span>
       </div>
 
       <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4">

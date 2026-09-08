@@ -1,22 +1,24 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { readings, type ReadingPassage } from "../lib/data/readings";
 import { useProgress } from "../hooks/useProgress";
 import { addErrors } from "../lib/errorStore";
 import { getAvailable, markCorrect } from "../lib/correctStore";
+import { todayLocalDate } from "../lib/date";
 
 export default function ReadingModule() {
-  const [index, setIndex] = useState(0);
+  const [queue, setQueue] = useState(() =>
+    getAvailable(readings, "reading").sort(() => Math.random() - 0.5),
+  );
   const [showQuestions, setShowQuestions] = useState(false);
   const [answers, setAnswers] = useState<Map<number, number>>(new Map());
   const [submitted, setSubmitted] = useState(false);
+  const [allCorrect, setAllCorrect] = useState(false);
   const { recordModuleAnswer } = useProgress();
 
-  const available = useMemo(() =>
-    getAvailable(readings, "reading").sort(() => Math.random() - 0.5),
-  []);
-  const passage: ReadingPassage | undefined = available.length > 0 ? available[index % available.length] : undefined;
+  // 当前篇固定在队首：提交评分期间队列不变，点"下一篇"才结算
+  const passage: ReadingPassage | undefined = queue[0];
 
   const handleSelect = (qi: number, oi: number) => {
     if (submitted) return;
@@ -29,28 +31,37 @@ export default function ReadingModule() {
     if (!passage) return;
     setSubmitted(true);
     const errors: { questionId: string; module: "reading"; date: string }[] = [];
-    let allCorrect = true;
+    let correctAll = true;
     for (let qi = 0; qi < passage.questions.length; qi++) {
       const correct = answers.get(qi) === passage.questions[qi].answer;
       recordModuleAnswer("reading", correct);
       if (!correct) {
-        allCorrect = false;
+        correctAll = false;
         errors.push({
           questionId: `${passage.id}-q${qi}`,
           module: "reading" as const,
-          date: new Date().toISOString(),
+          date: todayLocalDate(),
         });
       }
     }
-    if (allCorrect) markCorrect(passage.id, "reading");
+    setAllCorrect(correctAll);
+    if (correctAll) markCorrect(passage.id, "reading");
     if (errors.length > 0) await addErrors(errors);
   };
 
   const nextPassage = () => {
-    setIndex(i => i + 1);
+    if (!passage) return;
     setShowQuestions(false);
     setAnswers(new Map());
     setSubmitted(false);
+    setAllCorrect(false);
+    if (allCorrect) {
+      // 整篇全对：永久出队（已 markCorrect，刷新后也不会重现）
+      setQueue(prev => prev.slice(1));
+    } else {
+      // 有错：移到队尾，之后可重读
+      setQueue(prev => [...prev.slice(1), prev[0]]);
+    }
   };
 
   if (!passage) {
@@ -74,7 +85,7 @@ export default function ReadingModule() {
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
         <span className="font-medium text-[var(--text)]">阅读</span>
         <span className="rounded-full bg-[var(--border-light)] px-2 py-0.5 text-xs">{passage.difficulty}</span>
-        <span>剩余 {available.length} 篇</span>
+        <span>剩余 {queue.length} 篇</span>
       </div>
 
       <AnimatePresence mode="wait">

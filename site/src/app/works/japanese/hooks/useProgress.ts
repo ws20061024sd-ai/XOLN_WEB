@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { loadProgress, saveProgress } from "../lib/supabase";
+import { formatLocalDate, todayLocalDate } from "../lib/date";
 
 export interface ModuleStats {
   grammar: { total: number; correct: number };
@@ -69,7 +71,7 @@ function getYesterdayStr(): string {
 }
 
 function todayStr(): string {
-  return new Date().toISOString().split("T")[0];
+  return todayLocalDate();
 }
 
 const MODULE_LOG_KEY: Record<string, keyof DayLog> = {
@@ -81,13 +83,57 @@ const MODULE_LOG_KEY: Record<string, keyof DayLog> = {
 };
 
 export function useProgress() {
-  const [persisted, setPersisted] = useState<PersistedState>(loadPersisted);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
+  // 渲染期快照：早于任何 effect 的本地写入，决定是否需要从云端拉取。
+  // 不能在 effect 运行时再读 localStorage——持久化 effect 先跑会先写入空默认值，把"判空"污染成"非空"。
+  const [hadLocalData] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return !!localStorage.getItem(STORAGE_KEY);
+    } catch {
+      return false;
     }
-  }, [persisted]);
+  });
+  const [persisted, setPersisted] = useState<PersistedState>(loadPersisted);
+  // 本地原本有数据 → 直接允许落盘/云写（本地优先）；原本为空 → 先等云端拉取完成
+  const [cloudReady, setCloudReady] = useState(hadLocalData);
+
+  // 本地持久化 + 防抖云同步。
+  // cloudReady 之前不落本地也不云写：初始空默认值不固化到 localStorage，
+  // 也就不会让"新设备拉取"分支在下次挂载时被短路。
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!cloudReady) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
+    const t = setTimeout(() => {
+      saveProgress(persisted).catch(() => {});
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [persisted, cloudReady]);
+
+  // 初始化：本地原本为空（新设备）→ 从 Supabase 拉取合并后放行落盘
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (hadLocalData) return;
+    let cancelled = false;
+    loadProgress()
+      .then(remote => {
+        if (cancelled) return;
+        if (remote) {
+          setPersisted(prev => ({
+            daily: { ...prev.daily, ...remote.daily },
+            modules: { ...getEmptyModuleStats(), ...remote.modules },
+            dailyLog: prev.dailyLog,
+          }));
+        }
+        setCloudReady(true);
+      })
+      .catch(() => {
+        if (!cancelled) setCloudReady(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hadLocalData]);
 
   const markActivity = useCallback(() => {
     const today = new Date().toDateString();
@@ -161,7 +207,7 @@ export function useProgress() {
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const ds = d.toISOString().split("T")[0];
+      const ds = formatLocalDate(d);
       const found = persisted.dailyLog.find(l => l.date === ds);
       days.push(found?.total ?? 0);
     }

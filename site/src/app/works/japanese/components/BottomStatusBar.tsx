@@ -7,7 +7,7 @@ export default function BottomStatusBar({ stats }: { stats: DailyStats }) {
     <div className="flex items-center justify-center gap-6 border-t border-[var(--border)] px-4 py-2 text-xs text-[var(--text-muted)]">
       <span className="inline-flex items-center gap-1.5">
         <StatsIcon />
-        今日 {stats.cardsReviewed} 词
+        今日 {stats.cardsReviewed} 题
       </span>
       <span className="inline-flex items-center gap-1.5">
         <ClockIcon />
