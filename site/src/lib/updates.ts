@@ -83,6 +83,8 @@ export function getContentUpdates(): ContentUpdate[] {
       if (!UPDATE_SECTIONS.includes(section as any)) continue;
 
       const slug = rest.join("/").replace(/\.md$/, "");
+      // 跳过 _ 开头的元数据文件（如 _index.md）：它们不生成页面，链接会 404
+      if (rest.some((seg) => seg.startsWith("_"))) continue;
       const filePath = path.join(contentRoot, section as string, `${slug}.md`);
       if (!fs.existsSync(filePath)) continue;
 

@@ -64,11 +64,14 @@ function WorksList({ nodes, basePath }: { nodes: WorksNode[]; basePath: string }
               <span className="flex-shrink-0 rounded-lg bg-[var(--accent-soft)] p-2.5 text-[var(--accent)]">
                 <FolderIcon />
               </span>
-              <div>
+              <div className="min-w-0 flex-1">
                 <h3 className="font-semibold text-[var(--text)] group-hover:text-[var(--accent)] transition-colors">
                   {node.title}
                 </h3>
-                <p className="mt-0.5 text-xs text-[var(--text-soft)]">
+                {node.description && (
+                  <p className="mt-1 text-sm text-[var(--text-muted)] line-clamp-1">{node.description}</p>
+                )}
+                <p className="mt-1 text-xs text-[var(--text-soft)]">
                   {node.children?.filter(c => c.type === "file").length || 0} 篇作品
                 </p>
               </div>
@@ -115,7 +118,8 @@ export function generateStaticParams() {
       if (stat.isDirectory() && !entry.startsWith("_")) {
         results.push({ path: [...prefix, entry] });
         walk(full, [...prefix, entry]);
-      } else if (entry.endsWith(".md")) {
+      } else if (entry.endsWith(".md") && !entry.startsWith("_")) {
+        // 下划线开头是元数据文件（如 _index.md），不单独成页
         results.push({ path: [...prefix, entry.replace(/\.md$/, "")] });
       }
     }
@@ -143,6 +147,9 @@ export default async function WorksNodePage({
           <h1 className="font-serif text-3xl font-bold tracking-tight sm:text-4xl">
             {result.breadcrumb[result.breadcrumb.length - 1].label}
           </h1>
+          {result.description && (
+            <p className="mt-3 text-sm text-[var(--text-muted)]">{result.description}</p>
+          )}
         </ScrollReveal>
         <div className="mt-8">
           <WorksList nodes={result.children} basePath={`/works/${pathSegments.join("/")}`} />

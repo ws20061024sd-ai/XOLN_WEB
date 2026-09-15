@@ -31,7 +31,7 @@ export function getContentList(section: string): ContentMeta[] {
 
   const items = fs
     .readdirSync(dir)
-    .filter((f) => f.endsWith(".md"))
+    .filter((f) => f.endsWith(".md") && !f.startsWith("_"))
     .map((f) => {
       const raw = fs.readFileSync(path.join(dir, f), "utf-8");
       const { data } = matter(raw);
@@ -88,7 +88,8 @@ export function getAllContent(): (ContentItem & { section: string })[] {
       const stat = fs.statSync(full);
       if (stat.isDirectory() && !entry.startsWith("_")) {
         walk(full, section, prefix ? `${prefix}/${entry}` : entry);
-      } else if (entry.endsWith(".md")) {
+      } else if (entry.endsWith(".md") && !entry.startsWith("_")) {
+        // 下划线开头是元数据文件（如 _index.md），不进搜索索引
         const slugBase = entry.replace(/\.md$/, "");
         const slug = prefix ? `${prefix}/${slugBase}` : slugBase;
         try {
@@ -122,17 +123,19 @@ export function getAllContent(): (ContentItem & { section: string })[] {
 export interface WorksNode {
   type: "directory" | "file";
   name: string;       // 目录名或文件名（不含 .md）
-  title: string;      // 显示标题
+  title: string;      // 显示标题（目录可用 _index.md 覆盖）
   order?: number;     // 排序用
   children?: WorksNode[];
+  // 目录：来自 _index.md；文件：来自 frontmatter
+  description?: string;
   // 仅文件：
   date?: string;
-  description?: string;
   tags?: string[];
   content?: string;
 }
 
-function readWorksDir(dir: string): WorksNode[] {
+/** 读取目录树（导出供测试用）。目录的显示名优先取该目录下 _index.md 的 frontmatter。 */
+export function readWorksDir(dir: string): WorksNode[] {
   if (!fs.existsSync(dir)) return [];
   const entries = fs.readdirSync(dir);
 
@@ -146,14 +149,30 @@ function readWorksDir(dir: string): WorksNode[] {
       // 跳过下划线开头的隐藏目录
       if (name.startsWith("_")) continue;
       const children = readWorksDir(full);
-      // 目录名直接做标题，或者可以用一个 _index.md 来定义目录元数据
+      // 目录元数据：优先取 _index.md 的 frontmatter，缺省回退目录名
+      let title = name;
+      let description = "";
+      let order: number | undefined;
+      const indexPath = path.join(full, "_index.md");
+      if (fs.existsSync(indexPath)) {
+        try {
+          const { data } = matter(fs.readFileSync(indexPath, "utf-8"));
+          title = data.title || name;
+          description = data.description || "";
+          order = typeof data.order === "number" ? data.order : undefined;
+        } catch { /* frontmatter 损坏时回退目录名，不让整个构建失败 */ }
+      }
       nodes.push({
         type: "directory",
         name,
-        title: name,
+        title,
+        description,
+        order,
         children,
       });
     } else if (name.endsWith(".md")) {
+      // 跳过下划线开头的元数据文件（如 _index.md），它们不是文章
+      if (name.startsWith("_")) continue;
       const slug = name.replace(/\.md$/, "");
       const raw = fs.readFileSync(full, "utf-8");
       const { data, content } = matter(raw);
@@ -171,14 +190,14 @@ function readWorksDir(dir: string): WorksNode[] {
     // 忽略非 .md 文件
   }
 
-  // 排序：目录在前，按名称排；文件在后，有 order 按 order，否则按日期降序
+  // 排序：目录在前，有 order 按 order，否则按名称；文件在后，有 order 按 order，否则按日期降序
   nodes.sort((a, b) => {
     if (a.type !== b.type) return a.type === "directory" ? -1 : 1;
-    if (a.type === "directory") return a.name.localeCompare(b.name);
-    // both files
+    // 同类型：有 order 的在前并按 order 升序
     if (a.order != null && b.order != null) return a.order - b.order;
     if (a.order != null) return -1;
     if (b.order != null) return 1;
+    if (a.type === "directory") return a.name.localeCompare(b.name);
     return (b.date || "").localeCompare(a.date || "");
   });
 
@@ -193,14 +212,14 @@ export function getWorksRoot(): WorksNode[] {
 /** 根据 URL 路径段定位节点（/works/[...path] 用） */
 export function getWorksNode(
   pathSegments: string[]
-): { type: "directory"; children: WorksNode[]; breadcrumb: { name: string; label: string }[] }
+): { type: "directory"; children: WorksNode[]; description: string; breadcrumb: { name: string; label: string }[] }
  | { type: "file"; node: WorksNode; breadcrumb: { name: string; label: string }[] }
  | null {
   const root = getWorksRoot();
   const breadcrumb: { name: string; label: string }[] = [{ name: "", label: "作品" }];
 
   if (pathSegments.length === 0) {
-    return { type: "directory", children: root, breadcrumb };
+    return { type: "directory", children: root, description: "", breadcrumb };
   }
 
   let current = root;
@@ -213,7 +232,7 @@ export function getWorksNode(
       breadcrumb.push({ name: found.name, label: found.title });
       if (i === pathSegments.length - 1) {
         // 最后一段是目录 → 展示子目录列表
-        return { type: "directory", children: found.children || [], breadcrumb };
+        return { type: "directory", children: found.children || [], description: found.description || "", breadcrumb };
       }
       // 不是最后一段 → 继续深入
       current = found.children || [];

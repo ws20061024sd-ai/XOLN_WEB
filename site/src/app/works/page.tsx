@@ -36,11 +36,14 @@ function WorksList({ nodes, basePath }: { nodes: WorksNode[]; basePath: string }
               <span className="flex-shrink-0 rounded-lg bg-[var(--accent-soft)] p-2.5 text-[var(--accent)]">
                 <FolderIcon />
               </span>
-              <div>
+              <div className="min-w-0 flex-1">
                 <h3 className="font-semibold text-[var(--text)] transition-colors group-hover:text-[var(--accent)]">
                   {node.title}
                 </h3>
-                <p className="mt-0.5 text-xs text-[var(--text-soft)]">
+                {node.description && (
+                  <p className="mt-1 text-sm text-[var(--text-muted)] line-clamp-1">{node.description}</p>
+                )}
+                <p className="mt-1 text-xs text-[var(--text-soft)]">
                   {node.children?.filter(c => c.type === "file").length || 0} 篇作品
                 </p>
               </div>
