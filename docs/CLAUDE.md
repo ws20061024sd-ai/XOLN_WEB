@@ -46,7 +46,7 @@ site/
 │   ├── about.md          # 单页
 │   ├── changelog/        # 更新日志（14 篇，按 order 排序）
 │   ├── beliefs/          # 观念（6 篇：世界观/人生观/价值观/爱情/亲情/友情）
-│   ├── works/            # 作品（子目录=系列，201 篇文章）
+│   ├── works/            # 作品（子目录=系列，201 篇文章；系列 _index.md 定义中文显示名）
 │   ├── favorites/        # 喜爱（4 篇）
 │   └── misc/             # 杂项
 ├── src/
@@ -86,7 +86,9 @@ site/
 └── .env.local             # NEXT_PUBLIC_API_URL=https://api.xolnxoln.cn
 ```
 
-**内容排序规则**：所有栏目若全部有 `order` 字段则按 order 升序排列；否则按 date 降序。changelog 中 order 越小越新，排在最前。
+**内容排序规则**：所有栏目若全部有 `order` 字段则按 order 升序排列；否则按 date 降序。changelog 中 order 越小越新，排在最前。作品栏目的目录排序：有 `order` 按 order 升序，无 order 按名称排在后面（文件排序规则不变）。
+
+**作品系列显示名**：系列文件夹名保持英文（它决定 URL，评论 slug 依赖它，改中文会导致评论失联 + dev 模式路径 bug）；中文显示名/描述/排序写在系列目录内的 `_index.md` 里。`_` 开头的 `.md` 是元数据文件，不显示为文章、不进搜索索引、不进首页内容动态。
 
 ---
 
