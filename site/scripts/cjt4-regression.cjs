@@ -23,10 +23,11 @@ function harness(mocks = {}) {
   const cache=new Map();
   function load(file) {
     if (file in mocks) return mocks[file];
+    if (file.endsWith(".json")) return JSON.parse(fs.readFileSync(path.resolve(root, file), "utf8"));
     if (cache.has(file)) return cache.get(file);
     const filename=['.tsx','.ts'].map(ext=>path.join(root,file+ext)).find(fs.existsSync);
     const module={exports:{}}; cache.set(file,module.exports);
-    const code=ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText;
+    const code=ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{esModuleInterop:true,target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText;
     const requireMock = name => name==='motion/react'?{motion:{div:'div'}}:name==='react'?React:name==='react/jsx-runtime'?{jsx:(type,props)=>({type,props}),jsxs:(type,props)=>({type,props})}:name.startsWith('.')?load(path.posix.normalize(path.posix.join(path.posix.dirname(file),name))):require(name);
     vm.runInNewContext(code,{module,exports:module.exports,require:requireMock,window:{localStorage},localStorage,document:{visibilityState:'visible',addEventListener(){},removeEventListener(){}},setInterval:f=>{intervals.push(f);return intervals.length;},clearInterval(){},setTimeout:f=>{timers.push(f);return timers.length;},clearTimeout(){},console,Date,Map,Set,Promise});
     cache.set(file,module.exports); return module.exports;
@@ -50,7 +51,7 @@ function harness(mocks = {}) {
   const vocabulary=Array.from({length:30},(_,i)=>({id:`v-${i}`,meaning:i<2?'same':`meaning-${i}`}));
   const h=harness({'lib/supabase':{storage:null,loadCardStates:async()=>null,saveCardState:async()=>{}},'lib/data/vocabulary':{vocabulary}});
   // Use a second harness sharing this storage in its network mock.
-  const f=harness({'lib/supabase':{storage:h.storage,loadCardStates:async()=>null,saveCardState:async()=>{}},'lib/data/vocabulary':{vocabulary}});
+  const f=harness({'lib/supabase':{storage:h.storage,loadCardStates:async()=>h.storage.get("card_states"),saveCardState:async()=>{}},'lib/data/vocabulary':{vocabulary}});
   h.storage.set('flashcard_new_words',{date:new Date().toDateString(),ids:Array.from({length:9},(_,i)=>`old-${i}`)});
   const hook=f.load('hooks/useFlashcards').useFlashcards;
   f.render(hook);await flush();let cards=f.render(hook);
@@ -58,7 +59,7 @@ function harness(mocks = {}) {
   assert.equal(new Set(cards.options).size,cards.options.length,'option meanings must be unique');
   cards.checkAnswer(cards.currentCard.meaning);f.render(hook);
   assert.equal(h.storage.get('flashcard_new_words').ids.length,10);
-  const f2=harness({'lib/supabase':{storage:h.storage,loadCardStates:async()=>null,saveCardState:async()=>{}},'lib/data/vocabulary':{vocabulary}});
+  const f2=harness({'lib/supabase':{storage:h.storage,loadCardStates:async()=>h.storage.get("card_states"),saveCardState:async()=>{}},'lib/data/vocabulary':{vocabulary}});
   const hook2=f2.load('hooks/useFlashcards').useFlashcards;f2.render(hook2);await flush();
   assert.equal(f2.render(hook2).queueLength,0,'remount must not grant another batch');
   console.log('PASS daily new-word limit across remount and unique options');
@@ -103,7 +104,7 @@ function harness(mocks = {}) {
   assert.ok(recorded.length>=20,'timeout must record the full paper');
   assert.equal(mistakes.length,recorded.length,'unanswered questions must enter error book');
   const count=recorded.length;exam.intervals.at(-1)();assert.equal(recorded.length,count,'finishing twice must not duplicate results');
-  assert.ok(elements(exam.render(Exam)).some(n=>n.type==='button' && n.props.children==='重新模考'));
+  assert.ok(elements(exam.render(Exam)).some(n=>n.type==='button' && n.props.children==='再练一卷'));
   assert.ok(running);
   console.log('PASS timeout submits once and includes unanswered mistakes');
 

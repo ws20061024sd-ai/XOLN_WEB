@@ -1,33 +1,9 @@
-// 记录已答对的题目 ID，避免它们再次出现
-const KEY = "cjt4_correct";
+import { reviewQueue, recordReview, type ReviewModule } from "./reviewStore";
 
-function loadSet(key: string): Set<string> {
-  if (typeof window === "undefined") return new Set();
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
-  } catch { return new Set(); }
+// Legacy cjt4_correct remains untouched. A historical correct answer is not proof of lasting recall.
+export function getAvailable<T extends { id: string }>(items: T[], module: ReviewModule): T[] {
+  return reviewQueue(items, module);
 }
-
-function saveSet(key: string, set: Set<string>) {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(key, JSON.stringify([...set]));
-  } catch {}
-}
-
-// 获取可用题目（排除已答对的）
-export function getAvailable<T extends { id: string }>(
-  items: T[],
-  module: "grammar" | "reading" | "listening"
-): T[] {
-  const correctSet = loadSet(KEY);
-  return items.filter(item => !correctSet.has(`${module}:${item.id}`));
-}
-
-// 标记为答对
-export function markCorrect(id: string, module: "grammar" | "reading" | "listening") {
-  const set = loadSet(KEY);
-  set.add(`${module}:${id}`);
-  saveSet(KEY, set);
+export function markCorrect(id: string, module: ReviewModule) {
+  recordReview(id, module, true);
 }

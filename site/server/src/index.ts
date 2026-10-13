@@ -1,6 +1,7 @@
 import "./load-env.js";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { bodyLimit } from "hono/body-limit";
 import { serve } from "@hono/node-server";
 import comments from "./routes/comments.js";
 import stats from "./routes/stats.js";
@@ -8,6 +9,7 @@ import contact from "./routes/contact.js";
 import admin from "./routes/admin.js";
 import guestbook from "./routes/guestbook.js";
 import community from "./routes/community.js";
+import study from "./routes/study.js";
 
 const app = new Hono();
 
@@ -22,7 +24,7 @@ app.use(
       "http://localhost:3000",
     ],
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "x-admin-key"],
+    allowHeaders: ["Content-Type", "x-admin-key", "Authorization"],
   })
 );
 
@@ -57,6 +59,8 @@ app.use("/api/*", async (c, next) => {
   await next();
 });
 
+app.use("/api/study/*", bodyLimit({ maxSize: 30000, onError: c => c.json({ error: "请求内容过长" }, 413) }));
+
 // 路由挂载
 app.route("/api/comments", comments);
 app.route("/api/stats", stats);
@@ -64,6 +68,7 @@ app.route("/api/contact", contact);
 app.route("/api/guestbook", guestbook);
 app.route("/api/community", community);
 app.route("/api/admin", admin);
+app.route("/api/study", study);
 
 // 健康检查
 app.get("/api/health", (c) => c.json({ ok: true, time: new Date().toISOString() }));

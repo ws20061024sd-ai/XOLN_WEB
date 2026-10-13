@@ -26,7 +26,7 @@ export async function addErrors(records: Omit<ErrorRecord, "count">[]): Promise<
   }
   // Persist before network I/O so navigation or an offline request cannot lose mistakes.
   storage.set(ERROR_KEY, all);
-  await Promise.all(records.map(record => saveError(record)));
+  await Promise.all(records.map(record => saveError(all.find(error => error.questionId === record.questionId && error.module === record.module)!)));
 }
 
 export async function getAllErrors(): Promise<ErrorRecord[]> {

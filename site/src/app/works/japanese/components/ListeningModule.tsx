@@ -1,8 +1,8 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { listeningScripts } from "../lib/data/listening";
-import { speakJapanese } from "../lib/tts";
+import { speakJapanese, stopJapanese } from "../lib/tts";
 import { useProgress } from "../hooks/useProgress";
 import { addErrors } from "../lib/errorStore";
 import { getAvailable, markCorrect } from "../lib/correctStore";
@@ -10,8 +10,11 @@ import { todayLocalDate } from "../lib/date";
 
 export default function ListeningModule() {
   const [queue, setQueue] = useState(() =>
-    getAvailable(listeningScripts, "listening").sort(() => Math.random() - 0.5),
+    getAvailable(listeningScripts, "listening"),
   );
+  const [audioError, setAudioError] = useState("");
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; stopJapanese(); }; }, []);
   const [played, setPlayed] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [answers, setAnswers] = useState<Map<number, number>>(new Map());
@@ -27,9 +30,12 @@ export default function ListeningModule() {
   const play = useCallback(async () => {
     if (!script) return;
     setPlaying(true);
-    await speakJapanese(script.script, rate);
+    setAudioError("");
+    const completed = await speakJapanese(script.script, rate);
+    if (!mounted.current) return;
     setPlaying(false);
-    setPlayed(true);
+    if (completed) setPlayed(true);
+    else setAudioError("播放未完成。请确认浏览器支持日语语音，再点击播放；失败不计完成。");
   }, [script, rate]);
 
   const handleSelect = (qi: number, oi: number) => {
@@ -63,6 +69,9 @@ export default function ListeningModule() {
 
   const nextScript = () => {
     if (!script) return;
+    stopJapanese();
+    setPlaying(false);
+    setAudioError("");
     setPlayed(false);
     setAnswers(new Map());
     setSubmitted(false);
@@ -85,8 +94,8 @@ export default function ListeningModule() {
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
         </div>
-        <p className="text-lg font-medium text-[var(--text)]">听力全部完成</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">所有听力题都已答对</p>
+        <p className="text-lg font-medium text-[var(--text)]">今天的听力队列已完成</p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">完成短听后，记得在到期时再次验证理解。</p>
       </div>
     );
   }
@@ -101,6 +110,8 @@ export default function ListeningModule() {
         <span>剩余 {queue.length} 段</span>
       </div>
 
+      <div className="rounded-xl bg-[var(--accent-soft)] p-4 text-xs leading-6 text-[var(--text-muted)]">5分钟耳机练习：盲听 → 作答 → 对照原文 → 遮住文字再听。本组使用浏览器合成语音，正式诊断请用测评中心的官方录音。</div>
+      {audioError && <p role="alert" className="text-xs text-red-500">{audioError}</p>}
       <div className="flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4">
         <button onClick={play} disabled={playing}
           className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
@@ -154,7 +165,8 @@ export default function ListeningModule() {
                   <p className="mt-2 text-xs text-[var(--text-muted)]">{script.translation}</p>
                 </motion.div>
               )}
-              <button onClick={nextScript} className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white">下一段</button>
+              {showScript && <div className="w-full flex flex-col gap-2">{script.script.split(/(?<=[。！？])/).filter(Boolean).map((sentence, i) => <button key={i} disabled={playing} onClick={async () => { setPlaying(true); const completed = await speakJapanese(sentence, rate); if (mounted.current) { setPlaying(false); if (!completed) setAudioError("这一句未播放完成，请重试。"); } }} className="rounded-lg border border-[var(--border)] p-3 text-left text-xs leading-6 disabled:opacity-40"><span className="mr-2 text-[var(--accent)]">▶</span>{sentence}</button>)}</div>}
+              <button disabled={playing} onClick={nextScript} className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white">下一段</button>
             </div>
           )}
         </>

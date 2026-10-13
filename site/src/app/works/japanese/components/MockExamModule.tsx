@@ -114,7 +114,7 @@ export default function MockExamModule() {
           </svg>
         </div>
         <div>
-          <p className="text-xl font-bold text-[var(--text)]">真题模考</p>
+          <p className="text-xl font-bold text-[var(--text)]">语法阅读综合练习</p>
           <p className="mt-2 text-sm text-[var(--text-muted)]">
             模拟卷 · 限时 {examConfig.totalTime} 分钟 · 文法 {exam.grammar.length} 题 + 読解 {exam.reading.length} 篇（
             {exam.grammar.length + exam.reading.reduce((s, r) => s + r.questions.length, 0)} 题）
@@ -122,7 +122,7 @@ export default function MockExamModule() {
         </div>
         <div className="text-left text-sm text-[var(--text-muted)] space-y-1">
           <p>· 真考结构：{examConfig.sections.map(s => `${s.name} ${s.weight}%`).join(" · ")}</p>
-          <p>· 计分：答对率折算百分制，60 分合格</p>
+          <p>· 计分：答对率折算百分制，仅反映本次专项练习表现</p>
           <p className="text-xs text-[var(--text-soft)]">
             本卷暂只覆盖文法与読解两大板块，听力 / 文字词汇 / 翻译写作请用对应标签页专项练习
           </p>
@@ -144,7 +144,7 @@ export default function MockExamModule() {
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <span className="text-sm text-[var(--text-muted)]">
-            真题模考 · 已答 {answeredCount}/{totalQuestions}
+            语法阅读综合练习 · 已答 {answeredCount}/{totalQuestions}
           </span>
           <span className={`text-lg font-mono font-bold ${timeLeft < 300 ? "text-red-500" : "text-[var(--text)]"}`}>
             {formatTime(timeLeft)}
@@ -221,11 +221,11 @@ export default function MockExamModule() {
       {!showParse ? (
         <div className="flex flex-col items-center gap-6 py-12 text-center">
           <p className="text-3xl font-bold text-[var(--text)]">
-            {s && s.total >= 60 ? "合格" : "加油"}
+            {s && s.total >= 60 ? "练习完成" : "练习完成"}
           </p>
           <p className="text-4xl font-bold text-[var(--accent)]">{s?.total ?? 0} 分</p>
           <p className="text-sm text-[var(--text-muted)]">
-            {s && s.total >= 60 ? "恭喜，达到合格线！" : "差一点，继续加油！"}
+            {s && s.total >= 60 ? "继续用未见题验证理解。" : "从错题解析开始，补上薄弱考点。"}
           </p>
           {/* 分项统计 */}
           {s && (
@@ -241,7 +241,7 @@ export default function MockExamModule() {
           <div className="flex gap-3">
             <button onClick={startExam}
               className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm text-[var(--text)] hover:bg-[var(--bg-card)]">
-              重新模考
+              再练一卷
             </button>
             <button onClick={() => setShowParse(true)}
               className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white">

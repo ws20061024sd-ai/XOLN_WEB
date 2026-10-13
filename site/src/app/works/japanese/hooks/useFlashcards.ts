@@ -38,28 +38,30 @@ function loadDaily(): { date: string; reviewed: number; correct: number } {
   return { date: today, reviewed: 0, correct: 0 };
 }
 
-export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "grammar" | "reading" | "listening", correct: boolean) => void) {
+export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "grammar" | "reading" | "listening", correct: boolean) => void, skill: "meaning" | "reading" = "meaning") {
   const [queue, setQueue] = useState<VocabCard[]>([]);
   const [cardStates, setCardStates] = useState<Map<string, CardState>>(new Map());
   const [dailies, setDailies] = useState(loadDaily);
+  const [loading, setLoading] = useState(true);
   const [lastResult, setLastResult] = useState<boolean | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
+  const answeredRef = useRef(false);
+
 
   const reviewedToday = dailies.reviewed;
   const correctToday = dailies.correct;
 
   useEffect(() => {
+    let cancelled = false;
     const load = async () => {
-      const saved = (await loadCardStates()) as Record<string, CardState> | null
-        ?? await storage.get<Record<string, CardState>>("card_states");
+      const saved = (skill === "meaning" ? await loadCardStates() : storage.get<Record<string, CardState>>("card_states_reading")) as Record<string, CardState> | null;
+      if (cancelled) return;
       const states = new Map<string, CardState>();
       const now = new Date();
 
       const due: VocabCard[] = [];
       const fresh: VocabCard[] = [];
 
-      for (const card of vocabulary) {
+      for (const card of vocabulary.filter(card => skill === "meaning" || /[一-龯々]/.test(card.word))) {
         const raw = saved?.[card.id];
         const state: CardState = raw ? { ...raw, nextReview: new Date(raw.nextReview) } : getInitialState(card.id);
         states.set(card.id, state);
@@ -75,35 +77,39 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
       const introduced = storage.get<{ date: string; ids: string[] }>(NEW_WORDS_KEY);
       const ids = introduced?.date === today ? introduced.ids : [];
       setCardStates(states);
-      setQueue([...shuffle(due), ...shuffle(fresh).slice(0, Math.max(0, DAILY_NEW_LIMIT - ids.length))]);
+      setQueue([...shuffle(due), ...shuffle(fresh.filter(card => ids.includes(card.id))), ...shuffle(fresh.filter(card => !ids.includes(card.id))).slice(0, Math.max(0, DAILY_NEW_LIMIT - ids.length))]);
+      setLoading(false);
     };
-    load();
-  }, []);
+    void load();
+    return () => { cancelled = true; };
+  }, [skill]);
 
   const currentCard = queue[0] ?? null;
+  const correctAnswer = currentCard ? skill === "reading" ? currentCard.reading : currentCard.meaning : "";
 
   // 生成当前题目的4个选项（1正确 + 3干扰）
   const options = useMemo(() => {
     if (!currentCard) return [];
     const others = vocabulary.filter(c => c.id !== currentCard.id);
     const shuffledOthers = shuffle(others);
-    const distractors = [...new Set(shuffledOthers.map(c => c.meaning))]
-      .filter(meaning => meaning !== currentCard.meaning).slice(0, OPTION_COUNT - 1);
-    return shuffle([currentCard.meaning, ...distractors]);
-  }, [currentCard]);
+    const distractors = [...new Set(shuffledOthers.map(c => skill === "reading" ? c.reading : c.meaning))]
+      .filter(meaning => meaning !== correctAnswer).slice(0, OPTION_COUNT - 1);
+    return shuffle([correctAnswer, ...distractors]);
+  }, [currentCard, correctAnswer, skill]);
 
   useEffect(() => {
     if (cardStates.size === 0) return;
     const obj: Record<string, CardState> = {};
     cardStates.forEach((v, k) => { obj[k] = v; });
-    storage.set("card_states", obj);
-  }, [cardStates]);
+    storage.set(skill === "reading" ? "card_states_reading" : "card_states", obj);
+  }, [cardStates, skill]);
 
   const checkAnswer = useCallback((selectedMeaning: string) => {
     const card = currentCard;
-    if (!card || lastResult !== null) return;
+    if (!card || answeredRef.current) return;
+    answeredRef.current = true;
 
-    const isCorrect = selectedMeaning === card.meaning;
+    const isCorrect = selectedMeaning === correctAnswer;
     setLastResult(isCorrect);
 
     const oldState = cardStates.get(card.id) ?? getInitialState(card.id);
@@ -118,7 +124,7 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
     newStates.set(card.id, newState);
     setCardStates(newStates);
     // Supabase 同步
-    saveCardState(card.id, newState);
+    if (skill === "meaning") void saveCardState(card.id, newState);
 
     const next = { ...dailies, reviewed: dailies.reviewed + 1, correct: dailies.correct + (isCorrect ? 1 : 0) };
     setDailies(next);
@@ -127,21 +133,21 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
     }
     recordModuleAnswer?.("flashcard", isCorrect);
 
-    // 延迟切换下一题，让用户看到反馈（组件卸载时自动清理）
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => {
-      setQueue(prev => {
-        const rest = prev.slice(1);
-        if (!isCorrect) rest.push(card);
-        return rest;
-      });
-      setLastResult(null);
-    }, isCorrect ? 600 : 1200);
-  }, [currentCard, cardStates, dailies, lastResult, recordModuleAnswer]);
+  }, [currentCard, correctAnswer, cardStates, dailies, recordModuleAnswer, skill]);
+
+  const nextCard = useCallback(() => {
+    if (!answeredRef.current || !currentCard || lastResult === null) return;
+    setQueue(prev => lastResult ? prev.slice(1) : [...prev.slice(1), currentCard]);
+    answeredRef.current = false;
+    setLastResult(null);
+  }, [currentCard, lastResult]);
 
   const accuracy = reviewedToday > 0 ? Math.round(correctToday / reviewedToday * 100) : 0;
 
   return {
+    loading,
+    correctAnswer,
+    nextCard,
     currentCard,
     options,
     queueLength: queue.length,

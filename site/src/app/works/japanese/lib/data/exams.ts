@@ -7,10 +7,11 @@ export interface ExamConfig {
 export const examConfig: ExamConfig = {
   totalTime: 120, // 与真考一致
   sections: [
-    { name: "聴解", weight: 20 },
+    { name: "聴解", weight: 15 },
     { name: "文字と語彙", weight: 15 },
     { name: "文法", weight: 20 },
     { name: "読解", weight: 30 },
-    { name: "翻訳と作文", weight: 15 },
+    { name: "翻訳", weight: 10 },
+    { name: "作文", weight: 10 },
   ],
 };

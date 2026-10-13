@@ -4,13 +4,16 @@ import { motion, AnimatePresence } from "motion/react";
 import { grammarQuestions } from "../lib/data/grammar";
 import { useProgress } from "../hooks/useProgress";
 import { addError } from "../lib/errorStore";
-import { getAvailable, markCorrect } from "../lib/correctStore";
+import { getAvailable } from "../lib/correctStore";
+import { recordReview } from "../lib/reviewStore";
 import { todayLocalDate } from "../lib/date";
 
 export default function GrammarModule() {
   const [queue, setQueue] = useState(() =>
-    getAvailable(grammarQuestions, "grammar").sort(() => Math.random() - 0.5),
+    getAvailable(grammarQuestions, "grammar"),
   );
+  const [confident, setConfident] = useState(true);
+  const [topic, setTopic] = useState("all");
   const [selected, setSelected] = useState<number | null>(null);
   const [showExplain, setShowExplain] = useState(false);
   const { recordModuleAnswer, moduleStats } = useProgress();
@@ -26,23 +29,23 @@ export default function GrammarModule() {
     const correct = index === question.answer;
     recordModuleAnswer("grammar", correct);
 
-    if (correct) {
-      markCorrect(question.id, "grammar");
-    } else {
+    recordReview(question.id, "grammar", correct, confident);
+    if (!correct) {
       await addError({
         questionId: question.id,
         module: "grammar",
         date: todayLocalDate(),
       });
     }
-  }, [selected, question, recordModuleAnswer]);
+  }, [selected, question, recordModuleAnswer, confident]);
 
   const handleShowExplain = () => setShowExplain(true);
 
   const nextQuestion = () => {
     if (!question) return;
-    const wasCorrect = selected === question.answer;
+    const wasCorrect = selected === question.answer && confident;
     setSelected(null);
+    setConfident(true);
     setShowExplain(false);
     if (wasCorrect) {
       // 答对：永久出队（已 markCorrect，刷新后也不会重现）
@@ -61,8 +64,8 @@ export default function GrammarModule() {
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
         </div>
-        <p className="text-lg font-medium text-[var(--text)]">语法全部完成</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">所有语法题都已答对，去错题本回顾错题吧</p>
+        <p className="text-lg font-medium text-[var(--text)]">今天的语法复习已完成</p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">已答对题将在到期后再次出现。用未见题确认掌握，或切换其它专项。</p>
       </div>
     );
   }
@@ -74,6 +77,11 @@ export default function GrammarModule() {
         <span>正确率 {grammarStats.total > 0 ? Math.round(grammarStats.correct / grammarStats.total * 100) : 0}%</span>
       </div>
 
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[var(--border)] p-4">
+        <label className="text-xs text-[var(--text-muted)]">考点 <select aria-label="语法考点" value={topic} onChange={e => { const value = e.target.value; setTopic(value); setQueue(getAvailable(grammarQuestions.filter(q => value === "all" || q.knowledgePoint === value), "grammar")); setSelected(null); setShowExplain(false); setConfident(true); }} className="ml-2 max-w-[220px] rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-[var(--text)]"><option value="all">全部考点 · 到期优先</option>{[...new Set(grammarQuestions.map(q=>q.knowledgePoint))].sort().map(t=><option key={t} value={t}>{t}</option>)}</select></label>
+        <span className="text-xs text-[var(--text-muted)]">本次队列 {queue.length} 题</span>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 text-xs"><span className="text-[var(--text-muted)]">这道题：</span>{[{value:true,label:"我有把握"},{value:false,label:"不确定 / 可能猜"}].map(item=><button key={item.label} disabled={selected !== null} onClick={()=>setConfident(item.value)} className={`rounded-full border px-3 py-2 ${confident === item.value ? "border-[var(--accent)] text-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)]"}`}>{item.label}</button>)}<span className="ml-auto text-[var(--text-soft)]">猜对会进入补练，不计为独立掌握</span></div>
       <AnimatePresence mode="wait">
         <motion.div
           key={question.id}
@@ -126,7 +134,7 @@ export default function GrammarModule() {
               className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5"
             >
               <p className={`font-semibold text-sm mb-2 ${isCorrect ? "text-green-600" : "text-red-500"}`}>
-                {isCorrect ? "正确" : "错误"}
+                {isCorrect ? confident ? "正确 · 已安排明日复习" : "答案正确 · 不确定，稍后再练" : "需要再练一次"}
               </p>
 
               {!showExplain ? (

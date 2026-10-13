@@ -9,7 +9,7 @@ import { todayLocalDate } from "../lib/date";
 
 export default function ReadingModule() {
   const [queue, setQueue] = useState(() =>
-    getAvailable(readings, "reading").sort(() => Math.random() - 0.5),
+    getAvailable(readings, "reading"),
   );
   const [showQuestions, setShowQuestions] = useState(false);
   const [answers, setAnswers] = useState<Map<number, number>>(new Map());
@@ -56,7 +56,7 @@ export default function ReadingModule() {
     setSubmitted(false);
     setAllCorrect(false);
     if (allCorrect) {
-      // 整篇全对：永久出队（已 markCorrect，刷新后也不会重现）
+      // 整篇全对：本次出队；到期后重新进入复习
       setQueue(prev => prev.slice(1));
     } else {
       // 有错：移到队尾，之后可重读
@@ -72,8 +72,8 @@ export default function ReadingModule() {
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
         </div>
-        <p className="text-lg font-medium text-[var(--text)]">阅读全部完成</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">所有文章都已答对</p>
+        <p className="text-lg font-medium text-[var(--text)]">今天的阅读队列已完成</p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">材料到期后会再次出现；也可以用新文章验证理解。</p>
       </div>
     );
   }

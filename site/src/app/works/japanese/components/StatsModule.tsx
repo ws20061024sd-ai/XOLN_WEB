@@ -147,7 +147,7 @@ export default function StatsModule() {
             }
             for (const day of heatmap) {
               const d = parseInt(day.date.split("-")[2], 10);
-              const hasActivity = day.count > 0;
+
               const level = day.count === 0 ? 0 : day.count < 5 ? 1 : day.count < 15 ? 2 : 3;
               const colors = [
                 "bg-[var(--border-light)]",
@@ -180,7 +180,7 @@ export default function StatsModule() {
       <div className="flex gap-3">
         <button onClick={() => setView("exam")}
           className="flex-1 rounded-lg bg-[var(--accent)] py-3 text-sm font-medium text-white">
-          真题模考
+          语法阅读综合练习
         </button>
         <button onClick={() => setView("errors")}
           className="flex-1 rounded-lg border border-[var(--border)] py-3 text-sm font-medium text-[var(--text)]">

@@ -7,6 +7,12 @@ export const supabase = (supabaseUrl && supabaseKey)
   ? createClient(supabaseUrl, supabaseKey)
   : null;
 
+async function authenticatedUserId(): Promise<string | null> {
+  if (!supabase) return null;
+  const { data } = await supabase.auth.getSession();
+  return data.session?.user.id ?? null;
+}
+
 // ===== localStorage 通用存储（始终可用，兜底方案） =====
 const PREFIX = "cjt4_";
 
@@ -44,11 +50,12 @@ export interface ProgressSnapshot {
 // （useProgress.ts 直接用裸 key "cjt4_progress" 读写，二者必须一致）
 export async function loadProgress(forceRemote = false): Promise<ProgressSnapshot | null> {
   const local = storage.get<ProgressSnapshot>("progress");
-  if (!supabase) return forceRemote ? null : local;
+  const userId = await authenticatedUserId();
+  if (!supabase || !userId) return forceRemote ? null : local;
   if (!local || forceRemote) {
     try {
       const { data, error } = await supabase
-        .from("user_progress").select("*").limit(1).maybeSingle();
+        .from("user_progress").select("*").eq("user_id", userId).limit(1).maybeSingle();
       if (error) throw error;
       if (data) {
         const d = data as Record<string, unknown>;
@@ -74,10 +81,12 @@ export async function loadProgress(forceRemote = false): Promise<ProgressSnapsho
 }
 
 export async function saveProgress(value: ProgressSnapshot): Promise<void> {
-  if (supabase) {
+  const userId = await authenticatedUserId();
+  if (supabase && userId) {
     try {
       await supabase.from("user_progress").upsert({
-        id: "00000000-0000-0000-0000-000000000001",
+        id: userId,
+        user_id: userId,
         cards_reviewed: value.daily.cardsReviewed,
         streak_days: value.daily.streakDays,
         total_minutes: Math.floor(value.daily.totalMinutes),
@@ -90,7 +99,7 @@ export async function saveProgress(value: ProgressSnapshot): Promise<void> {
         flashcard_total: value.modules.flashcard.total,
         flashcard_correct: value.modules.flashcard.correct,
         last_active: value.lastActive ?? null,
-      }, { onConflict: "id" });
+      }, { onConflict: "user_id" });
     } catch { /* 云写失败静默，本地数据不受影响 */ }
   }
   // 本地落盘由 useProgress 的 effect 统一负责，这里不再重复写
@@ -100,13 +109,13 @@ export async function saveProgress(value: ProgressSnapshot): Promise<void> {
 export async function loadCardStates(): Promise<Record<string, unknown> | null> {
   // localStorage 是最新数据，始终优先
   const local = storage.get<Record<string, unknown>>("card_states");
-  if (!supabase) return local;
-
   if (local) return local;
+  const userId = await authenticatedUserId();
+  if (!supabase || !userId) return local;
 
   // 本地为空时才请求云端，离线时已有闪卡仍可立即使用
   try {
-    const { data } = await supabase.from("card_progress").select("*");
+    const { data } = await supabase.from("card_progress").select("*").eq("user_id", userId);
     if (data && data.length > 0 && !local) {
       // 只有 localStorage 为空时才用 Supabase（如新设备首次打开）
       const result: Record<string, unknown> = {};
@@ -127,15 +136,17 @@ export async function loadCardStates(): Promise<Record<string, unknown> | null> 
 }
 
 export async function saveCardState(wordId: string, state: { level: number; nextReview: Date | string; totalReviews: number; totalCorrect: number }): Promise<void> {
-  if (supabase) {
+  const userId = await authenticatedUserId();
+  if (supabase && userId) {
     try {
       await supabase.from("card_progress").upsert({
+        user_id: userId,
         word_id: wordId,
         level: state.level ?? 0,
         next_review: state.nextReview instanceof Date ? state.nextReview.toISOString() : state.nextReview,
         total_reviews: state.totalReviews ?? 0,
         total_correct: state.totalCorrect ?? 0,
-      }, { onConflict: "word_id" });
+      }, { onConflict: "user_id,word_id" });
     } catch { /* fall through to localStorage */ }
   }
 }
@@ -151,18 +162,19 @@ export interface ErrorRow {
 // ===== 错题：localStorage 优先，Supabase 补充 =====
 export async function loadErrors(): Promise<ErrorRow[] | null> {
   const local = storage.get<ErrorRow[]>("cjt4_errors");
-  if (!supabase) return local;
+  const userId = await authenticatedUserId();
+  if (!supabase || !userId) return local;
   if (!local || local.length === 0) {
     try {
       const { data } = await supabase
-        .from("error_records").select("*").order("created_at", { ascending: false });
+        .from("error_records").select("*").eq("user_id", userId).order("created_at", { ascending: false });
       if (data && data.length > 0) {
         // 云端列为 snake_case（question_id），统一转成前端结构，否则错题本按 questionId 查不到题
         return (data as Record<string, unknown>[]).map(d => ({
           questionId: String(d.question_id ?? ""),
           module: d.module as ErrorRow["module"],
           date: String(d.date ?? ""),
-          count: 1,
+          count: Number(d.count ?? 1),
         }));
       }
     } catch { /* ignore */ }
@@ -171,14 +183,12 @@ export async function loadErrors(): Promise<ErrorRow[] | null> {
 }
 
 export async function saveError(record: { questionId: string; module: string; date: string; count?: number }): Promise<void> {
-  if (supabase) {
-    try {
-      await supabase.from("error_records").delete().eq("question_id", record.questionId);
-      await supabase.from("error_records").insert({
-        question_id: record.questionId,
-        module: record.module,
-        date: record.date,
-      });
-    } catch { /* fall through to localStorage */ }
-  }
+  const userId = await authenticatedUserId();
+  if (!supabase || !userId) return;
+  try {
+    await supabase.from("error_records").upsert({
+      user_id: userId, question_id: record.questionId, module: record.module,
+      date: record.date, count: record.count ?? 1,
+    }, { onConflict: "user_id,module,question_id" });
+  } catch { /* Local mistakes remain available when cloud sync fails. */ }
 }

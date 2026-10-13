@@ -1,16 +1,19 @@
 "use client";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useFlashcards } from "../hooks/useFlashcards";
 import { useProgress } from "../hooks/useProgress";
 
-export default function FlashcardModule() {
+function FlashcardSession({ skill }: { skill: "meaning" | "reading" }) {
   const { recordModuleAnswer } = useProgress();
-  const { currentCard, options, queueLength, reviewedToday, accuracy, lastResult, checkAnswer } = useFlashcards(recordModuleAnswer);
+  const { loading, correctAnswer, nextCard, currentCard, options, queueLength, reviewedToday, accuracy, lastResult, checkAnswer } = useFlashcards(recordModuleAnswer, skill);
 
   const handleSelect = (meaning: string) => {
     if (lastResult !== null) return;
     checkAnswer(meaning);
   };
+
+  if (loading) return <p className="py-16 text-center text-sm text-[var(--text-muted)]">正在准备复习队列…</p>;
 
   if (!currentCard) {
     return (
@@ -34,7 +37,7 @@ export default function FlashcardModule() {
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
-        <span className="font-medium text-[var(--text)]">词汇闪卡</span>
+        <span className="font-medium text-[var(--text)]">{skill === "meaning" ? "词义回忆" : "汉字读音"}</span>
         <span>待复习 {queueLength}</span>
         <span>正确率 {accuracy}%</span>
       </div>
@@ -51,7 +54,7 @@ export default function FlashcardModule() {
           {/* 单词卡片 */}
           <div className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-8 text-center shadow-sm">
             <p className="text-3xl font-bold text-[var(--text)]">{currentCard.word}</p>
-            <p className="mt-2 text-lg text-[var(--text-muted)]">{currentCard.reading}</p>
+            {(skill === "meaning" || lastResult !== null) && <p className="mt-2 text-lg text-[var(--text-muted)]">{currentCard.reading}</p>}
             <div className="mt-4 flex justify-center gap-2">
               <span className="rounded-full bg-[var(--border-light)] px-2.5 py-0.5 text-xs text-[var(--text-muted)]">
                 {currentCard.partOfSpeech}
@@ -65,11 +68,11 @@ export default function FlashcardModule() {
           {/* 选项 */}
           <div className="grid w-full max-w-sm grid-cols-1 gap-2.5">
             {options.map((meaning, i) => {
-              const isCorrectOption = meaning === currentCard.meaning;
+              const isCorrectOption = meaning === correctAnswer;
               // 简化：lastResult为false时高亮正确答案，lastResult为true时高亮选中的
               let borderClass = "border-[var(--border)] hover:border-[var(--accent)]";
               let bgClass = "";
-              let cursorClass = lastResult !== null ? "cursor-default" : "cursor-pointer";
+              const cursorClass = lastResult !== null ? "cursor-default" : "cursor-pointer";
 
               if (lastResult !== null && isCorrectOption) {
                 borderClass = "border-green-400";
@@ -92,6 +95,7 @@ export default function FlashcardModule() {
             })}
           </div>
 
+          {lastResult !== null && <div className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4"><p className="text-sm font-medium">{currentCard.meaning}</p><p className="mt-3 text-sm leading-6">{currentCard.example}</p><p className="mt-1 text-xs text-[var(--text-muted)]">{currentCard.exampleMeaning}</p><button onClick={nextCard} className="mt-4 w-full rounded-lg bg-[var(--accent)] py-2.5 text-sm text-white">看懂了，下一词 →</button></div>}
           {/* 反馈 */}
           {lastResult !== null && (
             <motion.p
@@ -99,11 +103,16 @@ export default function FlashcardModule() {
               animate={{ opacity: 1 }}
               className={`text-sm font-medium ${lastResult ? "text-green-600" : "text-red-500"}`}
             >
-              {lastResult ? "正确" : `错误，正确答案是「${currentCard.meaning}」`}
+              {lastResult ? "正确" : `正确答案是「${correctAnswer}」`}
             </motion.p>
           )}
         </motion.div>
       </AnimatePresence>
     </div>
   );
+}
+
+export default function FlashcardModule() {
+  const [skill, setSkill] = useState<"meaning" | "reading">("meaning");
+  return <div><div className="mb-6 flex justify-center gap-2">{([{key:"meaning",label:"词义"},{key:"reading",label:"汉字读音"}] as const).map(item=><button key={item.key} onClick={()=>setSkill(item.key)} className={`rounded-full border px-5 py-2 text-sm ${skill===item.key?"border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]":"border-[var(--border)]"}`}>{item.label}</button>)}</div><FlashcardSession key={skill} skill={skill} /></div>;
 }
