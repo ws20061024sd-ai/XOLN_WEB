@@ -10,33 +10,23 @@ export interface ErrorRecord {
 }
 
 export async function addError(record: Omit<ErrorRecord, "count">): Promise<void> {
-  await saveError({ ...record, count: 1 });
-  const all = storage.get<ErrorRecord[]>(ERROR_KEY) ?? [];
-  const idx = all.findIndex(e => e.questionId === record.questionId);
-  if (idx >= 0) {
-    all[idx].count += 1;
-    all[idx].date = record.date;
-  } else {
-    all.push({ ...record, count: 1 });
-  }
-  storage.set(ERROR_KEY, all);
+  return addErrors([record]);
 }
 
 export async function addErrors(records: Omit<ErrorRecord, "count">[]): Promise<void> {
-  for (const r of records) {
-    await saveError({ ...r, count: 1 });
-  }
   const all = storage.get<ErrorRecord[]>(ERROR_KEY) ?? [];
-  for (const r of records) {
-    const idx = all.findIndex(e => e.questionId === r.questionId);
-    if (idx >= 0) {
-      all[idx].count += 1;
-      all[idx].date = r.date;
+  for (const record of records) {
+    const existing = all.find(e => e.questionId === record.questionId && e.module === record.module);
+    if (existing) {
+      existing.count += 1;
+      existing.date = record.date;
     } else {
-      all.push({ ...r, count: 1 });
+      all.push({ ...record, count: 1 });
     }
   }
+  // Persist before network I/O so navigation or an offline request cannot lose mistakes.
   storage.set(ERROR_KEY, all);
+  await Promise.all(records.map(record => saveError(record)));
 }
 
 export async function getAllErrors(): Promise<ErrorRecord[]> {

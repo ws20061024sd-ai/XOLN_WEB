@@ -1,11 +1,10 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
-import { motion } from "motion/react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { examConfig } from "../lib/data/exams";
 import { grammarQuestions } from "../lib/data/grammar";
 import { readings } from "../lib/data/readings";
 import { useProgress } from "../hooks/useProgress";
-import { addError } from "../lib/errorStore";
+import { addErrors } from "../lib/errorStore";
 import { todayLocalDate } from "../lib/date";
 
 type AnswerMap = Record<string, number>; // questionId -> selected option index
@@ -25,16 +24,8 @@ export default function MockExamModule() {
   }
   const [exam, setExam] = useState(() => genExam());
 
-  // 倒计时
-  useEffect(() => {
-    if (phase !== "running") return;
-    if (timeLeft <= 0) { setPhase("finished"); return; }
-    const t = setInterval(() => setTimeLeft(p => {
-      if (p <= 1) { setPhase("finished"); return 0; }
-      return p - 1;
-    }), 1000);
-    return () => clearInterval(t);
-  }, [phase]);
+  const deadline = useRef(0);
+  const finished = useRef(false);
 
   // 计算分数
   const scoreResult = useMemo(() => {
@@ -61,6 +52,8 @@ export default function MockExamModule() {
   }, [phase, answers, exam]);
 
   const startExam = () => {
+    finished.current = false;
+    deadline.current = Date.now() + examConfig.totalTime * 60000;
     setExam(genExam());
     setAnswers({});
     setTimeLeft(examConfig.totalTime * 60);
@@ -68,31 +61,38 @@ export default function MockExamModule() {
     setShowParse(false);
   };
 
-  const submitExam = async () => {
+  const submitExam = useCallback(() => {
+    if (finished.current || phase !== "running") return;
+    finished.current = true;
     setPhase("finished");
-    // 记录统计 + 错题入库
+    const errors: { questionId: string; module: "grammar" | "reading"; date: string }[] = [];
     for (const q of exam.grammar) {
-      const userAns = answers[q.id];
-      if (userAns !== undefined) {
-        recordModuleAnswer("grammar", userAns === q.answer);
-        if (userAns !== q.answer) {
-          await addError({ questionId: q.id, module: "grammar", date: todayLocalDate() });
-        }
-      }
+      const correct = answers[q.id] === q.answer;
+      recordModuleAnswer("grammar", correct);
+      if (!correct) errors.push({ questionId: q.id, module: "grammar", date: todayLocalDate() });
     }
     for (const r of exam.reading) {
-      for (let qi = 0; qi < r.questions.length; qi++) {
-        const q = r.questions[qi];
-        const userAns = answers[`${r.id}-q${qi}`];
-        if (userAns !== undefined) {
-          recordModuleAnswer("reading", userAns === q.answer);
-          if (userAns !== q.answer) {
-            await addError({ questionId: `${r.id}-q${qi}`, module: "reading", date: todayLocalDate() });
-          }
-        }
-      }
+      r.questions.forEach((q, qi) => {
+        const questionId = `${r.id}-q${qi}`;
+        const correct = answers[questionId] === q.answer;
+        recordModuleAnswer("reading", correct);
+        if (!correct) errors.push({ questionId, module: "reading", date: todayLocalDate() });
+      });
     }
-  };
+    void addErrors(errors);
+  }, [phase, exam, answers, recordModuleAnswer]);
+
+  useEffect(() => {
+    if (phase !== "running") return;
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((deadline.current - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining === 0) submitExam();
+    };
+    const timer = setInterval(tick, 1000);
+    document.addEventListener("visibilitychange", tick);
+    return () => { clearInterval(timer); document.removeEventListener("visibilitychange", tick); };
+  }, [phase, submitExam]);
 
   const selectAnswer = (qid: string, oi: number) => {
     setAnswers(prev => ({ ...prev, [qid]: oi }));
@@ -178,7 +178,7 @@ export default function MockExamModule() {
 
         {/* 阅读题 */}
         <p className="text-sm font-medium text-[var(--text)]">二、読解（{exam.reading.length}篇）</p>
-        {exam.reading.map((r, ri) => (
+        {exam.reading.map((r) => (
           <div key={r.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5">
             <h4 className="font-semibold text-[var(--text)] mb-2">{r.title}</h4>
             <p className="text-sm text-[var(--text)] leading-relaxed mb-4 whitespace-pre-wrap">{r.content}</p>

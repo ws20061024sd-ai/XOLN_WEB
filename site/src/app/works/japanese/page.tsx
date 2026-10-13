@@ -10,7 +10,7 @@ import ReadingModule from "./components/ReadingModule";
 import ListeningModule from "./components/ListeningModule";
 import TranslateModule from "./components/TranslateModule";
 import StatsModule from "./components/StatsModule";
-import { useProgress } from "./hooks/useProgress";
+import { ProgressProvider, useProgress } from "./hooks/useProgress";
 
 const MODULES: Record<string, React.ComponentType> = {
   flashcard: FlashcardModule,
@@ -21,7 +21,7 @@ const MODULES: Record<string, React.ComponentType> = {
   stats: StatsModule,
 };
 
-export default function JapanesePage() {
+function JapaneseContent() {
   const [activeTab, setActiveTab] = useState("flashcard");
   const { stats } = useProgress();
   const Module = MODULES[activeTab];
@@ -51,4 +51,8 @@ export default function JapanesePage() {
       <BottomStatusBar stats={stats} />
     </div>
   );
+}
+
+export default function JapanesePage() {
+  return <ProgressProvider><JapaneseContent /></ProgressProvider>;
 }

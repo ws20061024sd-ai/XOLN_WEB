@@ -20,6 +20,7 @@ function shuffle<T>(arr: T[]): T[] {
 
 const TODAY_KEY = "cjt4_flashcard_today";
 const TODAY_COUNT_KEY = "cjt4_flashcard_count";
+const NEW_WORDS_KEY = "flashcard_new_words";
 
 function loadDaily(): { date: string; reviewed: number; correct: number } {
   if (typeof window === "undefined") return { date: "", reviewed: 0, correct: 0 };
@@ -70,8 +71,11 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
         }
       }
 
+      const today = new Date().toDateString();
+      const introduced = storage.get<{ date: string; ids: string[] }>(NEW_WORDS_KEY);
+      const ids = introduced?.date === today ? introduced.ids : [];
       setCardStates(states);
-      setQueue(shuffle([...due, ...fresh.slice(0, Math.max(0, DAILY_NEW_LIMIT - due.length))]));
+      setQueue([...shuffle(due), ...shuffle(fresh).slice(0, Math.max(0, DAILY_NEW_LIMIT - ids.length))]);
     };
     load();
   }, []);
@@ -83,7 +87,8 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
     if (!currentCard) return [];
     const others = vocabulary.filter(c => c.id !== currentCard.id);
     const shuffledOthers = shuffle(others);
-    const distractors = shuffledOthers.slice(0, OPTION_COUNT - 1).map(c => c.meaning);
+    const distractors = [...new Set(shuffledOthers.map(c => c.meaning))]
+      .filter(meaning => meaning !== currentCard.meaning).slice(0, OPTION_COUNT - 1);
     return shuffle([currentCard.meaning, ...distractors]);
   }, [currentCard]);
 
@@ -96,12 +101,18 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
 
   const checkAnswer = useCallback((selectedMeaning: string) => {
     const card = currentCard;
-    if (!card) return;
+    if (!card || lastResult !== null) return;
 
     const isCorrect = selectedMeaning === card.meaning;
     setLastResult(isCorrect);
 
     const oldState = cardStates.get(card.id) ?? getInitialState(card.id);
+    if (oldState.totalReviews === 0) {
+      const date = new Date().toDateString();
+      const saved = storage.get<{ date: string; ids: string[] }>(NEW_WORDS_KEY);
+      const ids = saved?.date === date ? saved.ids : [];
+      storage.set(NEW_WORDS_KEY, { date, ids: [...new Set([...ids, card.id])] });
+    }
     const newState = review(oldState, isCorrect);
     const newStates = new Map(cardStates);
     newStates.set(card.id, newState);
@@ -126,7 +137,7 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
       });
       setLastResult(null);
     }, isCorrect ? 600 : 1200);
-  }, [currentCard, cardStates, dailies]);
+  }, [currentCard, cardStates, dailies, lastResult, recordModuleAnswer]);
 
   const accuracy = reviewedToday > 0 ? Math.round(correctToday / reviewedToday * 100) : 0;
 

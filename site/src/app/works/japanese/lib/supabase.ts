@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { todayLocalDate } from "./date";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
@@ -29,6 +28,7 @@ export const storage = {
 
 // 进度统计快照（云端 user_progress 表字段与此对应，不含本地 dailyLog）
 export interface ProgressSnapshot {
+  lastActive?: string | null;
   daily: { cardsReviewed: number; streakDays: number; totalMinutes: number };
   modules: {
     grammar: { total: number; correct: number };
@@ -42,16 +42,18 @@ export interface ProgressSnapshot {
 // ===== 用户进度：localStorage 优先，Supabase 补充 =====
 // 注意：storage 自带 "cjt4_" 前缀，key 只传短名，避免双前缀
 // （useProgress.ts 直接用裸 key "cjt4_progress" 读写，二者必须一致）
-export async function loadProgress(): Promise<ProgressSnapshot | null> {
+export async function loadProgress(forceRemote = false): Promise<ProgressSnapshot | null> {
   const local = storage.get<ProgressSnapshot>("progress");
-  if (!supabase) return local;
-  if (!local) {
+  if (!supabase) return forceRemote ? null : local;
+  if (!local || forceRemote) {
     try {
       const { data, error } = await supabase
         .from("user_progress").select("*").limit(1).maybeSingle();
-      if (!error && data) {
+      if (error) throw error;
+      if (data) {
         const d = data as Record<string, unknown>;
         return {
+          lastActive: typeof d.last_active === "string" ? d.last_active : null,
           daily: {
             cardsReviewed: (d.cards_reviewed as number) ?? 0,
             streakDays: (d.streak_days as number) ?? 0,
@@ -66,9 +68,9 @@ export async function loadProgress(): Promise<ProgressSnapshot | null> {
           },
         };
       }
-    } catch { /* ignore */ }
+    } catch (error) { throw error; }
   }
-  return local;
+  return forceRemote ? null : local;
 }
 
 export async function saveProgress(value: ProgressSnapshot): Promise<void> {
@@ -78,7 +80,7 @@ export async function saveProgress(value: ProgressSnapshot): Promise<void> {
         id: "00000000-0000-0000-0000-000000000001",
         cards_reviewed: value.daily.cardsReviewed,
         streak_days: value.daily.streakDays,
-        total_minutes: value.daily.totalMinutes,
+        total_minutes: Math.floor(value.daily.totalMinutes),
         grammar_total: value.modules.grammar.total,
         grammar_correct: value.modules.grammar.correct,
         reading_total: value.modules.reading.total,
@@ -87,7 +89,7 @@ export async function saveProgress(value: ProgressSnapshot): Promise<void> {
         listening_correct: value.modules.listening.correct,
         flashcard_total: value.modules.flashcard.total,
         flashcard_correct: value.modules.flashcard.correct,
-        last_active: todayLocalDate(),
+        last_active: value.lastActive ?? null,
       }, { onConflict: "id" });
     } catch { /* 云写失败静默，本地数据不受影响 */ }
   }
@@ -100,7 +102,9 @@ export async function loadCardStates(): Promise<Record<string, unknown> | null> 
   const local = storage.get<Record<string, unknown>>("card_states");
   if (!supabase) return local;
 
-  // Supabase 在后台静默同步（用于跨设备），不阻塞返回
+  if (local) return local;
+
+  // 本地为空时才请求云端，离线时已有闪卡仍可立即使用
   try {
     const { data } = await supabase.from("card_progress").select("*");
     if (data && data.length > 0 && !local) {
