@@ -1,4 +1,5 @@
 import { storage } from "./supabase";
+import { mixedOrder } from "./learningOrder";
 
 export type ReviewModule = "grammar" | "reading" | "listening";
 export interface ReviewState { nextReview: number; successes: number; attempts: number; lastCorrect: boolean; }
@@ -15,7 +16,10 @@ export function schedule(previous: ReviewState | undefined, correct: boolean, co
 export function recordReview(questionId: string, module: ReviewModule, correct: boolean, confident = true) {
   const states = storage.get<Record<string, ReviewState>>(KEY) ?? {};
   const key = `${module}:${questionId}`;
-  states[key] = schedule(states[key], correct, confident);
+  const previous = states[key];
+  states[key] = previous && previous.nextReview > Date.now() && correct && confident
+    ? { ...previous, attempts: previous.attempts + 1, lastCorrect: true }
+    : schedule(previous, correct, confident);
   storage.set(KEY, states);
   const events = storage.get<Attempt[]>("attempts_v2") ?? [];
   events.push({ id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`, questionId, module, correct, confident, time: Date.now() });
@@ -25,13 +29,11 @@ export function recordReview(questionId: string, module: ReviewModule, correct: 
 export function reviewQueue<T extends { id: string }>(items: T[], module: ReviewModule): T[] {
   const states = storage.get<Record<string, ReviewState>>(KEY) ?? {};
   const now = Date.now();
-  return items.filter(item => !states[`${module}:${item.id}`] || states[`${module}:${item.id}`].nextReview <= now)
-    .sort((a, b) => {
-      const sa = states[`${module}:${a.id}`], sb = states[`${module}:${b.id}`];
-      if (sa && !sb) return -1;
-      if (!sa && sb) return 1;
-      return (sa?.nextReview ?? 0) - (sb?.nextReview ?? 0);
-    });
+  const available = items.filter(item => !states[`${module}:${item.id}`] || states[`${module}:${item.id}`].nextReview <= now);
+  return mixedOrder(available.length ? available : items, item => {
+    const state = states[`${module}:${item.id}`];
+    return state && state.nextReview <= now ? (state.successes === 0 ? 4 : 3) : 1;
+  });
 }
 
 export function reviewOverview() {

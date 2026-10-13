@@ -28,6 +28,11 @@ export function review(
     return { wordId: state.wordId, level: 0, nextReview: now, totalReviews, totalCorrect };
   }
 
+  // Early correct repetitions are useful practice, but do not prove delayed recall.
+  if (state.totalReviews > 0 && state.nextReview.getTime() > now.getTime()) {
+    return { ...state, totalReviews, totalCorrect };
+  }
+
   const newLevel = Math.min(5, state.level + 1);
   const intervalDays = calculateInterval(newLevel);
   const nextReview = new Date(now.getTime() + intervalDays * 24 * 60 * 60 * 1000);

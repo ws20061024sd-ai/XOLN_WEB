@@ -72,8 +72,9 @@ export default function ReadingModule() {
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
         </div>
-        <p className="text-lg font-medium text-[var(--text)]">今天的阅读队列已完成</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">材料到期后会再次出现；也可以用新文章验证理解。</p>
+        <p className="text-lg font-medium text-[var(--text)]">本轮阅读练习已完成</p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">可以继续随机练一轮；提前巩固不会延长已安排的复习间隔。</p>
+        <button onClick={() => setQueue(getAvailable(readings, "reading"))} className="mt-4 rounded-lg border border-[var(--border)] px-4 py-2 text-sm">打散再练一轮</button>
       </div>
     );
   }
@@ -86,6 +87,7 @@ export default function ReadingModule() {
         <span className="font-medium text-[var(--text)]">阅读</span>
         <span className="rounded-full bg-[var(--border-light)] px-2 py-0.5 text-xs">{passage.difficulty}</span>
         <span>剩余 {queue.length} 篇</span>
+        {passage.source && <span className="text-xs">{passage.source}</span>}
       </div>
 
       <AnimatePresence mode="wait">
@@ -120,6 +122,7 @@ export default function ReadingModule() {
                       );
                     })}
                   </div>
+                  {submitted && q.explanation && <p className="mt-3 text-xs leading-6 text-[var(--text-muted)]">依据：{q.explanation}</p>}
                 </div>
               ))}
 

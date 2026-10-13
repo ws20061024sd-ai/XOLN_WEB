@@ -4,6 +4,8 @@ import { translateTasks, type TranslateTask } from "../lib/data/translate";
 import { useProgress } from "../hooks/useProgress";
 import { storage, supabase } from "../lib/supabase";
 
+import { mixedOrder } from "../lib/learningOrder";
+
 const LABELS = { ja2zh: "日译汉", zh2ja: "日语输出", writing: "作文" };
 const API = `${(process.env.NEXT_PUBLIC_API_URL ?? "https://api.xolnxoln.cn").replace(/\/$/, "")}/api/study`;
 interface Draft { text: string; feedback?: string; requestId?: string; }
@@ -80,7 +82,11 @@ function DraftEditor({ task, index, onNext, onType }: { task: TranslateTask; ind
 export default function TranslateModule() {
   const [index, setIndex] = useState(0);
   const [type, setType] = useState<TranslateTask["type"]>("ja2zh");
-  const filtered = translateTasks.filter(task => task.type === type);
+  const [queues, setQueues] = useState(() => ({ ja2zh: mixedOrder(translateTasks.filter(t => t.type === "ja2zh")), zh2ja: mixedOrder(translateTasks.filter(t => t.type === "zh2ja")), writing: mixedOrder(translateTasks.filter(t => t.type === "writing")) }));
+  const filtered = queues[type];
   const task = filtered[index % filtered.length];
-  return <DraftEditor key={task.id} task={task} index={index} onNext={() => setIndex(i => i + 1)} onType={value => { setType(value); setIndex(0); }} />;
+  return <DraftEditor key={task.id} task={task} index={index} onNext={() => {
+    if (index + 1 < filtered.length) setIndex(index + 1);
+    else { setQueues(previous => ({ ...previous, [type]: mixedOrder(filtered) })); setIndex(0); }
+  }} onType={value => { setQueues(previous => ({ ...previous, [value]: mixedOrder(translateTasks.filter(t => t.type === value)) })); setType(value); setIndex(0); }} />;
 }

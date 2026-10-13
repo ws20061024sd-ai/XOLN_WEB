@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from "motion/react";
 import { useFlashcards } from "../hooks/useFlashcards";
 import { useProgress } from "../hooks/useProgress";
 
-function FlashcardSession({ skill }: { skill: "meaning" | "reading" }) {
+function FlashcardSession({ skill, difficulty }: { skill: "meaning" | "reading"; difficulty: "standard" | "foundation" }) {
   const { recordModuleAnswer } = useProgress();
-  const { loading, correctAnswer, nextCard, currentCard, options, queueLength, reviewedToday, accuracy, lastResult, checkAnswer } = useFlashcards(recordModuleAnswer, skill);
+  const { kind, totalWords, loading, correctAnswer, nextCard, currentCard, options, queueLength, reviewedToday, accuracy, lastResult, checkAnswer } = useFlashcards(recordModuleAnswer, skill, difficulty);
 
   const handleSelect = (meaning: string) => {
     if (lastResult !== null) return;
@@ -24,7 +24,7 @@ function FlashcardSession({ skill }: { skill: "meaning" | "reading" }) {
             <polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
         </div>
-        <p className="text-lg font-medium text-[var(--text)]">今日任务完成</p>
+        <p className="text-lg font-medium text-[var(--text)]">暂无可用词条</p>
         <p className="mt-1 text-sm text-[var(--text-muted)]">
           已复习 {reviewedToday} 词，正确率 {accuracy}%
         </p>
@@ -37,8 +37,9 @@ function FlashcardSession({ skill }: { skill: "meaning" | "reading" }) {
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
-        <span className="font-medium text-[var(--text)]">{skill === "meaning" ? "词义回忆" : "汉字读音"}</span>
-        <span>待复习 {queueLength}</span>
+        <span className="font-medium text-[var(--text)]">{skill === "meaning" ? "词义回忆" : "汉字读音"} · {totalWords} 卡</span>
+        <span>本组剩余 {queueLength}</span>
+        <span className="rounded-full bg-[var(--accent-soft)] px-2 py-1 text-xs text-[var(--accent)]">{kind}</span>
         <span>正确率 {accuracy}%</span>
       </div>
 
@@ -113,6 +114,7 @@ function FlashcardSession({ skill }: { skill: "meaning" | "reading" }) {
 }
 
 export default function FlashcardModule() {
+  const [difficulty, setDifficulty] = useState<"standard" | "foundation">("standard");
   const [skill, setSkill] = useState<"meaning" | "reading">("meaning");
-  return <div><div className="mb-6 flex justify-center gap-2">{([{key:"meaning",label:"词义"},{key:"reading",label:"汉字读音"}] as const).map(item=><button key={item.key} onClick={()=>setSkill(item.key)} className={`rounded-full border px-5 py-2 text-sm ${skill===item.key?"border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]":"border-[var(--border)]"}`}>{item.label}</button>)}</div><FlashcardSession key={skill} skill={skill} /></div>;
+  return <div><label className="mb-4 flex items-center justify-end gap-2 text-xs text-[var(--text-muted)]">学习阶段<select aria-label="词汇学习阶段" value={difficulty} onChange={e=>setDifficulty(e.target.value as "standard" | "foundation")} className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] p-2 text-[var(--text)]"><option value="standard">常用训练 · 基础已有一些</option><option value="foundation">基础恢复 · 想先补牢</option></select></label><div className="mb-5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-4"><p className="text-sm font-medium">连续刷词 · 没有每日上限</p><p className="mt-2 text-xs leading-6 text-[var(--text-muted)]">到期词与新词混合打散，到期词和薄弱词更容易出现；每组20词，刷完自动接下一组。没有到期词时可自由巩固，同一天反复答对不会延长复习间隔。</p><details className="mt-2 text-xs text-[var(--text-muted)]"><summary className="cursor-pointer">出现顺序是怎样安排的？</summary><p className="mt-2 leading-6">每次进入、每组结束都会重新随机打散；到期词和薄弱词提高抽中概率，但不固定排在前面。常用训练适当增加N4标签内容，基础恢复适当增加基础词，各阶段内容都有机会出现。答错的词回到本组末尾。独立答对后安排1、3、7、21、90天复习；词义与读音各自记录。难度标签用于学习组织，尚未逐词核验完整考纲覆盖。</p></details></div><div className="mb-6 flex justify-center gap-2">{([{key:"meaning",label:"词义"},{key:"reading",label:"汉字读音"}] as const).map(item=><button key={item.key} onClick={()=>setSkill(item.key)} className={`rounded-full border px-5 py-2 text-sm ${skill===item.key?"border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]":"border-[var(--border)]"}`}>{item.label}</button>)}</div><FlashcardSession key={`${skill}:${difficulty}`} skill={skill} difficulty={difficulty} /></div>;
 }

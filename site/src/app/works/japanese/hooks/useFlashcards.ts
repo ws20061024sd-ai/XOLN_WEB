@@ -6,7 +6,7 @@ import type { CardState } from "../lib/cardScheduler";
 import { getInitialState, review } from "../lib/cardScheduler";
 import { storage, loadCardStates, saveCardState } from "../lib/supabase";
 
-const DAILY_NEW_LIMIT = 10;
+import { vocabularyQueue } from "../lib/vocabularyQueue";
 const OPTION_COUNT = 4;
 
 function shuffle<T>(arr: T[]): T[] {
@@ -38,13 +38,15 @@ function loadDaily(): { date: string; reviewed: number; correct: number } {
   return { date: today, reviewed: 0, correct: 0 };
 }
 
-export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "grammar" | "reading" | "listening", correct: boolean) => void, skill: "meaning" | "reading" = "meaning") {
+export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "grammar" | "reading" | "listening", correct: boolean) => void, skill: "meaning" | "reading" = "meaning", difficulty: "standard" | "foundation" = "standard") {
   const [queue, setQueue] = useState<VocabCard[]>([]);
   const [cardStates, setCardStates] = useState<Map<string, CardState>>(new Map());
   const [dailies, setDailies] = useState(loadDaily);
   const [loading, setLoading] = useState(true);
   const [lastResult, setLastResult] = useState<boolean | null>(null);
   const answeredRef = useRef(false);
+  const [queueTime, setQueueTime] = useState(() => Date.now());
+  const [lastKind, setLastKind] = useState("新词");
 
 
   const reviewedToday = dailies.reviewed;
@@ -56,41 +58,31 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
       const saved = (skill === "meaning" ? await loadCardStates() : storage.get<Record<string, CardState>>("card_states_reading")) as Record<string, CardState> | null;
       if (cancelled) return;
       const states = new Map<string, CardState>();
-      const now = new Date();
-
-      const due: VocabCard[] = [];
-      const fresh: VocabCard[] = [];
-
-      for (const card of vocabulary.filter(card => skill === "meaning" || /[一-龯々]/.test(card.word))) {
+      const eligible = vocabulary.filter(card => skill === "meaning" || /[一-龯々]/.test(card.word));
+      for (const card of eligible) {
         const raw = saved?.[card.id];
-        const state: CardState = raw ? { ...raw, nextReview: new Date(raw.nextReview) } : getInitialState(card.id);
+        const nextReview = raw ? new Date(raw.nextReview) : new Date();
+        const state: CardState = raw ? { ...raw, nextReview: Number.isNaN(nextReview.getTime()) ? new Date() : nextReview } : getInitialState(card.id);
         states.set(card.id, state);
-
-        if (state.nextReview <= now && state.totalReviews > 0) {
-          due.push(card);
-        } else if (state.totalReviews === 0) {
-          fresh.push(card);
-        }
       }
-
-      const today = new Date().toDateString();
-      const introduced = storage.get<{ date: string; ids: string[] }>(NEW_WORDS_KEY);
-      const ids = introduced?.date === today ? introduced.ids : [];
       setCardStates(states);
-      setQueue([...shuffle(due), ...shuffle(fresh.filter(card => ids.includes(card.id))), ...shuffle(fresh.filter(card => !ids.includes(card.id))).slice(0, Math.max(0, DAILY_NEW_LIMIT - ids.length))]);
+      setQueue(vocabularyQueue(eligible, states, Date.now(), difficulty));
+      setQueueTime(Date.now());
       setLoading(false);
     };
     void load();
     return () => { cancelled = true; };
-  }, [skill]);
+  }, [skill, difficulty]);
 
   const currentCard = queue[0] ?? null;
+  const currentState = currentCard ? cardStates.get(currentCard.id) : null;
+  const kind = !currentState?.totalReviews ? "新词" : currentState.nextReview.getTime() <= queueTime ? "到期复习" : "自由巩固";
   const correctAnswer = currentCard ? skill === "reading" ? currentCard.reading : currentCard.meaning : "";
 
   // 生成当前题目的4个选项（1正确 + 3干扰）
   const options = useMemo(() => {
     if (!currentCard) return [];
-    const others = vocabulary.filter(c => c.id !== currentCard.id);
+    const others = vocabulary.filter(c => c.word !== currentCard.word);
     const shuffledOthers = shuffle(others);
     const distractors = [...new Set(shuffledOthers.map(c => skill === "reading" ? c.reading : c.meaning))]
       .filter(meaning => meaning !== correctAnswer).slice(0, OPTION_COUNT - 1);
@@ -110,6 +102,7 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
     answeredRef.current = true;
 
     const isCorrect = selectedMeaning === correctAnswer;
+    setLastKind(kind);
     setLastResult(isCorrect);
 
     const oldState = cardStates.get(card.id) ?? getInitialState(card.id);
@@ -133,18 +126,26 @@ export function useFlashcards(recordModuleAnswer?: (module: "flashcard" | "gramm
     }
     recordModuleAnswer?.("flashcard", isCorrect);
 
-  }, [currentCard, correctAnswer, cardStates, dailies, recordModuleAnswer, skill]);
+  }, [currentCard, correctAnswer, cardStates, dailies, recordModuleAnswer, skill, kind]);
 
   const nextCard = useCallback(() => {
     if (!answeredRef.current || !currentCard || lastResult === null) return;
-    setQueue(prev => lastResult ? prev.slice(1) : [...prev.slice(1), currentCard]);
+    const eligible = vocabulary.filter(card => skill === "meaning" || /[一-龯々]/.test(card.word));
+    setQueueTime(Date.now());
+    const rest = lastResult ? queue.slice(1) : [...queue.slice(1), currentCard];
+    if (rest.length) setQueue(rest);
+    else {
+      setQueue(vocabularyQueue(eligible, cardStates, Date.now(), difficulty));
+    }
     answeredRef.current = false;
     setLastResult(null);
-  }, [currentCard, lastResult]);
+  }, [currentCard, lastResult, cardStates, skill, difficulty, queue]);
 
   const accuracy = reviewedToday > 0 ? Math.round(correctToday / reviewedToday * 100) : 0;
 
   return {
+    kind: lastResult === null ? kind : lastKind,
+    totalWords: vocabulary.length,
     loading,
     correctAnswer,
     nextCard,

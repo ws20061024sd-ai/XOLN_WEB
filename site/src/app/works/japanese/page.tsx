@@ -34,7 +34,7 @@ function JapaneseContent() {
         <p className="text-sm font-medium tracking-wide text-[var(--accent)] uppercase">CJT4 · 学习与复习</p>
         <h1 className="mt-2 font-serif text-2xl font-bold tracking-tight sm:text-3xl">日语四级学习舱</h1>
       </div>
-      <p className="px-4 pb-5 text-sm text-[var(--text-muted)]">为 2027 年 6 月准备 · 每天约一小时 · 先理解，再验证</p>
+      <p className="px-4 pb-5 text-sm text-[var(--text-muted)]">为 2027 年 6 月准备 · 灵活安排 · 随机练习与间隔复习</p>
       <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="flex-1 px-4 py-6">
         <AnimatePresence mode="wait">

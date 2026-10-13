@@ -48,7 +48,7 @@ export default function GrammarModule() {
     setConfident(true);
     setShowExplain(false);
     if (wasCorrect) {
-      // 答对：永久出队（已 markCorrect，刷新后也不会重现）
+      // 本轮答对后出队，后续仍可按复习间隔再练。
       setQueue(prev => prev.slice(1));
     } else {
       // 答错：移到队尾，本会话内稍后可再遇
@@ -64,8 +64,9 @@ export default function GrammarModule() {
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
         </div>
-        <p className="text-lg font-medium text-[var(--text)]">今天的语法复习已完成</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">已答对题将在到期后再次出现。用未见题确认掌握，或切换其它专项。</p>
+        <p className="text-lg font-medium text-[var(--text)]">本轮语法练习已完成</p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">可以继续随机练一轮；提前巩固不会延长已安排的复习间隔。</p>
+        <button onClick={() => setQueue(getAvailable(grammarQuestions.filter(q => topic === "all" || q.knowledgePoint === topic), "grammar"))} className="mt-4 rounded-lg border border-[var(--border)] px-4 py-2 text-sm">打散再练一轮</button>
       </div>
     );
   }
@@ -74,11 +75,12 @@ export default function GrammarModule() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)]">
         <span className="font-medium text-[var(--text)]">语法</span>
+        {question.source && <span className="text-xs">{question.source}</span>}
         <span>正确率 {grammarStats.total > 0 ? Math.round(grammarStats.correct / grammarStats.total * 100) : 0}%</span>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[var(--border)] p-4">
-        <label className="text-xs text-[var(--text-muted)]">考点 <select aria-label="语法考点" value={topic} onChange={e => { const value = e.target.value; setTopic(value); setQueue(getAvailable(grammarQuestions.filter(q => value === "all" || q.knowledgePoint === value), "grammar")); setSelected(null); setShowExplain(false); setConfident(true); }} className="ml-2 max-w-[220px] rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-[var(--text)]"><option value="all">全部考点 · 到期优先</option>{[...new Set(grammarQuestions.map(q=>q.knowledgePoint))].sort().map(t=><option key={t} value={t}>{t}</option>)}</select></label>
+        <label className="text-xs text-[var(--text-muted)]">考点 <select aria-label="语法考点" value={topic} onChange={e => { const value = e.target.value; setTopic(value); setQueue(getAvailable(grammarQuestions.filter(q => value === "all" || q.knowledgePoint === value), "grammar")); setSelected(null); setShowExplain(false); setConfident(true); }} className="ml-2 max-w-[220px] rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-[var(--text)]"><option value="all">全部考点 · 随机混合</option>{[...new Set(grammarQuestions.map(q=>q.knowledgePoint))].sort().map(t=><option key={t} value={t}>{t}</option>)}</select></label>
         <span className="text-xs text-[var(--text-muted)]">本次队列 {queue.length} 题</span>
       </div>
       <div className="flex flex-wrap items-center gap-2 text-xs"><span className="text-[var(--text-muted)]">这道题：</span>{[{value:true,label:"我有把握"},{value:false,label:"不确定 / 可能猜"}].map(item=><button key={item.label} disabled={selected !== null} onClick={()=>setConfident(item.value)} className={`rounded-full border px-3 py-2 ${confident === item.value ? "border-[var(--accent)] text-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)]"}`}>{item.label}</button>)}<span className="ml-auto text-[var(--text-soft)]">猜对会进入补练，不计为独立掌握</span></div>

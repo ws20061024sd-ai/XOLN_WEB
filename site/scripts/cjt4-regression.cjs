@@ -55,14 +55,22 @@ function harness(mocks = {}) {
   h.storage.set('flashcard_new_words',{date:new Date().toDateString(),ids:Array.from({length:9},(_,i)=>`old-${i}`)});
   const hook=f.load('hooks/useFlashcards').useFlashcards;
   f.render(hook);await flush();let cards=f.render(hook);
-  assert.equal(cards.queueLength,1,'nine introduced words leave one new word');
+  assert.equal(cards.queueLength,20,'continuous learning has no daily new-word cap');
   assert.equal(new Set(cards.options).size,cards.options.length,'option meanings must be unique');
   cards.checkAnswer(cards.currentCard.meaning);f.render(hook);
   assert.equal(h.storage.get('flashcard_new_words').ids.length,10);
   const f2=harness({'lib/supabase':{storage:h.storage,loadCardStates:async()=>h.storage.get("card_states"),saveCardState:async()=>{}},'lib/data/vocabulary':{vocabulary}});
   const hook2=f2.load('hooks/useFlashcards').useFlashcards;f2.render(hook2);await flush();
-  assert.equal(f2.render(hook2).queueLength,0,'remount must not grant another batch');
-  console.log('PASS daily new-word limit across remount and unique options');
+  assert.equal(f2.render(hook2).queueLength,20,'remaining new words stay available after remount');
+  let continuous = f.render(hook);
+  if (continuous.lastResult !== null) { continuous.nextCard(); f.render(hook); }
+  for (let i=0;i<35;i++) {
+    continuous=f.render(hook); assert.ok(continuous.currentCard, 'continuous study cannot stop at the end of a batch');
+    continuous.checkAnswer(continuous.correctAnswer);
+    continuous=f.render(hook);continuous.nextCard();f.render(hook);
+  }
+  assert.ok(Object.values(h.storage.get('card_states')).every(state=>state.level <= 1), 'same-session free practice must not fast-forward review levels');
+  console.log('PASS continuous learning across remount and unique options');
 
   let resolveCloud;
   const p=harness({'lib/supabase':{loadProgress:()=>new Promise(r=>resolveCloud=r),saveProgress:async()=>{}}});

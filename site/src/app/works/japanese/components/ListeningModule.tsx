@@ -94,8 +94,9 @@ export default function ListeningModule() {
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
         </div>
-        <p className="text-lg font-medium text-[var(--text)]">今天的听力队列已完成</p>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">完成短听后，记得在到期时再次验证理解。</p>
+        <p className="text-lg font-medium text-[var(--text)]">本轮听力练习已完成</p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">可以继续随机练一轮；提前巩固不会延长已安排的复习间隔。</p>
+        <button onClick={() => setQueue(getAvailable(listeningScripts, "listening"))} className="mt-4 rounded-lg border border-[var(--border)] px-4 py-2 text-sm">打散再练一轮</button>
       </div>
     );
   }
@@ -108,6 +109,7 @@ export default function ListeningModule() {
         <span className="font-medium text-[var(--text)]">听力</span>
         <span className="rounded-full bg-[var(--border-light)] px-2 py-0.5 text-xs">{script.difficulty}</span>
         <span>剩余 {queue.length} 段</span>
+        {script.source && <span className="text-xs">{script.source}</span>}
       </div>
 
       <div className="rounded-xl bg-[var(--accent-soft)] p-4 text-xs leading-6 text-[var(--text-muted)]">5分钟耳机练习：盲听 → 作答 → 对照原文 → 遮住文字再听。本组使用浏览器合成语音，正式诊断请用测评中心的官方录音。</div>
@@ -144,6 +146,7 @@ export default function ListeningModule() {
                   );
                 })}
               </div>
+              {submitted && q.explanation && <p className="mt-3 text-xs leading-6 text-[var(--text-muted)]">听音依据：{q.explanation}</p>}
             </div>
           ))}
 

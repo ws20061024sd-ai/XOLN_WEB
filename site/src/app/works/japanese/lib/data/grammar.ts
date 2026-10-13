@@ -1,4 +1,5 @@
 export interface GrammarQuestion {
+  source?: string;
   id: string;
   question: string;
   options: string[];
@@ -222,4 +223,25 @@ export const grammarQuestions: GrammarQuestion[] = [
   {"id": "g-opt-002", "question": "この部屋では、靴を（　　　）なければなりません。", "options": ["脱ぐ", "脱が", "脱いで", "脱げ"], "answer": 1, "explanation": "脱ぐ的ない形为脱がない。ない去い＋ければならない：脱がなければならない。", "knowledgePoint": "義務·なければならない", "jlptLevel": "N4"},
   {"id": "g-opt-003", "question": "駅に着いた（　　　）、電話してください。", "options": ["ら", "ので", "ながら", "なら"], "answer": 0, "explanation": "着いたら表示到站之后的条件。た形＋ら。其它项不接在完整た形后形成所需条件。", "knowledgePoint": "条件·たら", "jlptLevel": "N4"},
   {"id": "g-opt-004", "question": "「食べる」の可能形は（　　　）です。", "options": ["食べれる", "食べられる", "食べさせる", "食べられた"], "answer": 1, "explanation": "标准可能形：一段动词去る＋られる。食べれる是口语ら抜き；食べさせる是使役，食べられた是过去形式。", "knowledgePoint": "動詞·可能形", "jlptLevel": "N4"},
+  // 原创专项练习，难度需用官方样卷与实际作答校准。
+  {"source": "原创专项练习", "id": "g-flex-001", "question": "「待つ」のて形は（　　　）です。", "options": ["待って", "待いて", "待んで", "待して"], "answer": 0, "explanation": "待つ的て形是待って。以う/つ/る结尾的五段动词通常发生促音便。", "knowledgePoint": "動詞·て形", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-002", "question": "「書く」のて形は（　　　）です。", "options": ["書って", "書いて", "書んで", "書して"], "answer": 1, "explanation": "書く→書いて。く结尾一般变いて；行く→行って是例外。", "knowledgePoint": "動詞·て形", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-003", "question": "「飲む」のて形は（　　　）です。", "options": ["飲いて", "飲って", "飲んで", "飲して"], "answer": 2, "explanation": "飲む→飲んで。む/ぶ/ぬ结尾通常变んで。", "knowledgePoint": "動詞·て形", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-004", "question": "「行く」のて形は（　　　）です。", "options": ["行いて", "行んで", "行して", "行って"], "answer": 3, "explanation": "行く是く结尾动词的特殊情况，て形是行って。", "knowledgePoint": "動詞·て形", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-005", "question": "「買う」のない形は（　　　）です。", "options": ["買わない", "買うない", "買あない", "買いない"], "answer": 0, "explanation": "う结尾的五段动词变ない形时用わ：買う→買わない。", "knowledgePoint": "動詞·ない形", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-006", "question": "「泳ぐ」のない形は（　　　）です。", "options": ["泳ぐない", "泳がない", "泳ぎない", "泳げない"], "answer": 1, "explanation": "泳ぐ→泳がない，ぐ变が。泳げない是可能形的否定，意思是不能游泳。", "knowledgePoint": "動詞·ない形", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-007", "question": "この部屋（　　　）勉強しています。", "options": ["を", "に", "で", "が"], "answer": 2, "explanation": "动作进行的场所用で：部屋で勉強する。に主要表示存在的场所、方向等。", "knowledgePoint": "助詞·で（場所）", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-008", "question": "次の駅で電車（　　　）降ります。", "options": ["が", "に", "で", "を"], "answer": 3, "explanation": "离开交通工具用を：電車を降りる。乘坐则是電車に乗る。", "knowledgePoint": "助詞·を（離脱）", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-009", "question": "このバス（　　　）乗ってください。", "options": ["に", "を", "で", "が"], "answer": 0, "explanation": "乗る的乘坐对象用に：バスに乗る。で是交通手段，如バスで行く。", "knowledgePoint": "助詞·に（対象）", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-010", "question": "家から駅（　　　）歩いて10分です。", "options": ["だけ", "まで", "しか", "ほどに"], "answer": 1, "explanation": "まで标记终点，与から形成“从……到……”。", "knowledgePoint": "助詞·まで（終点）", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-011", "question": "部屋に机が一つ（　　　）ありません。", "options": ["ずつ", "まで", "しか", "から"], "answer": 2, "explanation": "しか与否定呼应，表达“只有一张”。だけ一般用于肯定表达数量限制；此句强调仅有一个。", "knowledgePoint": "限定·しか", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-012", "question": "音楽を聞き（　　　）、料理をしています。", "options": ["ので", "から", "ために", "ながら"], "answer": 3, "explanation": "ます形去ます＋ながら表示同一主体同时进行两个动作：聞きながら料理する。", "knowledgePoint": "同時·ながら", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-013", "question": "日本語の本を読む（　　　）、辞書を買いました。", "options": ["ために", "ながら", "しか", "ままに"], "answer": 0, "explanation": "动词辞书形＋ために表示目的：为了读日语书而买了词典。", "knowledgePoint": "目的·ために", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-014", "question": "「食べたことがある」は、何を表しますか。", "options": ["毎日の習慣", "過去の経験", "未来の義務", "禁止"], "answer": 1, "explanation": "た形＋ことがある表示曾有某种经历，不是习惯、义务或禁止。", "knowledgePoint": "経験·たことがある", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-015", "question": "明日は早く起き（　　　）と思っています。", "options": ["る", "た", "よう", "て"], "answer": 2, "explanation": "一段动词意向形：起きる→起きよう。ようと思っている表示说话人的打算。", "knowledgePoint": "意志·ようと思う", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-016", "question": "「する」の条件形は（　　　）です。", "options": ["すると", "したら", "するなら", "すれば"], "answer": 3, "explanation": "这里问活用中的条件形，する→すれば。と/たら/なら也可构成条件表达，但不是する的条件形活用。", "knowledgePoint": "条件·ば", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-017", "question": "窓が（　　　）います。外の音がよく聞こえます。", "options": ["開いて", "開けって", "開きて", "開けた"], "answer": 0, "explanation": "开着的状态用自动词開く的て形：開いている。開けている表示人主动开着窗的动作/状态，此处主语是窗。", "knowledgePoint": "自他·開く／開ける", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-018", "question": "先週、来月の旅行に備えて、必要な切符を買って（　　　）。", "options": ["いるところです", "おきました", "みたいでした", "あるました"], "answer": 1, "explanation": "旅行の準備を先に済ませる表达用ておく：買っておきました。“正在买”与“已为以后备好”不同；其它两项接续不成立。", "knowledgePoint": "準備·ておく", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-019", "question": "「飲みすぎる」の「すぎる」は、どんな意味ですか。", "options": ["飲み始める", "飲み続ける", "必要以上に飲む", "飲むのをやめる"], "answer": 2, "explanation": "ます形去ます＋すぎる表示过度。飲みすぎる=喝得过多。", "knowledgePoint": "過度·すぎる", "jlptLevel": "N4"},
+  {"source": "原创专项练习", "id": "g-flex-020", "question": "このペンは書き（　　　）です。手が疲れません。", "options": ["たがる", "たい", "ながら", "やすい"], "answer": 3, "explanation": "ます形去ます＋やすい表示容易做某事：書きやすい=好写。たい表示想写，不接です形成同一表达；ながら不能作此谓语。", "knowledgePoint": "容易·やすい", "jlptLevel": "N4"},
 ];
