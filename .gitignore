@@ -8,5 +8,6 @@ out/
 .vercel
 *.tsbuildinfo
 .claude/
+.workbuddy/
 site/.superpowers/
 site/docs/superpowers/
